@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이전 실적 검색</title>
+    <link rel="stylesheet" href="./history.css">
+  </head>
+  <body>
+    <main class="panel">
+      <div id="dragHandle" class="drag-handle">이전 실적 검색</div>
+      <div id="cacheStatus" class="cache-status">실적 캐시 확인 중...</div>
+      <form id="historyForm" class="search-form">
+        <input id="historySearch" type="search" placeholder="상품명 / 편성코드명 검색" autocomplete="off">
+        <button id="historyButton" type="submit">검색</button>
+      </form>
+      <section id="summary" class="summary">전역 실적 DB에서 과거 방송 실적을 검색합니다.</section>
+      <section id="viz" class="viz"></section>
+      <section id="results" class="results" aria-live="polite"></section>
+    </main>
+    <script src="./history.js"></script>
+  </body>
+</html>

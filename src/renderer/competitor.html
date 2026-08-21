@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경쟁사 검색</title>
+    <link rel="stylesheet" href="./competitor.css">
+  </head>
+  <body>
+    <main class="panel">
+      <div id="dragHandle" class="drag-handle">경쟁사 검색</div>
+      <div class="month-row">
+        <select id="searchMonth" title="검색 월">
+          <option value="all">전체</option>
+        </select>
+      </div>
+      <div class="dual-search">
+        <form id="brandForm" class="search-form">
+          <input id="brandSearch" type="search" placeholder="브랜드명 포함 검색" autocomplete="off">
+          <button id="brandButton" type="submit">브랜드</button>
+        </form>
+        <form id="productForm" class="search-form">
+          <input id="productSearch" type="search" placeholder="상품명 포함 검색" autocomplete="off">
+          <button id="productButton" type="submit">상품명</button>
+        </form>
+      </div>
+      <section id="criteria" class="criteria"></section>
+      <section id="summary" class="summary">브랜드나 상품명을 검색하면 조건 뱃지가 쌓입니다. 캐시는 사용하지 않습니다.</section>
+      <section id="filters" class="filters"></section>
+      <section id="viz" class="viz"></section>
+      <section id="results" class="results" aria-live="polite"></section>
+    </main>
+    <script src="./competitor.js"></script>
+  </body>
+</html>

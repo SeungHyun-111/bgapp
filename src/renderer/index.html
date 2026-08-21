@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broadcast Schedule</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="widget">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">ON AIR SCHEDULE</p>
+          <h1>Broadcast Schedule</h1>
+        </div>
+        <div class="top-actions">
+          <button id="refreshSchedule" type="button" title="Refresh schedule" aria-label="Refresh schedule">REFRESH</button>
+          <time id="clock">--:--</time>
+        </div>
+      </header>
+
+      <section class="schedule" aria-label="Broadcast schedule list">
+        <p class="loading">Loading schedule...</p>
+      </section>
+    </main>
+    <script src="./renderer.js"></script>
+  </body>
+</html>

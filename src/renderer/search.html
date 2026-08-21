@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>잔여편성 검색</title>
+    <link rel="stylesheet" href="./search.css">
+  </head>
+  <body>
+    <main class="search-panel">
+      <div id="dragHandle" class="drag-handle">잔여편성 검색</div>
+      <form id="searchForm" class="search-form">
+        <input id="remainingSearch" type="search" placeholder="잔여편성 검색" autocomplete="off">
+        <button id="searchButton" type="submit">검색</button>
+      </form>
+      <section id="searchSummary" class="search-summary">오늘 이후 편성운영 버전에서 검색합니다.</section>
+      <section id="searchResults" class="results" aria-live="polite"></section>
+    </main>
+    <script src="./search.js"></script>
+  </body>
+</html>
