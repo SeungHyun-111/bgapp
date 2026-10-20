@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Menu, Tray, ipcMain, nativeImage, screen, shell } = require('electron');
 const fs = require('fs');
 const path = require('path');
+const startPets = require('./pets');
 const { loadSchedule, refreshFutureOpsVersions, searchRemainingSchedules, refreshGlobalPerformance, searchPerformanceHistory, searchCompetitorInfo, warmPerformanceCache, getPerformanceCacheStatus, configureCacheDirectory } = require('./schedule');
 
 let mainWindow;
@@ -310,6 +311,8 @@ function createWindow() {
 
   mainWindow = new BrowserWindow({
     ...bounds,
+    // Keep legacy renderers loaded for their services, without desktop visuals.
+    show: false,
     frame: false,
     transparent: true,
     resizable: false,
@@ -336,6 +339,8 @@ function createFloatingWindow() {
 
   floatingWindow = new BrowserWindow({
     ...bounds,
+    // Keep legacy renderers loaded for their services, without desktop visuals.
+    show: false,
     frame: false,
     transparent: true,
     resizable: false,
@@ -362,6 +367,8 @@ function createSearchWindow() {
 
   searchWindow = new BrowserWindow({
     ...bounds,
+    // Keep legacy renderers loaded for their services, without desktop visuals.
+    show: false,
     frame: false,
     transparent: true,
     resizable: false,
@@ -388,6 +395,8 @@ function createPerformanceWindow() {
 
   performanceWindow = new BrowserWindow({
     ...bounds,
+    // Keep legacy renderers loaded for their services, without desktop visuals.
+    show: false,
     frame: false,
     transparent: true,
     resizable: false,
@@ -413,6 +422,8 @@ function createHistoryWindow() {
   const bounds = loadHistoryBounds();
   historyWindow = new BrowserWindow({
     ...bounds,
+    // Keep legacy renderers loaded for their services, without desktop visuals.
+    show: false,
     frame: false,
     transparent: true,
     resizable: false,
@@ -437,6 +448,8 @@ function createCompetitorWindow() {
   const bounds = loadCompetitorBounds();
   competitorWindow = new BrowserWindow({
     ...bounds,
+    // Keep legacy renderers loaded for their services, without desktop visuals.
+    show: false,
     frame: false,
     transparent: true,
     resizable: false,
@@ -475,6 +488,7 @@ function createTray() {
 app.whenReady().then(() => {
   enableAutoLaunch();
   configureCacheDirectory(path.join(app.getPath('userData'), 'data-cache'));
+  require('./data-cache').configureCache(path.join(app.getPath('userData'), 'data-cache', 'shared'));
 
   ipcMain.handle('schedule:load', loadSchedule);
   ipcMain.handle('pgmdr:refresh-future-ops', refreshFutureOpsVersions);
@@ -530,19 +544,12 @@ app.whenReady().then(() => {
   createHistoryWindow();
   createCompetitorWindow();
   createTray();
+  startPets();
   warmPerformanceCache();
 });
 
 app.on('second-instance', () => {
-  if (!mainWindow) {
-    return;
-  }
-
-  if (mainWindow.isMinimized()) {
-    mainWindow.restore();
-  }
-
-  mainWindow.show();
+  // Relaunching must not bring back the legacy desktop widgets.
 });
 
 app.on('before-quit', () => {

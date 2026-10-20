@@ -1,6 +1,7 @@
 ﻿const SCHEDULE_URL = 'https://www.skstoa.com/tv_schedule';
 const DETAIL_URL_PREFIX = 'https://www.skstoa.com/display/goods/';
 const https = require('https');
+const sharedCache = require('./data-cache');
 const PGMDR_DB_URL = 'https://pgmdr-87328-default-rtdb.asia-southeast1.firebasedatabase.app';
 const COMPETITOR_DB_URL = 'https://schedule-7ec7a-default-rtdb.asia-southeast1.firebasedatabase.app';
 const COMPETITOR_ROOT = 'competitorInfo';
@@ -160,19 +161,25 @@ function parseSchedule(html) {
 }
 
 async function loadSchedule() {
+  const sharedScheduleUrl = 'https://newnavi-329ad-default-rtdb.asia-southeast1.firebasedatabase.app/schedule/tvSchedule.json';
   try {
-    const response = await fetch(SCHEDULE_URL, {
+    const payload = await sharedCache.get(sharedScheduleUrl, {
+      marker: sharedScheduleUrl.replace('.json', '/loadedAt.json')
+    });
+    const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()).replace(/-/g, '');
+    if (String(payload?.refreshDate || '').replace(/-/g, '') === today && Array.isArray(payload.items) && payload.items.length) {
+      return { items: payload.items, loadedAt: payload.loadedAt, fromCache: sharedCache.status(sharedScheduleUrl).offline, source: 'shared-rtdb' };
+    }
+  } catch { /* The official page remains a fallback when the shared schedule is unavailable. */ }
+  try {
+    const html = await sharedCache.get(SCHEDULE_URL, {
+      type: 'text', ttl: 3600000,
       headers: {
         'user-agent': 'Mozilla/5.0 BroadcastOverlayWidget/0.1',
         accept: 'text/html,application/xhtml+xml'
       }
     });
 
-    if (!response.ok) {
-      throw new Error(`Schedule request failed: ${response.status}`);
-    }
-
-    const html = await response.text();
     const items = parseSchedule(html);
     await writeJsonCache('schedule-cache.json', { items, loadedAt: Date.now() });
     return { items, fromCache: false, loadedAt: Date.now() };
@@ -331,7 +338,15 @@ function normalizeOpsBlockBeforeSave(block) {
   };
 }
 
-async function firebaseGet(path) {
+async function firebaseGet(path, { force = false } = {}) {
+  const url = `${PGMDR_DB_URL}/${path}.json`;
+  if (path === 'performanceEntries') {
+    return sharedCache.get(url, { marker: `${PGMDR_DB_URL}/performanceMeta.json`, force });
+  }
+  if (/^sessions\/.+\/versions\/ops$/.test(path)) {
+    return sharedCache.get(url, { marker: `${PGMDR_DB_URL}/${path}/updatedAt.json` });
+  }
+  if (path === 'activeSessions' || path === 'performanceMeta') return sharedCache.get(url);
   return jsonRequest(`${PGMDR_DB_URL}/${path}.json`);
 }
 
@@ -683,6 +698,14 @@ function compactPerformanceEntry(entry) {
     perfKey,
     pgmCodeName,
     broadcastDate: entry.broadcastDate || '',
+    dayOfWeek: entry.dayOfWeek || '',
+    mdTeam: entry.mdTeam || entry.orgName || '',
+    mdName: entry.mdName || '',
+    multiChannel: entry.multiChannel || '',
+    weightedMin: toNullableNumber(entry.weightedMin),
+    expectedSales: toNullableNumber(entry.expectedSales),
+    contributionProfit: toNullableNumber(entry.contributionProfit),
+    lateNightPgmYn: String(entry.lateNightPgmYn || '').trim().toUpperCase(),
     broadcastTime: entry.broadcastTime || '',
     broadcastTimestamp: Number(entry.broadcastTimestamp || 0),
     salesPerWeightedMin: Number(entry.salesPerWeightedMin || 0),
@@ -700,12 +723,12 @@ function compactPerformanceEntry(entry) {
   };
 }
 async function loadPerformanceCache({ force = false } = {}) {
-  if (!force && performanceCache) return performanceCache;
+  if (!force && performanceCache && Date.now() - performanceCache.loadedAt < 300000) return performanceCache;
   if (!force && performanceCachePromise) return performanceCachePromise;
 
   performanceCachePromise = (async () => {
     try {
-      const entries = await firebaseGet('performanceEntries');
+      const entries = await firebaseGet('performanceEntries', { force });
       const rows = normalizePerformanceRows(entries || {})
         .map(compactPerformanceEntry)
         .filter((row) => row.perfKey && row.broadcastTimestamp)
@@ -1104,7 +1127,63 @@ async function searchPerformanceHistory(keyword = '') {
   };
 }
 
+let momongaReportCache = null;
+let momongaReportPending = null;
+async function loadMomongaReport() {
+  if (momongaReportCache && Date.now() - momongaReportCache.loadedAt < 60000) return momongaReportCache;
+  if (momongaReportPending) return momongaReportPending;
+  momongaReportPending = buildMomongaReport();
+  try { return await momongaReportPending; } finally { momongaReportPending = null; }
+}
+async function buildMomongaReport() {
+  const now = Date.now();
+  const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(now));
+  const active = await firebaseGet('activeSessions');
+  const sessions = Object.keys(active || {}).map(parseWeekKey).filter(Boolean)
+    .filter(s => getFallbackEndDate(s.startDate) >= today);
+  const versions = await Promise.all(sessions.map(s => firebaseGet(`sessions/${s.weekKey}/versions/${VERSION_OPS}`)));
+  const current = new Map();
+  const future = new Map();
+  for (const version of versions) {
+    for (const raw of Object.values(version?.scheduleBlocks || {})) {
+      if (!raw || raw.isDefault) continue;
+      const block = raw.uniqueKey && version.entityProps?.[raw.uniqueKey] ? { ...raw, ...version.entityProps[raw.uniqueKey] } : raw;
+      const time = normalizePerfTime(block.timeText);
+      const start = Date.parse(`${block.dateKey}T${time}:00+09:00`);
+      const duration = Number(block.durationMin);
+      if (!Number.isFinite(start) || !(duration > 0)) continue;
+      const key = makePerfKey(block.dealTypeConverted || block.dealType, block.pgmCodeName);
+      if (!key) continue;
+      if (start > now) {
+        const id = `${key}|${block.dateKey}|${time}|${block.channel || 'ALL'}`;
+        if (!future.has(id)) future.set(id, { perfKey: key, date: block.dateKey, time,
+          channel: block.channel || 'ALL', pgmCodeName: block.pgmCodeName || '',
+          mdTeam: block.mdTeam || block.orgName || '', dealType: block.dealTypeConverted || block.dealType || '',
+          memoCode: block.memoCode || '', scheduleComment: block.scheduleComment || '',
+          weightedMin: Number(block.weightedMin || 0), start });
+        continue;
+      }
+      if (now >= start + duration * 60000) continue;
+      current.set(key, { perfKey: key, pgmCodeName: block.pgmCodeName, startTime: time,
+        timestamp: makeBroadcastTimestamp(block.dateKey, time) });
+    }
+  }
+  const cache = await loadPerformanceCache();
+  const products = [...current.values()].map(product => {
+    const seen = new Set();
+    const history = cache.rows.filter(row => row.perfKey === product.perfKey && row.lateNightPgmYn === 'N' && row.broadcastTimestamp < product.timestamp)
+      .sort((a, b) => b.broadcastTimestamp - a.broadcastTimestamp || b.sourceRow - a.sourceRow)
+      .filter(row => { const key = `${row.broadcastDate}|${row.broadcastTime}`; if (seen.has(key)) return false; seen.add(key); return true; }).slice(0, 3);
+    const remaining = [...future.values()].filter(slot => slot.perfKey === product.perfKey).sort((a, b) => a.start - b.start);
+    return { ...product, history, remaining };
+  });
+  momongaReportCache = { products, fromCache: Boolean(cache.fromCache), loadedAt: Date.now() };
+  return momongaReportCache;
+}
+
 module.exports = {
+  loadPerformanceCache,
+  loadMomongaReport,
   loadSchedule,
   parseSchedule,
   configureCacheDirectory,
