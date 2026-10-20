@@ -544,6 +544,8 @@ app.whenReady().then(() => {
   createHistoryWindow();
   createCompetitorWindow();
   createTray();
+  const stopWallpaper = require('./day-night-wallpaper').startDayNightWallpaper();
+  app.on('before-quit', stopWallpaper);
   startPets();
   warmPerformanceCache();
 });
