@@ -16,3 +16,6 @@ release/
 *.log
 Thumbs.db
 Desktop.ini
+
+# Personal learning notes and locally cached program names.
+/data/

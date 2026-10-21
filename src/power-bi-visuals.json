@@ -1,0 +1,616 @@
+{
+  "reportId": "9cd0cf77-a071-4359-8817-1d66cc898b0b",
+  "reportPage": "ReportSection32e609eaa4cfa0f386ef",
+  "sourceFile": "PowerBIPerformanceData.json",
+  "sourceVersion": "1.1.0",
+  "visualQueryCount": 11,
+  "limitations": [
+    "Recorded visual queries only; this is not the complete report definition.",
+    "Measure references are captured; their internal model formulas are not included.",
+    "Queries preserve recorded product filters and selected-row interactions; do not reuse these constants as universal search filters.",
+    "Visual position, formatting, and display units are not established by these events.",
+    "Row counts are recorded metadata; no query result values are present in this file."
+  ],
+  "visuals": [
+    {
+      "id": "5390bc27b07030e7314c",
+      "title": "카드",
+      "type": "card",
+      "recordedAt": "2026-10-21T05:01:53.255Z",
+      "recordedRowCount": 1,
+      "filterContext": "program-code-and-selected-broadcast-row",
+      "programCodeValues": [
+        "\"[홀베리]당근주스\""
+      ],
+      "groupingFields": [],
+      "outputs": [
+        {
+          "alias": "Sumv_전체_미리주문_예상취급액_V__",
+          "expression": "IGNORE(\r\n\t\t\tCALCULATE(\r\n\t\t\t\tSUM('BO'[(전체/미리주문)예상취급액(V-)])\r\n\t\t\t)\r\n\t\t)",
+          "references": [
+            "'BO'[(전체/미리주문)예상취급액(V-)]"
+          ]
+        }
+      ],
+      "measureReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]",
+        "'BO'[(전체/미리주문)예상취급액(V-)]"
+      ],
+      "queryFile": "docs/power-bi/queries/1-5390bc27b07030e7314c.dax",
+      "queryText": "DEFINE VAR __DS0FilterTable = \r\n\tFILTER(\r\n\t\tKEEPFILTERS(\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\tVALUES('BO'),\r\n\t\t\t\t'BO'[방송일시],\r\n\t\t\t\t'BO'[다원구분],\r\n\t\t\t\t'BO'[MD분류],\r\n\t\t\t\t'BO'[편성코드],\r\n\t\t\t\t'BO'[대표업체명],\r\n\t\t\t\t'BO'[대표상품명],\r\n\t\t\t\t'BO'[편성 Comment],\r\n\t\t\t\t'BO'[영상구분],\r\n\t\t\t\t'BO'[거래형태],\r\n\t\t\t\t'BO'[영상ID],\r\n\t\t\t\t'BO'[MD명],\r\n\t\t\t\t'BO'[기업구분],\r\n\t\t\t\t'BO'[프로그램명],\r\n\t\t\t\t'BO'[아이템명]\r\n\t\t\t)\r\n\t\t),\r\n\t\tAND(\r\n\t\t\t'BO'[편성코드] IN {\"[홀베리]당근주스\"},\r\n\t\t\t('BO'[방송일시], 'BO'[다원구분], 'BO'[MD분류], 'BO'[편성코드], 'BO'[대표업체명], 'BO'[대표상품명], 'BO'[편성 Comment], 'BO'[영상구분], 'BO'[거래형태], 'BO'[영상ID], 'BO'[MD명], 'BO'[기업구분], 'BO'[프로그램명], 'BO'[아이템명]) IN {((DATE(2024, 10, 26) + TIME(0, 33, 0)), \"전체\", \"건강식품\", \"[홀베리]당근주스\", \"홀푸드코리아 주식회사\", \"[홀베리]1일 1당근 유기농 당근주스 8박스(80g*14포*8박스)\", \"\", \"기존\", \"위수탁\", 25531, \"윤혜성\", \"중소기업\", \"SK스토아 프로그램\", \"1000\")}\r\n\t\t)\r\n\t)\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t\"Sumv_전체_미리주문_예상취급액_V__\", IGNORE(\r\n\t\t\tCALCULATE(\r\n\t\t\t\tSUM('BO'[(전체/미리주문)예상취급액(V-)])\r\n\t\t\t)\r\n\t\t)\r\n\t)"
+    },
+    {
+      "id": "b51b01f08c58cae7d8e6",
+      "title": "카드",
+      "type": "card",
+      "recordedAt": "2026-10-21T05:01:53.255Z",
+      "recordedRowCount": 1,
+      "filterContext": "program-code-and-selected-broadcast-row",
+      "programCodeValues": [
+        "\"[홀베리]당근주스\""
+      ],
+      "groupingFields": [],
+      "outputs": [
+        {
+          "alias": "v_전체_한계이익에서__전체_방송중_한계이익을_를__뺀_값",
+          "expression": "IGNORE(\r\n\t\t\t'BO'[(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]\r\n\t\t)",
+          "references": [
+            "'BO'[(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]"
+          ]
+        }
+      ],
+      "measureReferences": [
+        "'BO'[(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]"
+      ],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]",
+        "'BO'[(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]"
+      ],
+      "queryFile": "docs/power-bi/queries/2-b51b01f08c58cae7d8e6.dax",
+      "queryText": "DEFINE VAR __DS0FilterTable = \r\n\tFILTER(\r\n\t\tKEEPFILTERS(\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\tVALUES('BO'),\r\n\t\t\t\t'BO'[방송일시],\r\n\t\t\t\t'BO'[다원구분],\r\n\t\t\t\t'BO'[MD분류],\r\n\t\t\t\t'BO'[편성코드],\r\n\t\t\t\t'BO'[대표업체명],\r\n\t\t\t\t'BO'[대표상품명],\r\n\t\t\t\t'BO'[편성 Comment],\r\n\t\t\t\t'BO'[영상구분],\r\n\t\t\t\t'BO'[거래형태],\r\n\t\t\t\t'BO'[영상ID],\r\n\t\t\t\t'BO'[MD명],\r\n\t\t\t\t'BO'[기업구분],\r\n\t\t\t\t'BO'[프로그램명],\r\n\t\t\t\t'BO'[아이템명]\r\n\t\t\t)\r\n\t\t),\r\n\t\tAND(\r\n\t\t\t'BO'[편성코드] IN {\"[홀베리]당근주스\"},\r\n\t\t\t('BO'[방송일시], 'BO'[다원구분], 'BO'[MD분류], 'BO'[편성코드], 'BO'[대표업체명], 'BO'[대표상품명], 'BO'[편성 Comment], 'BO'[영상구분], 'BO'[거래형태], 'BO'[영상ID], 'BO'[MD명], 'BO'[기업구분], 'BO'[프로그램명], 'BO'[아이템명]) IN {((DATE(2024, 10, 26) + TIME(0, 33, 0)), \"전체\", \"건강식품\", \"[홀베리]당근주스\", \"홀푸드코리아 주식회사\", \"[홀베리]1일 1당근 유기농 당근주스 8박스(80g*14포*8박스)\", \"\", \"기존\", \"위수탁\", 25531, \"윤혜성\", \"중소기업\", \"SK스토아 프로그램\", \"1000\")}\r\n\t\t)\r\n\t)\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t\"v_전체_한계이익에서__전체_방송중_한계이익을_를__뺀_값\", IGNORE(\r\n\t\t\t'BO'[(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]\r\n\t\t)\r\n\t)"
+    },
+    {
+      "id": "79d09be78a20373dc9a6",
+      "title": "카드",
+      "type": "card",
+      "recordedAt": "2026-10-21T05:01:53.224Z",
+      "recordedRowCount": 1,
+      "filterContext": "program-code-and-selected-broadcast-row",
+      "programCodeValues": [
+        "\"[홀베리]당근주스\""
+      ],
+      "groupingFields": [],
+      "outputs": [
+        {
+          "alias": "v_전체_미리주문_한익률___",
+          "expression": "IGNORE('BO'[(전체/미리주문)한익률(%)])",
+          "references": [
+            "'BO'[(전체/미리주문)한익률(%)]"
+          ]
+        }
+      ],
+      "measureReferences": [
+        "'BO'[(전체/미리주문)한익률(%)]"
+      ],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]",
+        "'BO'[(전체/미리주문)한익률(%)]"
+      ],
+      "queryFile": "docs/power-bi/queries/3-79d09be78a20373dc9a6.dax",
+      "queryText": "DEFINE VAR __DS0FilterTable = \r\n\tFILTER(\r\n\t\tKEEPFILTERS(\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\tVALUES('BO'),\r\n\t\t\t\t'BO'[방송일시],\r\n\t\t\t\t'BO'[다원구분],\r\n\t\t\t\t'BO'[MD분류],\r\n\t\t\t\t'BO'[편성코드],\r\n\t\t\t\t'BO'[대표업체명],\r\n\t\t\t\t'BO'[대표상품명],\r\n\t\t\t\t'BO'[편성 Comment],\r\n\t\t\t\t'BO'[영상구분],\r\n\t\t\t\t'BO'[거래형태],\r\n\t\t\t\t'BO'[영상ID],\r\n\t\t\t\t'BO'[MD명],\r\n\t\t\t\t'BO'[기업구분],\r\n\t\t\t\t'BO'[프로그램명],\r\n\t\t\t\t'BO'[아이템명]\r\n\t\t\t)\r\n\t\t),\r\n\t\tAND(\r\n\t\t\t'BO'[편성코드] IN {\"[홀베리]당근주스\"},\r\n\t\t\t('BO'[방송일시], 'BO'[다원구분], 'BO'[MD분류], 'BO'[편성코드], 'BO'[대표업체명], 'BO'[대표상품명], 'BO'[편성 Comment], 'BO'[영상구분], 'BO'[거래형태], 'BO'[영상ID], 'BO'[MD명], 'BO'[기업구분], 'BO'[프로그램명], 'BO'[아이템명]) IN {((DATE(2024, 10, 26) + TIME(0, 33, 0)), \"전체\", \"건강식품\", \"[홀베리]당근주스\", \"홀푸드코리아 주식회사\", \"[홀베리]1일 1당근 유기농 당근주스 8박스(80g*14포*8박스)\", \"\", \"기존\", \"위수탁\", 25531, \"윤혜성\", \"중소기업\", \"SK스토아 프로그램\", \"1000\")}\r\n\t\t)\r\n\t)\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t\"v_전체_미리주문_한익률___\", IGNORE('BO'[(전체/미리주문)한익률(%)])\r\n\t)"
+    },
+    {
+      "id": "1c0a959f026b927c9b28",
+      "title": "카드",
+      "type": "card",
+      "recordedAt": "2026-10-21T05:01:53.224Z",
+      "recordedRowCount": 1,
+      "filterContext": "program-code-and-selected-broadcast-row",
+      "programCodeValues": [
+        "\"[홀베리]당근주스\""
+      ],
+      "groupingFields": [],
+      "outputs": [
+        {
+          "alias": "v_전체_한계_분_",
+          "expression": "IGNORE('BO'[(전체)한계(분)])",
+          "references": [
+            "'BO'[(전체)한계(분)]"
+          ]
+        }
+      ],
+      "measureReferences": [
+        "'BO'[(전체)한계(분)]"
+      ],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]",
+        "'BO'[(전체)한계(분)]"
+      ],
+      "queryFile": "docs/power-bi/queries/4-1c0a959f026b927c9b28.dax",
+      "queryText": "DEFINE VAR __DS0FilterTable = \r\n\tFILTER(\r\n\t\tKEEPFILTERS(\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\tVALUES('BO'),\r\n\t\t\t\t'BO'[방송일시],\r\n\t\t\t\t'BO'[다원구분],\r\n\t\t\t\t'BO'[MD분류],\r\n\t\t\t\t'BO'[편성코드],\r\n\t\t\t\t'BO'[대표업체명],\r\n\t\t\t\t'BO'[대표상품명],\r\n\t\t\t\t'BO'[편성 Comment],\r\n\t\t\t\t'BO'[영상구분],\r\n\t\t\t\t'BO'[거래형태],\r\n\t\t\t\t'BO'[영상ID],\r\n\t\t\t\t'BO'[MD명],\r\n\t\t\t\t'BO'[기업구분],\r\n\t\t\t\t'BO'[프로그램명],\r\n\t\t\t\t'BO'[아이템명]\r\n\t\t\t)\r\n\t\t),\r\n\t\tAND(\r\n\t\t\t'BO'[편성코드] IN {\"[홀베리]당근주스\"},\r\n\t\t\t('BO'[방송일시], 'BO'[다원구분], 'BO'[MD분류], 'BO'[편성코드], 'BO'[대표업체명], 'BO'[대표상품명], 'BO'[편성 Comment], 'BO'[영상구분], 'BO'[거래형태], 'BO'[영상ID], 'BO'[MD명], 'BO'[기업구분], 'BO'[프로그램명], 'BO'[아이템명]) IN {((DATE(2024, 10, 26) + TIME(0, 33, 0)), \"전체\", \"건강식품\", \"[홀베리]당근주스\", \"홀푸드코리아 주식회사\", \"[홀베리]1일 1당근 유기농 당근주스 8박스(80g*14포*8박스)\", \"\", \"기존\", \"위수탁\", 25531, \"윤혜성\", \"중소기업\", \"SK스토아 프로그램\", \"1000\")}\r\n\t\t)\r\n\t)\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t\"v_전체_한계_분_\", IGNORE('BO'[(전체)한계(분)])\r\n\t)"
+    },
+    {
+      "id": "56cbe1e473da2e4aeefd",
+      "title": "카드",
+      "type": "card",
+      "recordedAt": "2026-10-21T05:01:53.224Z",
+      "recordedRowCount": 1,
+      "filterContext": "program-code-and-selected-broadcast-row",
+      "programCodeValues": [
+        "\"[홀베리]당근주스\""
+      ],
+      "groupingFields": [],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_한계이익에서_정액수수료_원_을_를__뺀_값을_를___전체_방송중_예상취급액_V__에서_정액수수료_원_을_를__뺀_값_으_로_나눈_값",
+          "expression": "IGNORE(\r\n\t\t\t'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]\r\n\t\t)",
+          "references": [
+            "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+          ]
+        }
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+      ],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]",
+        "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+      ],
+      "queryFile": "docs/power-bi/queries/5-56cbe1e473da2e4aeefd.dax",
+      "queryText": "DEFINE VAR __DS0FilterTable = \r\n\tFILTER(\r\n\t\tKEEPFILTERS(\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\tVALUES('BO'),\r\n\t\t\t\t'BO'[방송일시],\r\n\t\t\t\t'BO'[다원구분],\r\n\t\t\t\t'BO'[MD분류],\r\n\t\t\t\t'BO'[편성코드],\r\n\t\t\t\t'BO'[대표업체명],\r\n\t\t\t\t'BO'[대표상품명],\r\n\t\t\t\t'BO'[편성 Comment],\r\n\t\t\t\t'BO'[영상구분],\r\n\t\t\t\t'BO'[거래형태],\r\n\t\t\t\t'BO'[영상ID],\r\n\t\t\t\t'BO'[MD명],\r\n\t\t\t\t'BO'[기업구분],\r\n\t\t\t\t'BO'[프로그램명],\r\n\t\t\t\t'BO'[아이템명]\r\n\t\t\t)\r\n\t\t),\r\n\t\tAND(\r\n\t\t\t'BO'[편성코드] IN {\"[홀베리]당근주스\"},\r\n\t\t\t('BO'[방송일시], 'BO'[다원구분], 'BO'[MD분류], 'BO'[편성코드], 'BO'[대표업체명], 'BO'[대표상품명], 'BO'[편성 Comment], 'BO'[영상구분], 'BO'[거래형태], 'BO'[영상ID], 'BO'[MD명], 'BO'[기업구분], 'BO'[프로그램명], 'BO'[아이템명]) IN {((DATE(2024, 10, 26) + TIME(0, 33, 0)), \"전체\", \"건강식품\", \"[홀베리]당근주스\", \"홀푸드코리아 주식회사\", \"[홀베리]1일 1당근 유기농 당근주스 8박스(80g*14포*8박스)\", \"\", \"기존\", \"위수탁\", 25531, \"윤혜성\", \"중소기업\", \"SK스토아 프로그램\", \"1000\")}\r\n\t\t)\r\n\t)\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t\"v_전체_방송중_한계이익에서_정액수수료_원_을_를__뺀_값을_를___전체_방송중_예상취급액_V__에서_정액수수료_원_을_를__뺀_값_으_로_나눈_값\", IGNORE(\r\n\t\t\t'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]\r\n\t\t)\r\n\t)"
+    },
+    {
+      "id": "d2c42d330675513f14b6",
+      "title": "카드",
+      "type": "card",
+      "recordedAt": "2026-10-21T05:01:53.239Z",
+      "recordedRowCount": 1,
+      "filterContext": "program-code-and-selected-broadcast-row",
+      "programCodeValues": [
+        "\"[홀베리]당근주스\""
+      ],
+      "groupingFields": [],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_변동비_V__을_를___전체_방송중_예상취급액_V__에서_정액수수료_원_을_를__뺀_값_으_로_나눈_값",
+          "expression": "IGNORE(\r\n\t\t\t'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]\r\n\t\t)",
+          "references": [
+            "'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+          ]
+        }
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+      ],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]",
+        "'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+      ],
+      "queryFile": "docs/power-bi/queries/6-d2c42d330675513f14b6.dax",
+      "queryText": "DEFINE VAR __DS0FilterTable = \r\n\tFILTER(\r\n\t\tKEEPFILTERS(\r\n\t\t\tSUMMARIZE(\r\n\t\t\t\tVALUES('BO'),\r\n\t\t\t\t'BO'[방송일시],\r\n\t\t\t\t'BO'[다원구분],\r\n\t\t\t\t'BO'[MD분류],\r\n\t\t\t\t'BO'[편성코드],\r\n\t\t\t\t'BO'[대표업체명],\r\n\t\t\t\t'BO'[대표상품명],\r\n\t\t\t\t'BO'[편성 Comment],\r\n\t\t\t\t'BO'[영상구분],\r\n\t\t\t\t'BO'[거래형태],\r\n\t\t\t\t'BO'[영상ID],\r\n\t\t\t\t'BO'[MD명],\r\n\t\t\t\t'BO'[기업구분],\r\n\t\t\t\t'BO'[프로그램명],\r\n\t\t\t\t'BO'[아이템명]\r\n\t\t\t)\r\n\t\t),\r\n\t\tAND(\r\n\t\t\t'BO'[편성코드] IN {\"[홀베리]당근주스\"},\r\n\t\t\t('BO'[방송일시], 'BO'[다원구분], 'BO'[MD분류], 'BO'[편성코드], 'BO'[대표업체명], 'BO'[대표상품명], 'BO'[편성 Comment], 'BO'[영상구분], 'BO'[거래형태], 'BO'[영상ID], 'BO'[MD명], 'BO'[기업구분], 'BO'[프로그램명], 'BO'[아이템명]) IN {((DATE(2024, 10, 26) + TIME(0, 33, 0)), \"전체\", \"건강식품\", \"[홀베리]당근주스\", \"홀푸드코리아 주식회사\", \"[홀베리]1일 1당근 유기농 당근주스 8박스(80g*14포*8박스)\", \"\", \"기존\", \"위수탁\", 25531, \"윤혜성\", \"중소기업\", \"SK스토아 프로그램\", \"1000\")}\r\n\t\t)\r\n\t)\r\n\r\nEVALUATE\r\n\tSUMMARIZECOLUMNS(\r\n\t\t__DS0FilterTable,\r\n\t\t\"v_전체_방송중_변동비_V__을_를___전체_방송중_예상취급액_V__에서_정액수수료_원_을_를__뺀_값_으_로_나눈_값\", IGNORE(\r\n\t\t\t'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]\r\n\t\t)\r\n\t)"
+    },
+    {
+      "id": "f40317861c9460856e83",
+      "title": "Simple Image",
+      "type": "simpleImageEBC4593F96F1425FB3D84C5BF02B5075",
+      "recordedAt": "2026-10-21T05:01:53.239Z",
+      "recordedRowCount": 1,
+      "filterContext": "program-code-and-selected-broadcast-row",
+      "programCodeValues": [
+        "\"[홀베리]당근주스\""
+      ],
+      "groupingFields": [],
+      "outputs": [],
+      "measureReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]",
+        "'BO'[이미지]"
+      ],
+      "queryFile": "docs/power-bi/queries/7-f40317861c9460856e83.dax",
+      "queryText": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(\r\n\t\t\t\tSUMMARIZE(\r\n\t\t\t\t\tVALUES('BO'),\r\n\t\t\t\t\t'BO'[방송일시],\r\n\t\t\t\t\t'BO'[다원구분],\r\n\t\t\t\t\t'BO'[MD분류],\r\n\t\t\t\t\t'BO'[편성코드],\r\n\t\t\t\t\t'BO'[대표업체명],\r\n\t\t\t\t\t'BO'[대표상품명],\r\n\t\t\t\t\t'BO'[편성 Comment],\r\n\t\t\t\t\t'BO'[영상구분],\r\n\t\t\t\t\t'BO'[거래형태],\r\n\t\t\t\t\t'BO'[영상ID],\r\n\t\t\t\t\t'BO'[MD명],\r\n\t\t\t\t\t'BO'[기업구분],\r\n\t\t\t\t\t'BO'[프로그램명],\r\n\t\t\t\t\t'BO'[아이템명]\r\n\t\t\t\t)\r\n\t\t\t),\r\n\t\t\tAND(\r\n\t\t\t\t'BO'[편성코드] IN {\"[홀베리]당근주스\"},\r\n\t\t\t\t('BO'[방송일시], 'BO'[다원구분], 'BO'[MD분류], 'BO'[편성코드], 'BO'[대표업체명], 'BO'[대표상품명], 'BO'[편성 Comment], 'BO'[영상구분], 'BO'[거래형태], 'BO'[영상ID], 'BO'[MD명], 'BO'[기업구분], 'BO'[프로그램명], 'BO'[아이템명]) IN {((DATE(2024, 10, 26) + TIME(0, 33, 0)), \"전체\", \"건강식품\", \"[홀베리]당근주스\", \"홀푸드코리아 주식회사\", \"[홀베리]1일 1당근 유기농 당근주스 8박스(80g*14포*8박스)\", \"\", \"기존\", \"위수탁\", 25531, \"윤혜성\", \"중소기업\", \"SK스토아 프로그램\", \"1000\")}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tCALCULATETABLE(\r\n\t\t\tDISTINCT('BO'[이미지]),\r\n\t\t\tKEEPFILTERS(__DS0FilterTable)\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(101, __DS0Core, 'BO'[이미지], 1)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t'BO'[이미지]"
+    },
+    {
+      "id": "f5c437d5797bbbbf2b46",
+      "title": "테이블",
+      "type": "tableEx",
+      "recordedAt": "2026-10-21T05:01:53.239Z",
+      "recordedRowCount": 2,
+      "filterContext": "program-code-and-selected-broadcast-row",
+      "programCodeValues": [
+        "\"[홀베리]당근주스\""
+      ],
+      "groupingFields": [],
+      "outputs": [
+        {
+          "alias": "v_연동_방송중_예상취급___",
+          "expression": "'BO'[(연동/방송중)예상취급(%)]",
+          "references": [
+            "'BO'[(연동/방송중)예상취급(%)]"
+          ]
+        },
+        {
+          "alias": "v_전체_방송중_한계달성률___",
+          "expression": "'BO'[(전체/방송중)한계달성률(%)]",
+          "references": [
+            "'BO'[(전체/방송중)한계달성률(%)]"
+          ]
+        }
+      ],
+      "measureReferences": [
+        "'BO'[(연동/방송중)예상취급(%)]",
+        "'BO'[(전체/방송중)한계달성률(%)]"
+      ],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]",
+        "'BO'[MONTH(DAX)]",
+        "'BO'[(연동/방송중)예상취급(%)]",
+        "'BO'[(전체/방송중)한계달성률(%)]"
+      ],
+      "queryFile": "docs/power-bi/queries/8-f5c437d5797bbbbf2b46.dax",
+      "queryText": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(\r\n\t\t\t\tSUMMARIZE(\r\n\t\t\t\t\tVALUES('BO'),\r\n\t\t\t\t\t'BO'[방송일시],\r\n\t\t\t\t\t'BO'[다원구분],\r\n\t\t\t\t\t'BO'[MD분류],\r\n\t\t\t\t\t'BO'[편성코드],\r\n\t\t\t\t\t'BO'[대표업체명],\r\n\t\t\t\t\t'BO'[대표상품명],\r\n\t\t\t\t\t'BO'[편성 Comment],\r\n\t\t\t\t\t'BO'[영상구분],\r\n\t\t\t\t\t'BO'[거래형태],\r\n\t\t\t\t\t'BO'[영상ID],\r\n\t\t\t\t\t'BO'[MD명],\r\n\t\t\t\t\t'BO'[기업구분],\r\n\t\t\t\t\t'BO'[프로그램명],\r\n\t\t\t\t\t'BO'[아이템명]\r\n\t\t\t\t)\r\n\t\t\t),\r\n\t\t\tAND(\r\n\t\t\t\t'BO'[편성코드] IN {\"[홀베리]당근주스\"},\r\n\t\t\t\t('BO'[방송일시], 'BO'[다원구분], 'BO'[MD분류], 'BO'[편성코드], 'BO'[대표업체명], 'BO'[대표상품명], 'BO'[편성 Comment], 'BO'[영상구분], 'BO'[거래형태], 'BO'[영상ID], 'BO'[MD명], 'BO'[기업구분], 'BO'[프로그램명], 'BO'[아이템명]) IN {((DATE(2024, 10, 26) + TIME(0, 33, 0)), \"전체\", \"건강식품\", \"[홀베리]당근주스\", \"홀푸드코리아 주식회사\", \"[홀베리]1일 1당근 유기농 당근주스 8박스(80g*14포*8박스)\", \"\", \"기존\", \"위수탁\", 25531, \"윤혜성\", \"중소기업\", \"SK스토아 프로그램\", \"1000\")}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\tROLLUPADDISSUBTOTAL('BO'[MONTH(DAX)], \"IsGrandTotalRowTotal\"),\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t\"v_연동_방송중_예상취급___\", 'BO'[(연동/방송중)예상취급(%)],\r\n\t\t\t\"v_전체_방송중_한계달성률___\", 'BO'[(전체/방송중)한계달성률(%)]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(502, __DS0Core, [IsGrandTotalRowTotal], 0, [v_연동_방송중_예상취급___], 0, 'BO'[MONTH(DAX)], 1)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t[IsGrandTotalRowTotal] DESC, [v_연동_방송중_예상취급___] DESC, 'BO'[MONTH(DAX)]"
+    },
+    {
+      "id": "1a280d82c19a30eebd37",
+      "title": "행렬",
+      "type": "pivotTable",
+      "recordedAt": "2026-10-21T05:01:53.224Z",
+      "recordedRowCount": 7,
+      "filterContext": "program-code-and-selected-broadcast-row",
+      "programCodeValues": [
+        "\"[홀베리]당근주스\""
+      ],
+      "groupingFields": [],
+      "outputs": [
+        {
+          "alias": "v_연동_방송중_예상취급___",
+          "expression": "'BO'[(연동/방송중)예상취급(%)]",
+          "references": [
+            "'BO'[(연동/방송중)예상취급(%)]"
+          ]
+        }
+      ],
+      "measureReferences": [
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]",
+        "'BO'[HOUR(DAX)]",
+        "'BO'[WEEKDAY(DAX)]",
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "queryFile": "docs/power-bi/queries/9-1a280d82c19a30eebd37.dax",
+      "queryText": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(\r\n\t\t\t\tSUMMARIZE(\r\n\t\t\t\t\tVALUES('BO'),\r\n\t\t\t\t\t'BO'[방송일시],\r\n\t\t\t\t\t'BO'[다원구분],\r\n\t\t\t\t\t'BO'[MD분류],\r\n\t\t\t\t\t'BO'[편성코드],\r\n\t\t\t\t\t'BO'[대표업체명],\r\n\t\t\t\t\t'BO'[대표상품명],\r\n\t\t\t\t\t'BO'[편성 Comment],\r\n\t\t\t\t\t'BO'[영상구분],\r\n\t\t\t\t\t'BO'[거래형태],\r\n\t\t\t\t\t'BO'[영상ID],\r\n\t\t\t\t\t'BO'[MD명],\r\n\t\t\t\t\t'BO'[기업구분],\r\n\t\t\t\t\t'BO'[프로그램명],\r\n\t\t\t\t\t'BO'[아이템명]\r\n\t\t\t\t)\r\n\t\t\t),\r\n\t\t\tAND(\r\n\t\t\t\t'BO'[편성코드] IN {\"[홀베리]당근주스\"},\r\n\t\t\t\t('BO'[방송일시], 'BO'[다원구분], 'BO'[MD분류], 'BO'[편성코드], 'BO'[대표업체명], 'BO'[대표상품명], 'BO'[편성 Comment], 'BO'[영상구분], 'BO'[거래형태], 'BO'[영상ID], 'BO'[MD명], 'BO'[기업구분], 'BO'[프로그램명], 'BO'[아이템명]) IN {((DATE(2024, 10, 26) + TIME(0, 33, 0)), \"전체\", \"건강식품\", \"[홀베리]당근주스\", \"홀푸드코리아 주식회사\", \"[홀베리]1일 1당근 유기농 당근주스 8박스(80g*14포*8박스)\", \"\", \"기존\", \"위수탁\", 25531, \"윤혜성\", \"중소기업\", \"SK스토아 프로그램\", \"1000\")}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\tROLLUPADDISSUBTOTAL('BO'[HOUR(DAX)], \"IsGrandTotalRowTotal\"),\r\n\t\t\tROLLUPADDISSUBTOTAL('BO'[WEEKDAY(DAX)], \"IsGrandTotalColumnTotal\"),\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t\"v_연동_방송중_예상취급___\", 'BO'[(연동/방송중)예상취급(%)]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t102,\r\n\t\t\tSUMMARIZE(__DS0Core, 'BO'[HOUR(DAX)], [IsGrandTotalRowTotal]),\r\n\t\t\t[IsGrandTotalRowTotal],\r\n\t\t\t0,\r\n\t\t\t'BO'[HOUR(DAX)],\r\n\t\t\t1\r\n\t\t)\r\n\r\n\tVAR __DS0SecondaryBase = \r\n\t\tSUMMARIZE(__DS0Core, 'BO'[WEEKDAY(DAX)], [IsGrandTotalColumnTotal])\r\n\r\n\tVAR __DS0Secondary = \r\n\t\tTOPN(102, __DS0SecondaryBase, [IsGrandTotalColumnTotal], 1, 'BO'[WEEKDAY(DAX)], 1)\r\n\r\n\tVAR __DS0BodyLimited = \r\n\t\tNATURALLEFTOUTERJOIN(\r\n\t\t\t__DS0PrimaryWindowed,\r\n\t\t\tSUBSTITUTEWITHINDEX(\r\n\t\t\t\t__DS0Core,\r\n\t\t\t\t\"ColumnIndex\",\r\n\t\t\t\t__DS0Secondary,\r\n\t\t\t\t[IsGrandTotalColumnTotal],\r\n\t\t\t\tASC,\r\n\t\t\t\t'BO'[WEEKDAY(DAX)],\r\n\t\t\t\tASC\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0CoreNoInstanceFiltersNoTotals = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(__DS0Core),\r\n\t\t\tAND([IsGrandTotalRowTotal] = FALSE, [IsGrandTotalColumnTotal] = FALSE)\r\n\t\t)\r\n\r\nEVALUATE\r\n\tGROUPBY(\r\n\t\t__DS0CoreNoInstanceFiltersNoTotals,\r\n\t\t\"Maxv_연동_방송중_예상취급___\", MAXX(CURRENTGROUP(), [v_연동_방송중_예상취급___])\r\n\t)\r\n\r\nEVALUATE\r\n\t__DS0Secondary\r\n\r\nORDER BY\r\n\t[IsGrandTotalColumnTotal], 'BO'[WEEKDAY(DAX)]\r\n\r\nEVALUATE\r\n\t__DS0BodyLimited\r\n\r\nORDER BY\r\n\t[IsGrandTotalRowTotal] DESC, 'BO'[HOUR(DAX)], [ColumnIndex]"
+    },
+    {
+      "id": "4d44c16cb5cd964873d8",
+      "title": "테이블",
+      "type": "tableEx",
+      "recordedAt": "2026-10-21T05:01:53.208Z",
+      "recordedRowCount": 2,
+      "filterContext": "program-code-and-selected-broadcast-row",
+      "programCodeValues": [
+        "\"[홀베리]당근주스\""
+      ],
+      "groupingFields": [],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_한계달성률___",
+          "expression": "'BO'[(전체/방송중)한계달성률(%)]",
+          "references": [
+            "'BO'[(전체/방송중)한계달성률(%)]"
+          ]
+        },
+        {
+          "alias": "v_연동_방송중_예상취급___",
+          "expression": "'BO'[(연동/방송중)예상취급(%)]",
+          "references": [
+            "'BO'[(연동/방송중)예상취급(%)]"
+          ]
+        }
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)한계달성률(%)]",
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]",
+        "'BO'[YEAR(DAX)]",
+        "'BO'[(전체/방송중)한계달성률(%)]",
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "queryFile": "docs/power-bi/queries/10-4d44c16cb5cd964873d8.dax",
+      "queryText": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tFILTER(\r\n\t\t\tKEEPFILTERS(\r\n\t\t\t\tSUMMARIZE(\r\n\t\t\t\t\tVALUES('BO'),\r\n\t\t\t\t\t'BO'[방송일시],\r\n\t\t\t\t\t'BO'[다원구분],\r\n\t\t\t\t\t'BO'[MD분류],\r\n\t\t\t\t\t'BO'[편성코드],\r\n\t\t\t\t\t'BO'[대표업체명],\r\n\t\t\t\t\t'BO'[대표상품명],\r\n\t\t\t\t\t'BO'[편성 Comment],\r\n\t\t\t\t\t'BO'[영상구분],\r\n\t\t\t\t\t'BO'[거래형태],\r\n\t\t\t\t\t'BO'[영상ID],\r\n\t\t\t\t\t'BO'[MD명],\r\n\t\t\t\t\t'BO'[기업구분],\r\n\t\t\t\t\t'BO'[프로그램명],\r\n\t\t\t\t\t'BO'[아이템명]\r\n\t\t\t\t)\r\n\t\t\t),\r\n\t\t\tAND(\r\n\t\t\t\t'BO'[편성코드] IN {\"[홀베리]당근주스\"},\r\n\t\t\t\t('BO'[방송일시], 'BO'[다원구분], 'BO'[MD분류], 'BO'[편성코드], 'BO'[대표업체명], 'BO'[대표상품명], 'BO'[편성 Comment], 'BO'[영상구분], 'BO'[거래형태], 'BO'[영상ID], 'BO'[MD명], 'BO'[기업구분], 'BO'[프로그램명], 'BO'[아이템명]) IN {((DATE(2024, 10, 26) + TIME(0, 33, 0)), \"전체\", \"건강식품\", \"[홀베리]당근주스\", \"홀푸드코리아 주식회사\", \"[홀베리]1일 1당근 유기농 당근주스 8박스(80g*14포*8박스)\", \"\", \"기존\", \"위수탁\", 25531, \"윤혜성\", \"중소기업\", \"SK스토아 프로그램\", \"1000\")}\r\n\t\t\t)\r\n\t\t)\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\tROLLUPADDISSUBTOTAL('BO'[YEAR(DAX)], \"IsGrandTotalRowTotal\"),\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t\"v_전체_방송중_한계달성률___\", 'BO'[(전체/방송중)한계달성률(%)],\r\n\t\t\t\"v_연동_방송중_예상취급___\", 'BO'[(연동/방송중)예상취급(%)]\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(502, __DS0Core, [IsGrandTotalRowTotal], 0, [v_전체_방송중_한계달성률___], 0, 'BO'[YEAR(DAX)], 1)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t[IsGrandTotalRowTotal] DESC, [v_전체_방송중_한계달성률___] DESC, 'BO'[YEAR(DAX)]"
+    },
+    {
+      "id": "cd29081ceb95be52a04a",
+      "title": "테이블",
+      "type": "tableEx",
+      "recordedAt": "2026-10-21T05:01:53.224Z",
+      "recordedRowCount": 12,
+      "filterContext": "program-code",
+      "programCodeValues": [
+        "\"[홀베리]당근주스\""
+      ],
+      "groupingFields": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]"
+      ],
+      "outputs": [
+        {
+          "alias": "Sum노출분",
+          "expression": "CALCULATE(SUM('BO'[노출분]))",
+          "references": [
+            "'BO'[노출분]"
+          ]
+        },
+        {
+          "alias": "Sum가중분",
+          "expression": "CALCULATE(SUM('BO'[가중분]))",
+          "references": [
+            "'BO'[가중분]"
+          ]
+        },
+        {
+          "alias": "v_전체_한계_분_",
+          "expression": "'BO'[(전체)한계(분)]",
+          "references": [
+            "'BO'[(전체)한계(분)]"
+          ]
+        },
+        {
+          "alias": "Sumv_전체_방송중_제휴포인트",
+          "expression": "CALCULATE(SUM('BO'[(전체/방송중)제휴포인트]))",
+          "references": [
+            "'BO'[(전체/방송중)제휴포인트]"
+          ]
+        },
+        {
+          "alias": "Sumv_연동_총주문량",
+          "expression": "CALCULATE(SUM('BO'[(연동)총주문량]))",
+          "references": [
+            "'BO'[(연동)총주문량]"
+          ]
+        },
+        {
+          "alias": "분당혼합비",
+          "expression": "'BO'[분당혼합비]",
+          "references": [
+            "'BO'[분당혼합비]"
+          ]
+        },
+        {
+          "alias": "Sumv_전체_미리주문_예상취급액",
+          "expression": "CALCULATE(SUM('BO'[(전체/미리주문)예상취급액]))",
+          "references": [
+            "'BO'[(전체/미리주문)예상취급액]"
+          ]
+        },
+        {
+          "alias": "v_전체_취급달성률___",
+          "expression": "'BO'[(전체)취급달성률(%)]",
+          "references": [
+            "'BO'[(전체)취급달성률(%)]"
+          ]
+        },
+        {
+          "alias": "v_전체_매출달성률___",
+          "expression": "'BO'[(전체)매출달성률(%)]",
+          "references": [
+            "'BO'[(전체)매출달성률(%)]"
+          ]
+        },
+        {
+          "alias": "v_전체_매총달성률___",
+          "expression": "'BO'[(전체)매총달성률(%)]",
+          "references": [
+            "'BO'[(전체)매총달성률(%)]"
+          ]
+        },
+        {
+          "alias": "v_전체_한계달성률___",
+          "expression": "'BO'[(전체)한계달성률(%)]",
+          "references": [
+            "'BO'[(전체)한계달성률(%)]"
+          ]
+        },
+        {
+          "alias": "v_전체_미리주문_취급_목표___",
+          "expression": "'BO'[(전체/미리주문)취급/목표(%)]",
+          "references": [
+            "'BO'[(전체/미리주문)취급/목표(%)]"
+          ]
+        },
+        {
+          "alias": "Sum판매가_대표상품_",
+          "expression": "CALCULATE(SUM('BO'[판매가(대표상품)]))",
+          "references": [
+            "'BO'[판매가(대표상품)]"
+          ]
+        }
+      ],
+      "measureReferences": [
+        "'BO'[(전체)한계(분)]",
+        "'BO'[분당혼합비]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]",
+        "'BO'[(전체)매총달성률(%)]",
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체/미리주문)취급/목표(%)]"
+      ],
+      "allReferences": [
+        "'BO'[편성코드]",
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]",
+        "'BO'[노출분]",
+        "'BO'[가중분]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(전체/방송중)제휴포인트]",
+        "'BO'[(연동)총주문량]",
+        "'BO'[분당혼합비]",
+        "'BO'[(전체/미리주문)예상취급액]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]",
+        "'BO'[(전체)매총달성률(%)]",
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체/미리주문)취급/목표(%)]",
+        "'BO'[판매가(대표상품)]"
+      ],
+      "queryFile": "docs/power-bi/queries/11-cd29081ceb95be52a04a.dax",
+      "queryText": "DEFINE\r\n\tVAR __DS0FilterTable = \r\n\t\tTREATAS({\"[홀베리]당근주스\"}, 'BO'[편성코드])\r\n\r\n\tVAR __DS0Core = \r\n\t\tSUMMARIZECOLUMNS(\r\n\t\t\tROLLUPADDISSUBTOTAL(\r\n\t\t\t\tROLLUPGROUP(\r\n\t\t\t\t\t'BO'[방송일시],\r\n\t\t\t\t\t'BO'[다원구분],\r\n\t\t\t\t\t'BO'[MD분류],\r\n\t\t\t\t\t'BO'[편성코드],\r\n\t\t\t\t\t'BO'[대표업체명],\r\n\t\t\t\t\t'BO'[대표상품명],\r\n\t\t\t\t\t'BO'[편성 Comment],\r\n\t\t\t\t\t'BO'[영상구분],\r\n\t\t\t\t\t'BO'[거래형태],\r\n\t\t\t\t\t'BO'[영상ID],\r\n\t\t\t\t\t'BO'[MD명],\r\n\t\t\t\t\t'BO'[기업구분],\r\n\t\t\t\t\t'BO'[프로그램명],\r\n\t\t\t\t\t'BO'[아이템명]\r\n\t\t\t\t), \"IsGrandTotalRowTotal\"\r\n\t\t\t),\r\n\t\t\t__DS0FilterTable,\r\n\t\t\t\"Sum노출분\", CALCULATE(SUM('BO'[노출분])),\r\n\t\t\t\"Sum가중분\", CALCULATE(SUM('BO'[가중분])),\r\n\t\t\t\"v_전체_한계_분_\", 'BO'[(전체)한계(분)],\r\n\t\t\t\"Sumv_전체_방송중_제휴포인트\", CALCULATE(SUM('BO'[(전체/방송중)제휴포인트])),\r\n\t\t\t\"Sumv_연동_총주문량\", CALCULATE(SUM('BO'[(연동)총주문량])),\r\n\t\t\t\"분당혼합비\", 'BO'[분당혼합비],\r\n\t\t\t\"Sumv_전체_미리주문_예상취급액\", CALCULATE(SUM('BO'[(전체/미리주문)예상취급액])),\r\n\t\t\t\"v_전체_취급달성률___\", 'BO'[(전체)취급달성률(%)],\r\n\t\t\t\"v_전체_매출달성률___\", 'BO'[(전체)매출달성률(%)],\r\n\t\t\t\"v_전체_매총달성률___\", 'BO'[(전체)매총달성률(%)],\r\n\t\t\t\"v_전체_한계달성률___\", 'BO'[(전체)한계달성률(%)],\r\n\t\t\t\"v_전체_미리주문_취급_목표___\", 'BO'[(전체/미리주문)취급/목표(%)],\r\n\t\t\t\"Sum판매가_대표상품_\", CALCULATE(SUM('BO'[판매가(대표상품)]))\r\n\t\t)\r\n\r\n\tVAR __DS0PrimaryWindowed = \r\n\t\tTOPN(\r\n\t\t\t502,\r\n\t\t\t__DS0Core,\r\n\t\t\t[IsGrandTotalRowTotal],\r\n\t\t\t0,\r\n\t\t\t'BO'[방송일시],\r\n\t\t\t0,\r\n\t\t\t'BO'[다원구분],\r\n\t\t\t1,\r\n\t\t\t'BO'[MD분류],\r\n\t\t\t1,\r\n\t\t\t'BO'[편성코드],\r\n\t\t\t1,\r\n\t\t\t'BO'[대표업체명],\r\n\t\t\t1,\r\n\t\t\t'BO'[대표상품명],\r\n\t\t\t1,\r\n\t\t\t'BO'[편성 Comment],\r\n\t\t\t1,\r\n\t\t\t'BO'[영상구분],\r\n\t\t\t1,\r\n\t\t\t'BO'[거래형태],\r\n\t\t\t1,\r\n\t\t\t'BO'[영상ID],\r\n\t\t\t1,\r\n\t\t\t'BO'[MD명],\r\n\t\t\t1,\r\n\t\t\t'BO'[기업구분],\r\n\t\t\t1,\r\n\t\t\t'BO'[프로그램명],\r\n\t\t\t1,\r\n\t\t\t'BO'[아이템명],\r\n\t\t\t1\r\n\t\t)\r\n\r\nEVALUATE\r\n\t__DS0PrimaryWindowed\r\n\r\nORDER BY\r\n\t[IsGrandTotalRowTotal] DESC,\r\n\t'BO'[방송일시] DESC,\r\n\t'BO'[다원구분],\r\n\t'BO'[MD분류],\r\n\t'BO'[편성코드],\r\n\t'BO'[대표업체명],\r\n\t'BO'[대표상품명],\r\n\t'BO'[편성 Comment],\r\n\t'BO'[영상구분],\r\n\t'BO'[거래형태],\r\n\t'BO'[영상ID],\r\n\t'BO'[MD명],\r\n\t'BO'[기업구분],\r\n\t'BO'[프로그램명],\r\n\t'BO'[아이템명]"
+    }
+  ]
+}

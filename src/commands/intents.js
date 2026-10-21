@@ -1,0 +1,1 @@
+module.exports = Object.freeze({ PERFORMANCE_SEARCH: 'PERFORMANCE_SEARCH', GREETING: 'GREETING', HELP: 'HELP' });

@@ -7,7 +7,8 @@ const roster = [
 ];
 // Temporarily hidden; retain their assets and motion support for later.
 const hiddenPets = new Set(['siren', 'dekatsuyo', 'anoko']);
-const activeRoster = roster.filter(([id]) => !hiddenPets.has(id));
+const usagiLayer = new URLSearchParams(location.search).get('layer') === 'usagi';
+const activeRoster = roster.filter(([id]) => !hiddenPets.has(id) && (usagiLayer ? id === 'usagi' : id !== 'usagi'));
 const motions = { idle: [0, 6], right: [1, 8], left: [2, 8], wave: [3, 4],
   jump: [4, 5], failed: [5, 8], waiting: [6, 6], working: [7, 6], review: [8, 6] };
 const canvas = document.getElementById('world');
@@ -111,6 +112,8 @@ const load = src => new Promise((resolve, reject) => {
 });
 const asset = name => `../assets/pets/${name}`;
 const pets = [];
+let searchVisible = false;
+window.petsAPI.onSearchVisible(value => { searchVisible = value; });
 let drag = null;
 const sets = [];
 let shared = null, nextEncounter = 0, last = 0, lastRegions = 0;
@@ -171,6 +174,9 @@ function renderFrame(now) {
   encounter(now);
   for (const p of pets) {
     if (shared?.group.includes(p)) continue;
+    if (searchVisible && p.id === 'usagi') {
+      p.until = now + 1000; p.petUntil = now + 1000; p.state = 'idle';
+    }
     if (p !== drag?.pet && now > p.until && now > p.petUntil) {
       const walking = p.state === 'left' || p.state === 'right';
       if (walking) {
@@ -253,8 +259,30 @@ function renderFrame(now) {
     window.petsAPI.regions(pets.filter(p => !shared?.group.includes(p)).map(rect)); lastRegions = now;
   }
 }
+canvas.addEventListener('contextmenu', event => {
+  event.preventDefault();
+  if (!usagiLayer) return;
+  const hit = pets.some(p => {
+    const r = rect(p);
+    return !shared?.group.includes(p) && event.clientX >= r.x && event.clientX <= r.x + r.w && event.clientY >= r.y && event.clientY <= r.y + r.h;
+  });
+  if (hit) window.petsAPI.showContextMenu();
+});
+let movedSincePress = false;
+canvas.addEventListener('click', event => {
+  if (!usagiLayer || movedSincePress) return;
+  const pet = pets.find(p => {
+    const r = rect(p);
+    return p.id === 'usagi' && event.clientX >= r.x && event.clientX <= r.x + r.w && event.clientY >= r.y && event.clientY <= r.y + r.h;
+  });
+  if (pet) {
+    console.info('PETS_USAGI_CLICK');
+    window.petsAPI.openPowerBi({ x: pet.x, y: pet.y });
+  }
+});
 canvas.addEventListener('pointerdown', event => {
   if (event.button !== 0) return;
+  movedSincePress = false;
   const now = performance.now();
   const p = [...pets].reverse().find(p => {
     const r = rect(p);
@@ -270,8 +298,8 @@ canvas.addEventListener('pointerdown', event => {
 });
 canvas.addEventListener('pointermove', event => {
   if (!drag || event.pointerId !== drag.pointerId) return;
-  if (!(event.buttons & 1)) { endDrag({ type: 'pointercancel' }); return; }
-  if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 5) drag.moved = true;
+  if (!(event.buttons & 1)) return;
+  if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 5) { drag.moved = true; movedSincePress = true; }
   if (!drag.moved) return;
   drag.pet.x = Math.max(0, Math.min(W - drag.pet.w, event.clientX - drag.offsetX));
   drag.pet.y = Math.max(28, Math.min(H - drag.pet.h - 3, event.clientY - drag.offsetY));
@@ -281,7 +309,9 @@ function endDrag(event) {
   const { pet, moved } = drag;
   drag = null;
   const now = performance.now();
-  if (!moved && event.type === 'pointerup') { pet.petUntil = now + 1600; act(pet, 'wave', now, 1900); }
+  if (!moved && event.type === 'pointerup') {
+    pet.petUntil = now + 1600; act(pet, 'wave', now, 1900);
+  }
   else act(pet, 'idle', now, 1800);
   window.petsAPI.dragging(false);
   canvas.style.cursor = '';
@@ -303,6 +333,7 @@ async function init() {
     ['hc_walktogether', ['chiikawa', 'hachiware'], 9, 'together'],
     ['tanuki_trio', ['chiikawa', 'hachiware', 'usagi'], 51, 'tanuki']
   ]) {
+    if (!ids.every(id => activeRoster.some(([petId]) => petId === id))) continue;
     const frames = await Promise.all(Array.from({ length: count }, (_, i) => load(asset(`coanimations/${folder}/${i}.png`))));
     const poses = folder === 'hc_walktogether' ? await Promise.all(['hc_heart.png', 'hc_handholding.png'].map(n => load(asset(`coanimations/${n}`)))) : [];
     const audio = new Audio(asset(`coanimations/sounds/${audioName}.wav`)); audio.volume = .2;

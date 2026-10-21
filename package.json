@@ -5,7 +5,17 @@
   "description": "Desktop overlay widget for broadcast schedules.",
   "main": "src/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "bi:test": "node scripts/test-power-bi.js",
+    "bi:inspect": "node scripts/inspect-power-bi.js",
+    "bi:analyze": "node scripts/analyze-power-bi-visuals.js",
+    "bi:search-test": "node scripts/test-power-bi-search.js",
+    "bi:visual-test": "node scripts/test-power-bi-visuals.js",
+    "bi:dashboard-test": "node scripts/test-power-bi-dashboard.js",
+    "bi:codes": "node scripts/update-program-codes.js",
+    "queries:list": "node scripts/manage-queries.js",
+    "queries:converted": "node scripts/manage-queries.js converted",
+    "commands:test": "node --test scripts/test-commands.js"
   },
   "devDependencies": {
     "electron": "^37.10.3"

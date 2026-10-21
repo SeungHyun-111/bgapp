@@ -1,0 +1,624 @@
+{
+  "workspaceId": "7b8c960e-fac2-44bd-b673-d075d4c8d531",
+  "datasetId": "f1535d50-50bf-4f30-be18-685dda1f114c",
+  "tenantId": "16b78d10-5f28-4ccf-b10d-84efbb08a0e1",
+  "reportId": "9cd0cf77-a071-4359-8817-1d66cc898b0b",
+  "reportPage": "ReportSection32e609eaa4cfa0f386ef",
+  "metadataStatus": "BO-columns-observed",
+  "searchFields": {
+    "programCode": "BO[편성코드]",
+    "companyName": "BO[대표업체명]",
+    "productName": "BO[대표상품명]",
+    "broadcastDateTime": "BO[방송일시]"
+  },
+  "resultColumns": {
+    "channel": "BO[다원구분]",
+    "expectedSalesAmount": "BO[(전체)예상취급액]",
+    "totalOrderQuantity": "BO[(전체)총주문량]",
+    "contributionProfit": "BO[(전체)한계이익]"
+  },
+  "tables": [
+    {
+      "name": "BO",
+      "source": "executeQueries:SAMPLE(1)",
+      "columns": [
+        {
+          "name": "방송일시",
+          "reference": "BO[방송일시]"
+        },
+        {
+          "name": "다원구분",
+          "reference": "BO[다원구분]"
+        },
+        {
+          "name": "프라임구분",
+          "reference": "BO[프라임구분]"
+        },
+        {
+          "name": "혼합조정분",
+          "reference": "BO[혼합조정분]"
+        },
+        {
+          "name": "채널1기준분",
+          "reference": "BO[채널1기준분]"
+        },
+        {
+          "name": "프로그램명",
+          "reference": "BO[프로그램명]"
+        },
+        {
+          "name": "편성코드",
+          "reference": "BO[편성코드]"
+        },
+        {
+          "name": "거래형태",
+          "reference": "BO[거래형태]"
+        },
+        {
+          "name": "판매가(대표상품)",
+          "reference": "BO[판매가(대표상품)]"
+        },
+        {
+          "name": "아이템명",
+          "reference": "BO[아이템명]"
+        },
+        {
+          "name": "MD명",
+          "reference": "BO[MD명]"
+        },
+        {
+          "name": "MD분류",
+          "reference": "BO[MD분류]"
+        },
+        {
+          "name": "조직명",
+          "reference": "BO[조직명]"
+        },
+        {
+          "name": "대표상품ID",
+          "reference": "BO[대표상품ID]"
+        },
+        {
+          "name": "대표상품명",
+          "reference": "BO[대표상품명]"
+        },
+        {
+          "name": "대표업체명",
+          "reference": "BO[대표업체명]"
+        },
+        {
+          "name": "기업구분",
+          "reference": "BO[기업구분]"
+        },
+        {
+          "name": "영상구분",
+          "reference": "BO[영상구분]"
+        },
+        {
+          "name": "영상ID",
+          "reference": "BO[영상ID]"
+        },
+        {
+          "name": "영상명",
+          "reference": "BO[영상명]"
+        },
+        {
+          "name": "소재ID",
+          "reference": "BO[소재ID]"
+        },
+        {
+          "name": "PD명",
+          "reference": "BO[PD명]"
+        },
+        {
+          "name": "쇼호스트1",
+          "reference": "BO[쇼호스트1]"
+        },
+        {
+          "name": "쇼호스트2",
+          "reference": "BO[쇼호스트2]"
+        },
+        {
+          "name": "가중분",
+          "reference": "BO[가중분]"
+        },
+        {
+          "name": "노출분",
+          "reference": "BO[노출분]"
+        },
+        {
+          "name": "(전체)목표취급액",
+          "reference": "BO[(전체)목표취급액]"
+        },
+        {
+          "name": "(전체)목표매출액(V-)",
+          "reference": "BO[(전체)목표매출액(V-)]"
+        },
+        {
+          "name": "(전체)목표매출총이익액",
+          "reference": "BO[(전체)목표매출총이익액]"
+        },
+        {
+          "name": "(전체)한계이익목표",
+          "reference": "BO[(전체)한계이익목표]"
+        },
+        {
+          "name": "(전체/방송중)목표취급액",
+          "reference": "BO[(전체/방송중)목표취급액]"
+        },
+        {
+          "name": "(전체/방송중)목표매출액(V-)",
+          "reference": "BO[(전체/방송중)목표매출액(V-)]"
+        },
+        {
+          "name": "(전체/방송중)목표매출총이익액",
+          "reference": "BO[(전체/방송중)목표매출총이익액]"
+        },
+        {
+          "name": "(전체/방송중)한계이익율(%)",
+          "reference": "BO[(전체/방송중)한계이익율(%)]"
+        },
+        {
+          "name": "(전체)총주문량",
+          "reference": "BO[(전체)총주문량]"
+        },
+        {
+          "name": "(총주문)총주문액",
+          "reference": "BO[(총주문)총주문액]"
+        },
+        {
+          "name": "(전체)예상매출액(V-)",
+          "reference": "BO[(전체)예상매출액(V-)]"
+        },
+        {
+          "name": "(전체)예상취급액",
+          "reference": "BO[(전체)예상취급액]"
+        },
+        {
+          "name": "(전체)예상취급액(V-)",
+          "reference": "BO[(전체)예상취급액(V-)]"
+        },
+        {
+          "name": "(전체)예상매출총이익액(V-)",
+          "reference": "BO[(전체)예상매출총이익액(V-)]"
+        },
+        {
+          "name": "(전체)예상매출총이익액(V-)배송료 제외",
+          "reference": "BO[(전체)예상매출총이익액(V-)배송료 제외]"
+        },
+        {
+          "name": "(전체)한계이익",
+          "reference": "BO[(전체)한계이익]"
+        },
+        {
+          "name": "(전체/방송중)총주문량",
+          "reference": "BO[(전체/방송중)총주문량]"
+        },
+        {
+          "name": "(총주문)방송주문액",
+          "reference": "BO[(총주문)방송주문액]"
+        },
+        {
+          "name": "(전체/방송중)예상매출액(V-)",
+          "reference": "BO[(전체/방송중)예상매출액(V-)]"
+        },
+        {
+          "name": "(전체/방송중)예상취급액",
+          "reference": "BO[(전체/방송중)예상취급액]"
+        },
+        {
+          "name": "(전체/방송중)예상취급액(V-)",
+          "reference": "BO[(전체/방송중)예상취급액(V-)]"
+        },
+        {
+          "name": "(전체/방송중)매출총이익액(V-)",
+          "reference": "BO[(전체/방송중)매출총이익액(V-)]"
+        },
+        {
+          "name": "(전체/방송중)한계이익",
+          "reference": "BO[(전체/방송중)한계이익]"
+        },
+        {
+          "name": "(전체/미리주문)총주문량",
+          "reference": "BO[(전체/미리주문)총주문량]"
+        },
+        {
+          "name": "(총주문)미리주문액",
+          "reference": "BO[(총주문)미리주문액]"
+        },
+        {
+          "name": "(전체/미리주문)예상매출액(V-)",
+          "reference": "BO[(전체/미리주문)예상매출액(V-)]"
+        },
+        {
+          "name": "(전체/미리주문)예상취급액",
+          "reference": "BO[(전체/미리주문)예상취급액]"
+        },
+        {
+          "name": "(전체/미리주문)예상취급액(V-)",
+          "reference": "BO[(전체/미리주문)예상취급액(V-)]"
+        },
+        {
+          "name": "(전체/미리주문)매출총이익액(V-)",
+          "reference": "BO[(전체/미리주문)매출총이익액(V-)]"
+        },
+        {
+          "name": "(연동/방송중)총주문량",
+          "reference": "BO[(연동/방송중)총주문량]"
+        },
+        {
+          "name": "(연동/방송중)총주문량_1",
+          "reference": "BO[(연동/방송중)총주문량_1]"
+        },
+        {
+          "name": "(연동/방송중)예상취급액",
+          "reference": "BO[(연동/방송중)예상취급액]"
+        },
+        {
+          "name": "(연동/방송중)예상취급액(V-)",
+          "reference": "BO[(연동/방송중)예상취급액(V-)]"
+        },
+        {
+          "name": "(연동/방송중)매출총이익액(V-)",
+          "reference": "BO[(연동/방송중)매출총이익액(V-)]"
+        },
+        {
+          "name": "(연동/방송중)예상매출총이익액(V-)배송료 제외",
+          "reference": "BO[(연동/방송중)예상매출총이익액(V-)배송료 제외]"
+        },
+        {
+          "name": "(연동/미리주문)총주문량",
+          "reference": "BO[(연동/미리주문)총주문량]"
+        },
+        {
+          "name": "(연동/미리주문)예상매출액(V-)",
+          "reference": "BO[(연동/미리주문)예상매출액(V-)]"
+        },
+        {
+          "name": "(연동/미리주문)예상취급액",
+          "reference": "BO[(연동/미리주문)예상취급액]"
+        },
+        {
+          "name": "(연동/미리주문)예상취급액(V-)",
+          "reference": "BO[(연동/미리주문)예상취급액(V-)]"
+        },
+        {
+          "name": "(연동/미리주문)매출총이익액(V-)",
+          "reference": "BO[(연동/미리주문)매출총이익액(V-)]"
+        },
+        {
+          "name": "(연동)총주문량",
+          "reference": "BO[(연동)총주문량]"
+        },
+        {
+          "name": "(연동)예상매출액(V-)",
+          "reference": "BO[(연동)예상매출액(V-)]"
+        },
+        {
+          "name": "(연동)예상취급액",
+          "reference": "BO[(연동)예상취급액]"
+        },
+        {
+          "name": "(연동)예상취급액(V-)",
+          "reference": "BO[(연동)예상취급액(V-)]"
+        },
+        {
+          "name": "(연동)매출총이익액(V-)",
+          "reference": "BO[(연동)매출총이익액(V-)]"
+        },
+        {
+          "name": "(연동)예상매출총이익액(V-)배송료 제외",
+          "reference": "BO[(연동)예상매출총이익액(V-)배송료 제외]"
+        },
+        {
+          "name": "(비연동)총주문량",
+          "reference": "BO[(비연동)총주문량]"
+        },
+        {
+          "name": "(비연동)예상매출액(V-)",
+          "reference": "BO[(비연동)예상매출액(V-)]"
+        },
+        {
+          "name": "(비연동)예상취급액",
+          "reference": "BO[(비연동)예상취급액]"
+        },
+        {
+          "name": "(비연동)예상취급액(V-)",
+          "reference": "BO[(비연동)예상취급액(V-)]"
+        },
+        {
+          "name": "(비연동/방송중)매출총이익액(V-)",
+          "reference": "BO[(비연동/방송중)매출총이익액(V-)]"
+        },
+        {
+          "name": "(비연동/미리주문)총주문량",
+          "reference": "BO[(비연동/미리주문)총주문량]"
+        },
+        {
+          "name": "(비연동/미리주문)예상매출액(V-)",
+          "reference": "BO[(비연동/미리주문)예상매출액(V-)]"
+        },
+        {
+          "name": "(비연동/미리주문)예상취급액",
+          "reference": "BO[(비연동/미리주문)예상취급액]"
+        },
+        {
+          "name": "(비연동/미리주문)예상취급액(V-)",
+          "reference": "BO[(비연동/미리주문)예상취급액(V-)]"
+        },
+        {
+          "name": "(비연동/미리주문)매출총이익액(V-)",
+          "reference": "BO[(비연동/미리주문)매출총이익액(V-)]"
+        },
+        {
+          "name": "(비연동/미리주문)매출총이익액(V-)_2",
+          "reference": "BO[(비연동/미리주문)매출총이익액(V-)_2]"
+        },
+        {
+          "name": "(전체)PG수수료",
+          "reference": "BO[(전체)PG수수료]"
+        },
+        {
+          "name": "(전체)무이자수수료",
+          "reference": "BO[(전체)무이자수수료]"
+        },
+        {
+          "name": "(전체)청구할인",
+          "reference": "BO[(전체)청구할인]"
+        },
+        {
+          "name": "(전체)제휴수수료",
+          "reference": "BO[(전체)제휴수수료]"
+        },
+        {
+          "name": "(전체)배송보관비",
+          "reference": "BO[(전체)배송보관비]"
+        },
+        {
+          "name": "(전체)양품화비",
+          "reference": "BO[(전체)양품화비]"
+        },
+        {
+          "name": "(전체)주문상담비",
+          "reference": "BO[(전체)주문상담비]"
+        },
+        {
+          "name": "(전체)적립금",
+          "reference": "BO[(전체)적립금]"
+        },
+        {
+          "name": "(전체)사은품",
+          "reference": "BO[(전체)사은품]"
+        },
+        {
+          "name": "(전체)제휴포인트",
+          "reference": "BO[(전체)제휴포인트]"
+        },
+        {
+          "name": "(전체/방송중)PG수수료",
+          "reference": "BO[(전체/방송중)PG수수료]"
+        },
+        {
+          "name": "(전체/방송중)무이자수수료",
+          "reference": "BO[(전체/방송중)무이자수수료]"
+        },
+        {
+          "name": "(전체/방송중)청구할인",
+          "reference": "BO[(전체/방송중)청구할인]"
+        },
+        {
+          "name": "(전체/방송중)제휴수수료",
+          "reference": "BO[(전체/방송중)제휴수수료]"
+        },
+        {
+          "name": "(전체/방송중)배송보관비",
+          "reference": "BO[(전체/방송중)배송보관비]"
+        },
+        {
+          "name": "(전체/방송중)양품화비",
+          "reference": "BO[(전체/방송중)양품화비]"
+        },
+        {
+          "name": "(전체/방송중)주문상담비",
+          "reference": "BO[(전체/방송중)주문상담비]"
+        },
+        {
+          "name": "(전체/방송중)적립금",
+          "reference": "BO[(전체/방송중)적립금]"
+        },
+        {
+          "name": "(전체/방송중)사은품",
+          "reference": "BO[(전체/방송중)사은품]"
+        },
+        {
+          "name": "(전체/방송중)제휴포인트",
+          "reference": "BO[(전체/방송중)제휴포인트]"
+        },
+        {
+          "name": "심야구분",
+          "reference": "BO[심야구분]"
+        },
+        {
+          "name": "방송일체크",
+          "reference": "BO[방송일체크]"
+        },
+        {
+          "name": "분",
+          "reference": "BO[분]"
+        },
+        {
+          "name": "WEEKDAY(DAX)",
+          "reference": "BO[WEEKDAY(DAX)]"
+        },
+        {
+          "name": "요일(DAX)",
+          "reference": "BO[요일(DAX)]"
+        },
+        {
+          "name": "상한가",
+          "reference": "BO[상한가]"
+        },
+        {
+          "name": "정액수수료(원)",
+          "reference": "BO[정액수수료(원)]"
+        },
+        {
+          "name": "메모코드",
+          "reference": "BO[메모코드]"
+        },
+        {
+          "name": "(연동/방송중)정액外 취급액",
+          "reference": "BO[(연동/방송중)정액外 취급액]"
+        },
+        {
+          "name": "YEAR(DAX)",
+          "reference": "BO[YEAR(DAX)]"
+        },
+        {
+          "name": "MONTH(DAX)",
+          "reference": "BO[MONTH(DAX)]"
+        },
+        {
+          "name": "HOUR(DAX)",
+          "reference": "BO[HOUR(DAX)]"
+        },
+        {
+          "name": "방송일",
+          "reference": "BO[방송일]"
+        },
+        {
+          "name": "브랜드",
+          "reference": "BO[브랜드]"
+        },
+        {
+          "name": "시즌",
+          "reference": "BO[시즌]"
+        },
+        {
+          "name": "아이템",
+          "reference": "BO[아이템]"
+        },
+        {
+          "name": "주차명",
+          "reference": "BO[주차명]"
+        },
+        {
+          "name": "이미지",
+          "reference": "BO[이미지]"
+        },
+        {
+          "name": "성공구분",
+          "reference": "BO[성공구분]"
+        },
+        {
+          "name": "유/무형",
+          "reference": "BO[유/무형]"
+        },
+        {
+          "name": "월일",
+          "reference": "BO[월일]"
+        },
+        {
+          "name": "신상품구분",
+          "reference": "BO[신상품구분]"
+        },
+        {
+          "name": "표준조직",
+          "reference": "BO[표준조직]"
+        },
+        {
+          "name": "편성 Comment",
+          "reference": "BO[편성 Comment]"
+        }
+      ],
+      "note": "Observed column names only. Types, measures, and relationships are not inferred."
+    }
+  ],
+  "measures": [
+    {
+      "reference": "'BO'[(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    },
+    {
+      "reference": "'BO'[(전체/미리주문)한익률(%)]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    },
+    {
+      "reference": "'BO'[(전체)한계(분)]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    },
+    {
+      "reference": "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    },
+    {
+      "reference": "'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    },
+    {
+      "reference": "'BO'[(연동/방송중)예상취급(%)]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    },
+    {
+      "reference": "'BO'[(전체/방송중)한계달성률(%)]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    },
+    {
+      "reference": "'BO'[분당혼합비]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    },
+    {
+      "reference": "'BO'[(전체)취급달성률(%)]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    },
+    {
+      "reference": "'BO'[(전체)매출달성률(%)]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    },
+    {
+      "reference": "'BO'[(전체)매총달성률(%)]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    },
+    {
+      "reference": "'BO'[(전체)한계달성률(%)]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    },
+    {
+      "reference": "'BO'[(전체/미리주문)취급/목표(%)]",
+      "expression": null,
+      "status": "referenced-in-visual-query",
+      "source": "power-bi-visuals.json"
+    }
+  ],
+  "relationships": [],
+  "inspectedAt": "2026-10-21T04:33:58.885Z",
+  "visualAnalysis": {
+    "file": "power-bi-visuals.json",
+    "visualQueryCount": 11,
+    "measureDefinitionStatus": "not-extracted"
+  }
+}
