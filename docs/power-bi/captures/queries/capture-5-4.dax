@@ -1,0 +1,60 @@
+DEFINE
+	VAR __DS0FilterTable = 
+		FILTER(
+			KEEPFILTERS(VALUES('BO'[방송일시])),
+			AND('BO'[방송일시] >= DATE(2026, 4, 1), 'BO'[방송일시] < DATE(2026, 5, 12))
+		)
+
+	VAR __DS0FilterTable2 = 
+		TREATAS({"유형"}, 'BO'[유/무형])
+
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			ROLLUPADDISSUBTOTAL('BO'[HOUR(DAX)], "IsGrandTotalRowTotal"),
+			ROLLUPADDISSUBTOTAL('BO'[WEEKDAY(DAX)], "IsGrandTotalColumnTotal"),
+			__DS0FilterTable,
+			__DS0FilterTable2,
+			"v_전체_방송중_한계_분_", 'BO'[(전체/방송중)한계(분)]
+		)
+
+	VAR __DS0PrimaryWindowed = 
+		TOPN(
+			102,
+			SUMMARIZE(__DS0Core, 'BO'[HOUR(DAX)], [IsGrandTotalRowTotal]),
+			[IsGrandTotalRowTotal],
+			0,
+			'BO'[HOUR(DAX)],
+			1
+		)
+
+	VAR __DS0SecondaryBase = 
+		SUMMARIZE(__DS0Core, 'BO'[WEEKDAY(DAX)], [IsGrandTotalColumnTotal])
+
+	VAR __DS0Secondary = 
+		TOPN(102, __DS0SecondaryBase, [IsGrandTotalColumnTotal], 1, 'BO'[WEEKDAY(DAX)], 1)
+
+	VAR __DS0BodyLimited = 
+		NATURALLEFTOUTERJOIN(
+			__DS0PrimaryWindowed,
+			SUBSTITUTEWITHINDEX(
+				__DS0Core,
+				"ColumnIndex",
+				__DS0Secondary,
+				[IsGrandTotalColumnTotal],
+				ASC,
+				'BO'[WEEKDAY(DAX)],
+				ASC
+			)
+		)
+
+EVALUATE
+	__DS0Secondary
+
+ORDER BY
+	[IsGrandTotalColumnTotal], 'BO'[WEEKDAY(DAX)]
+
+EVALUATE
+	__DS0BodyLimited
+
+ORDER BY
+	[IsGrandTotalRowTotal] DESC, 'BO'[HOUR(DAX)], [ColumnIndex]

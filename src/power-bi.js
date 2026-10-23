@@ -7,16 +7,34 @@ const { QueryStore } = require('./commands/query-store');
 const { createCommandSystem } = require('./commands/handlers');
 const { containsCredential } = require('./commands/privacy');
 const { ProgramCodeIndex } = require('./program-code-index');
+const { RasaClient } = require('./commands/rasa-client');
+const { Dialogue } = require('./commands/dialogue');
+const { createMetricQuery } = require('./commands/bi-query');
+const { EntityCatalog } = require('./commands/entity-catalog');
 
 module.exports = function createPowerBi(options = {}) {
   const dataDirectory = options.dataDirectory || (app.isPackaged ? path.join(app.getPath('userData'), 'data') : path.join(__dirname, '../data'));
-  const commands = createCommandSystem(new QueryStore(dataDirectory));
+  const queryStore = new QueryStore(dataDirectory);
   const codeIndex = new ProgramCodeIndex(path.join(dataDirectory, 'program-codes.json'));
+  const nlu = new RasaClient();
+  const entityCatalog = new EntityCatalog(path.join(dataDirectory,'bi-entity-catalog.json'));
+  const dialogue = new Dialogue({ nlu, store: queryStore, codes: () => codeIndex.codes,
+    getEntities: async () => {
+      status('하! BI의 실제 팀·상품 목록을 확인할게 🐰');
+      try { return await entityCatalog.ensure(bridge); } finally { auth=false; }
+    },
+    queryMetric: async request => {
+      status('하! BI에서 실제 값을 가져올게 🐰');
+      try { return await createMetricQuery(bridge)(request); } finally { auth = false; }
+    }
+  });
+  const commands = createCommandSystem(queryStore, { dialogue });
   let refreshingCodes = null;
   let win = null, anchor = null, area = null, auth = false, rows = [], filter = null, generation = 0, petOwner = null, expanded = false;
   const pausePet = value => { if (petOwner && !petOwner.isDestroyed()) petOwner.webContents.send('pets:search-visible', value); };
   const status = message => { if (win && !win.isDestroyed()) win.webContents.send('bi:status', message); };
   const reset = (notify = true) => {
+    dialogue.reset();
     generation++; rows = []; filter = null; expanded = false;
     if (notify && win && !win.isDestroyed()) win.webContents.send('bi:reset');
   };
@@ -39,7 +57,10 @@ module.exports = function createPowerBi(options = {}) {
   ipcMain.handle('bi:schema', event => owner(event) ? schema : null);
   ipcMain.handle('bi:command', async (event, input) => {
     if (!owner(event)) return { error: '허용되지 않은 요청입니다.' };
-    try { return await commands.execute(input?.text, { mode: input?.mode === 'search' ? 'search' : 'talk' }); }
+    try {
+      if (input?.mode !== 'search') status('하! 로컬 엔진에서 질문을 해석하는 중이야 🐰');
+      return await commands.execute(input?.text, { mode: input?.mode === 'search' ? 'search' : 'talk' });
+    }
     catch { return { error: '학습 노트를 저장하지 못했어요. 저장 공간과 권한을 확인해주세요.' }; }
   });
   ipcMain.handle('bi:suggestions', (event, value) => owner(event) ? { codes: codeIndex.suggest(value), count: codeIndex.codes.size } : { codes: [], count: 0 });
@@ -47,7 +68,9 @@ module.exports = function createPowerBi(options = {}) {
     if (!owner(event)) return { error: '허용되지 않은 요청입니다.' };
     try {
       if (!refreshingCodes) refreshingCodes = codeIndex.refresh(bridge).finally(() => { refreshingCodes = null; });
-      return await refreshingCodes;
+      const result=await refreshingCodes;
+      await entityCatalog.ensure(bridge,{force:true});
+      return result;
     } catch { return { error: '편성코드 목록을 불러오지 못했어요. 로그인 상태를 확인하고 다시 시도해주세요.' }; }
     finally { auth = false; }
   });
@@ -120,7 +143,7 @@ module.exports = function createPowerBi(options = {}) {
     win.on('closed', () => { win = null; });
     win.loadFile(path.join(__dirname,'renderer/power-bi.html'));
   }
-  const stop = () => { pausePet(false); bridge.stop(); if (win && !win.isDestroyed()) win.destroy(); };
+  const stop = () => { pausePet(false); nlu.stop(); bridge.stop(); if (win && !win.isDestroyed()) win.destroy(); };
   app.once('before-quit',stop);
   return { open, stop };
 };

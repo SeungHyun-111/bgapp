@@ -1,0 +1,20 @@
+﻿recipe: default.v1
+assistant_id: usagi-local-nlu
+language: ko
+pipeline:
+  - name: korean_tokenizer.KoreanTokenizer
+  - name: CountVectorsFeaturizer
+    analyzer: char_wb
+    min_ngram: 2
+    max_ngram: 5
+  - name: DIETClassifier
+    epochs: 80
+    transformer_size: 64
+    number_of_transformer_layers: 1
+    random_seed: 42
+    entity_recognition: true
+    constrain_similarities: true
+  - name: EntitySynonymMapper
+  - name: FallbackClassifier
+    threshold: 0.65
+    ambiguity_threshold: 0.15

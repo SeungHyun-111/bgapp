@@ -4,7 +4,7 @@ const sections=['cards','year','month','hour','image'];
 const filterKeys=['program','deal','night','video'];
 let schema,revision=0,visualRevision=0,searchId=null,data=null,selected=null,sortKey='BO[방송일시]',sortDirection=-1;
 let suggestionRevision=0, suggestionTimer=null, suggested=[], activeSuggestion=-1, composing=false, talkComposing=false, commandPending=false, commandToken=0;
-const status=m=>{$('status').textContent=m;};
+const status=m=>{$('status').textContent=m;$('status').hidden=!m;};
 function format(value,column={}){
  if(value==null)return '—';
  if(column.key==='BO[YEAR(DAX)]'||column.key==='BO[MONTH(DAX)]')return String(value);
@@ -15,17 +15,17 @@ function format(value,column={}){
  return String(value);
 }
 function clearView(clearInput=false){
- commandToken++;commandPending=false;
+ commandToken++;commandPending=false;$('talk-send').disabled=false;
  closeSuggestions();
  revision++;visualRevision++;searchId=null;data=null;selected=null;
  for(const id of ['top-cards','results','ratios','year','month','hour','image','extra-content'])$(id).replaceChildren();
  $('content').hidden=true;$('all').hidden=true;$('search').disabled=false;$('context').textContent='';$('extra').open=false;$('bubble').scrollTop=0;
  if(clearInput){$('conversation').replaceChildren();$('conversation').hidden=true;$('keyword').value='';$('talk-input').value='';$('talk-send').disabled=false;}
- status('검색하면 상품별 실적을 한 화면에서 볼 수 있어요.');
+ status('');
 }
 window.powerBi.onReset(()=>clearView(true));
 window.powerBi.onFocus(()=>$('keyword').focus());
-window.powerBi.onStatus(m=>{if(!$('content').hidden||$('search').disabled||$('refresh-codes').disabled)status(m);});
+window.powerBi.onStatus(m=>{if(commandPending||!$('content').hidden||$('search').disabled)status(m);});
 $('hide').onclick=()=>window.powerBi.hide();
 $('clear').onclick=()=>{clearView(true);window.powerBi.reset();$('keyword').focus();};
 $('keyword').addEventListener('input',()=>{
@@ -186,7 +186,7 @@ function showReply(input,result){
  $('conversation').append(el('div',result.blocked?'인증 정보는 표시하지 않음':input,'user-message'),el('div',result.message,'usagi-message'));
  while($('conversation').childElementCount>40)$('conversation').firstChild.remove();
  $('conversation').scrollTop=$('conversation').scrollHeight;
- $('talk-note').hidden=false;status(result.saved?'이 기기의 학습 노트에 기록했어요.':result.blocked?'저장하거나 전송하지 않았어요.':'');
+ status(result.saved?'이 기기의 학습 노트에 기록했어요.':result.blocked?'저장하거나 전송하지 않았어요.':'');
 }
 async function submitCommand(mode='search'){
  if((mode==='search'?composing:talkComposing)||commandPending)return;
@@ -194,6 +194,7 @@ async function submitCommand(mode='search'){
  const button=mode==='search'?$('search'):$('talk-send');
  const input=inputElement.value.trim();if(!input){status('입력할 내용을 적어주세요.');return;}
  closeSuggestions();commandPending=true;button.disabled=true;const current=revision, token=++commandToken;
+ status(mode==='talk'?'하! 질문을 살펴보는 중이야. 로컬 엔진을 처음 켤 때는 잠깐 걸려 🐰':'검색 요청을 처리하는 중…');
  try{
   const result=await window.powerBi.command({text:input,mode});
   if(current!==revision||token!==commandToken)return;
@@ -221,7 +222,6 @@ async function updateSuggestions(){
  try{
   const result=await window.powerBi.suggestions(input);
   if(current!==suggestionRevision||$('keyword').value.trim()!==input)return;
-  $('code-status').textContent=result.count?'편성코드 '+result.count.toLocaleString('ko-KR')+'개 · ↑↓ 선택 / Enter 검색':'목록을 한 번 불러오면 자동완성이 시작돼요.';
   suggested=result.codes;
   if(!suggested.length)return;
   suggested.forEach((code,index)=>{const option=el('div',code,'suggestion');option.id='suggestion-'+index;option.setAttribute('role','option');option.setAttribute('aria-selected','false');option.onmousedown=e=>e.preventDefault();option.onclick=()=>chooseSuggestion(index);$('suggestions').append(option);});
@@ -244,10 +244,4 @@ $('keyword').addEventListener('keydown',event=>{
  }
 });
 document.addEventListener('pointerdown',event=>{if(!event.target.closest('.input-wrap'))closeSuggestions();});
-$('refresh-codes').onclick=async()=>{
- $('refresh-codes').disabled=true;status('편성코드 목록을 불러오는 중입니다. 로그인 창이 뜨면 완료해주세요.');
- try{const result=await window.powerBi.refreshCodes();if(result.error)throw Error(result.error);$('code-status').textContent=result.count.toLocaleString('ko-KR')+'개 준비됨'+(result.truncated?' · 최대 20,000개 조회':'');status('자동완성 준비가 끝났어요. 편성코드를 입력해보세요.');if($('keyword').value.trim())updateSuggestions();}
- catch(error){status(error.message);}finally{$('refresh-codes').disabled=false;}
-};
-window.powerBi.suggestions('').then(result=>{$('code-status').textContent=result.count?'편성코드 '+result.count.toLocaleString('ko-KR')+'개 · ↑↓ 선택 / Enter 검색':'자동완성 목록을 한 번 불러와주세요.';}).catch(()=>{});
 $('keyword').focus();

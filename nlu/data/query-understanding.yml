@@ -1,0 +1,139 @@
+version: "3.1"
+nlu:
+  - intent: query
+    examples: |
+      - 레이델 [브랜드 전체]{"entity":"scope","value":"all_products"} 26년 [가중분]{"entity":"metric","value":"weighted_minutes"} 알려줘
+      - [문화서비스팀]{"entity":"organization","value":"문화서비스"} 올해 [매달]{"entity":"groupBy","value":"month"} [방송 점유율]{"entity":"metric","value":"organization_weighted_share"} 보여줘
+      - 헬스푸드 [달마다]{"entity":"groupBy","value":"month"} [방송 비중]{"entity":"metric","value":"organization_weighted_share"} 어떻게 돼
+      - 홀베리 이번달 [취급액]{"entity":"metric","value":"sales"} 알려줘
+      - 헬스푸드팀 9월 편성비중
+      - 문화서비스 [월 단위로]{"entity":"groupBy","value":"month"} [편성 점유율]{"entity":"metric","value":"organization_weighted_share"} 보고 싶어
+      - 헬스 [월마다]{"entity":"groupBy","value":"month"} [편성 비율]{"entity":"metric","value":"organization_weighted_share"} 얼마야
+      - 홀베리 [수수료]{"entity":"metric","value":"commission_rate"} 몇프로인데?
+      - 홀베리 [마진]{"entity":"metric","value":"commission_rate"}이 어떻게 돼
+      - 헬쓰푸드팀 [가중분]{"entity":"metric","value":"weighted_minutes"}이 궁금해
+      - 선일금고 지난달 [한계이익]{"entity":"metric","value":"profit"}
+      - 레이델 올해 [가중분]{"entity":"metric","value":"weighted_minutes"}과 [한계이익]{"entity":"metric","value":"profit"} 알려줘
+      - 당근주스 [취급액]{"entity":"metric","value":"sales"}이랑 [한계이익]{"entity":"metric","value":"profit"} 같이 보여줘
+      - 9월 [조직별]{"entity":"groupBy","value":"organization"} 편성비중
+      - 부서별 [가중분]{"entity":"metric","value":"weighted_minutes"} 알려줘
+      - 6월 편성비중 [제일]{"entity":"limit","value":1} 많이 쓴 [팀]{"entity":"groupBy","value":"organization"}
+      - 올해 [전체 조직]{"entity":"groupBy","value":"organization"} 편성비중 [1위]{"entity":"limit","value":1} 알려줘
+  - intent: modify_condition
+    examples: |
+      - 그게 아니라 [브랜드 전체]{"entity":"scope","value":"all_products"} 말하는 거야
+      - 아니 하나 말고 [소속 상품 전부]{"entity":"scope","value":"all_products"} 합쳐서
+      - [같은 브랜드 상품 다]{"entity":"scope","value":"all_products"} 보자는 거야
+      - 그 제품 하나 말고 [브랜드 단위로]{"entity":"scope","value":"all_products"} 묶어줘
+      - 레이델 [제품 전부 합산]{"entity":"scope","value":"all_products"}해 달라고
+      - 아니 [브랜드에 속한 모든 상품]{"entity":"scope","value":"all_products"}이라고
+      - [소속 제품 전체]{"entity":"scope","value":"all_products"} 기준으로 바꿔
+      - 그게 아니라 [취급고]{"entity":"metric","value":"sales"}가 궁금해
+      - [취급액]{"entity":"metric","value":"sales"} 말고 [한계이익]{"entity":"metric","value":"profit"}으로 바꿔
+      - [마진]{"entity":"metric","value":"commission_rate"} 말고 [한계이익]{"entity":"metric","value":"profit"} 알려달라고
+      - 그 항목 대신 [가중분]{"entity":"metric","value":"weighted_minutes"}으로 바꿔줘
+      - 아니 [방송횟수 기준]{"entity":"shareBasis","value":"broadcast_count"}이야
+      - [가중분 기준]{"entity":"shareBasis","value":"weighted_minutes"} 말한 거야
+      - 그게 아니라 [횟수로 센 비중]{"entity":"shareBasis","value":"broadcast_count"}이야
+      - 아니 25년
+      - 그럼 지난달은
+      - 9월로 바꿔줘
+      - 2026년 9월
+      - [문화팀]{"entity":"organization","value":"문화서비스"} 찾으라니까 왜 편성팀을 찾았어
+      - 아니 [문화서비스팀]{"entity":"organization","value":"문화서비스"} 얘기잖아
+      - [문화팀]{"entity":"organization","value":"문화서비스"}으로 대상을 정정해
+      - 잘못 찾았어 문화서비스로 바꿔
+      - 제품 하나가 아니라 [소속 상품 전부]{"entity":"scope","value":"all_products"}를 보고 싶어
+      - 상품 한 가지 말고 [소속 상품 모두]{"entity":"scope","value":"all_products"} 합산해줘
+      - 상품별로 고르라는 게 아니고 [브랜드 전체]{"entity":"scope","value":"all_products"} 합계야
+      - 단일 상품이 아니라 [브랜드에 속한 모든 상품]{"entity":"scope","value":"all_products"}이 대상이야
+  - intent: add_condition
+    examples: |
+      - [취급액]{"entity":"metric","value":"sales"}도 같이
+      - [한계이익]{"entity":"metric","value":"profit"}도 추가해줘
+      - [가중분]{"entity":"metric","value":"weighted_minutes"}하고 [취급액]{"entity":"metric","value":"sales"} 둘 다 보여줘
+      - [수수료율]{"entity":"metric","value":"commission_rate"}도 함께 알려줘
+      - 지금 결과에 [매출액]{"entity":"metric","value":"revenue"}도 넣어줘
+      - [가중분]{"entity":"metric","value":"weighted_minutes"}도 더해줘
+      - 기존 항목에 [주문량]{"entity":"metric","value":"orders"}을 추가해
+      - [한계이익]{"entity":"metric","value":"profit"}도 빼먹지 말고 같이 봐
+      - 이번 결과에 [취급액]{"entity":"metric","value":"sales"} 하나 더
+      - [노출분]{"entity":"metric","value":"exposure_minutes"}까지 포함해줘
+      - [마진]{"entity":"metric","value":"commission_rate"}도 함께 보고 싶어
+      - [목표취급액]{"entity":"metric","value":"target_sales"}도 덧붙여줘
+      - [한익]{"entity":"metric","value":"profit"}까지 같이 보여달라고
+      - 그대로 두고 [취급고]{"entity":"metric","value":"sales"}도 넣어봐
+      - 기존 지표 유지하고 [PG수수료]{"entity":"metric","value":"pg_fee"} 추가해
+  - intent: remove_condition
+    examples: |
+      - [취급액]{"entity":"metric","value":"sales"} 빼줘
+      - [가중분]{"entity":"metric","value":"weighted_minutes"}은 제외해
+      - [한계이익]{"entity":"metric","value":"profit"}은 지워줘
+      - [매출액]{"entity":"metric","value":"revenue"}은 더 이상 안 볼래
+      - [주문량]{"entity":"metric","value":"orders"}만 결과에서 빼
+      - [수수료율]{"entity":"metric","value":"commission_rate"} 제외해줘
+      - [취급고]{"entity":"metric","value":"sales"}는 삭제해
+      - [목표취급액]{"entity":"metric","value":"target_sales"} 빼고 나머지는 그대로
+      - [노출분]{"entity":"metric","value":"exposure_minutes"}을 제외하고 보여줘
+      - [브랜드 조건]{"entity":"field","value":"target"} 빼
+      - [기간 조건]{"entity":"field","value":"period"} 없애줘
+      - [팀 조건]{"entity":"field","value":"target"} 지워
+      - [유무형 필터]{"entity":"field","value":"productType"} 해제해
+      - [월별 집계]{"entity":"field","value":"groupBy"} 풀어줘
+      - [모든 지표]{"entity":"field","value":"metric"} 비워줘
+      - [대상 조건]{"entity":"field","value":"target"} 제외하고 보여줘
+  - intent: change_grouping
+    examples: |
+      - [월별]{"entity":"groupBy","value":"month"}로
+      - [매달]{"entity":"groupBy","value":"month"} 나눠서 봐
+      - 그게 아니라 [월 단위로]{"entity":"groupBy","value":"month"} 나눠서 봐
+      - [한 달씩 따로]{"entity":"groupBy","value":"month"} 보고 싶은 거야
+      - 아니 [매달]{"entity":"groupBy","value":"month"} 추이로 보자
+      - [월마다]{"entity":"groupBy","value":"month"} 나눠줘
+      - [달마다]{"entity":"groupBy","value":"month"} 보고 싶다고
+      - 26년 [월별]{"entity":"groupBy","value":"month"}
+      - [조직별]{"entity":"groupBy","value":"organization"}로 보여달라고
+      - [전체 조직]{"entity":"groupBy","value":"organization"}을 한 줄씩 보여줘
+      - 아니 한 팀 말고 [모든 팀]{"entity":"groupBy","value":"organization"}의 편성비중이야
+      - [조직별]{"entity":"groupBy","value":"organization"}로 나눠달라는 말이야
+      - [각 조직]{"entity":"groupBy","value":"organization"}의 비중을 나눠서 보고 싶어
+      - [합계 하나]{"entity":"groupBy","value":"none"}로 보여줘
+      - [월 구분 없이]{"entity":"groupBy","value":"none"} 합쳐줘
+  - intent: confirm
+    examples: |
+      - 응 맞아
+      - 그래 그렇게 해
+      - 맞아 그 조건이야
+      - 확인
+      - 네 맞습니다
+      - 그걸로 해줘
+      - 좋아 진행해
+      - 응 그대로 조회해
+      - 그 조건으로 보여줘
+      - 맞다고
+  - intent: cancel
+    examples: |
+      - 취소
+      - 처음부터
+      - 초기화
+      - 됐어 그만
+      - 앞 이야기 잊어
+      - 조회 취소해
+      - 그 요청은 없던 걸로 해
+      - 다 지우고 다시 시작하자
+      - 이번 요청 중단해
+      - 그만 찾아도 돼
+  - intent: out_of_scope
+    examples: |
+      - 오늘 날씨 어때
+      - 점심 뭐 먹지
+      - 심심해
+      - 홀베리 뭐가 좀 이상한데
+      - 광고비 [마진]{"entity":"metric","value":"commission_rate"}구조가 궁금해
+      - [수수료]{"entity":"metric","value":"commission_rate"}가 떨어진 원인을 설명해줘
+      - 왜 [마진]{"entity":"metric","value":"commission_rate"}이 달라졌어
+      - 이게 무슨 소리야
+  - synonym: all_products
+    examples: |
+      - 소속
+      - 전부

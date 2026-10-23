@@ -8,6 +8,9 @@ const roster = [
 // Temporarily hidden; retain their assets and motion support for later.
 const hiddenPets = new Set(['siren', 'dekatsuyo', 'anoko']);
 const usagiLayer = new URLSearchParams(location.search).get('layer') === 'usagi';
+const worldParams=new URLSearchParams(location.search);
+const viewport={x:0,y:0};
+let renderPaused=false,pausedAt=0,frameRequest=0,initialized=false;
 const activeRoster = roster.filter(([id]) => !hiddenPets.has(id) && (usagiLayer ? id === 'usagi' : id !== 'usagi'));
 const motions = { idle: [0, 6], right: [1, 8], left: [2, 8], wave: [3, 4],
   jump: [4, 5], failed: [5, 8], waiting: [6, 6], working: [7, 6], review: [8, 6] };
@@ -18,11 +21,14 @@ let teamData = null, teamError = false;
 const speechGap = () => 20000 + Math.random() * 20000;
 let momongaData = null, momongaError = false, productIndex = 0;
 async function refreshMomonga() {
+  if(renderPaused)return;
   try { momongaData = await window.petsAPI.loadMomongaReport(); momongaError = false; }
   catch { momongaError = true; }
 }
-refreshMomonga();
-setInterval(refreshMomonga, 60000);
+if (!usagiLayer) {
+  refreshMomonga();
+  setInterval(refreshMomonga, 60000);
+}
 function sayMomonga(element) {
   if (momongaError || !momongaData) { element.textContent = '직전 실적을 확인 중이야. 조금 뒤 다시 알려줄게!'; return; }
   const products = momongaData.products || [];
@@ -63,11 +69,14 @@ const teamSpeakers = [
   { id: 'chiikawa', report: 'remaining' }
 ].map(speaker => ({ ...speaker, bubble: document.getElementById(`${speaker.id}-bubble`), until: 0, next: performance.now() + speechGap() }));
 async function refreshTeamPerformance() {
+  if(renderPaused)return;
   try { teamData = await window.petsAPI.loadTeamPerformance(); teamError = false; }
   catch { teamError = true; }
 }
-refreshTeamPerformance();
-setInterval(refreshTeamPerformance, 300000);
+if (!usagiLayer) {
+  refreshTeamPerformance();
+  setInterval(refreshTeamPerformance, 300000);
+}
 function sayTeamPerformance(speaker) {
   const teamBubble = speaker.bubble;
   if (speaker.report === 'previous') { sayMomonga(teamBubble); return; }
@@ -96,20 +105,29 @@ function updateScheduleBubble() {
     : scheduleError ? '편성을 불러오지 못했어. 잠시 뒤 다시 확인할게!' : '지금 시간에 맞는 편성을 찾지 못했어.';
 }
 async function refreshSchedule() {
+  if(renderPaused)return;
   try {
     const data = await window.petsAPI.loadSchedule();
     scheduleItems = data.items || []; scheduleCached = Boolean(data.fromCache); scheduleError = false;
   } catch { scheduleError = true; }
   updateScheduleBubble();
 }
-refreshSchedule();
-setInterval(refreshSchedule, 60000);
-setInterval(updateScheduleBubble, 1000);
+if (!usagiLayer) {
+  refreshSchedule();
+  setInterval(refreshSchedule, 60000);
+  setInterval(updateScheduleBubble, 1000);
+}
 const cursor = { x: -1000, y: -1000 };
-window.petsAPI.onCursor(point => Object.assign(cursor, point));
-const load = src => new Promise((resolve, reject) => {
+window.petsAPI.onCursor(point => Object.assign(cursor, {x:point.x+viewport.x,y:point.y+viewport.y}));
+const loadImage = src => new Promise((resolve, reject) => {
   const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(src)); image.src = src;
 });
+async function load(src,{scale=1,maxWidth=0}={}) {
+  const image=await loadImage(src);
+  const ratio=maxWidth?Math.min(1,maxWidth/image.width):scale;
+  try {return await createImageBitmap(image,{resizeWidth:Math.max(1,Math.round(image.width*ratio)),resizeHeight:Math.max(1,Math.round(image.height*ratio)),resizeQuality:'high'});}
+  finally {image.src='';}
+}
 const asset = name => `../assets/pets/${name}`;
 const pets = [];
 let searchVisible = false;
@@ -117,11 +135,12 @@ window.petsAPI.onSearchVisible(value => { searchVisible = value; });
 let drag = null;
 const sets = [];
 let shared = null, nextEncounter = 0, last = 0, lastRegions = 0;
-let W = innerWidth, H = innerHeight;
+let W = usagiLayer?Number(worldParams.get('worldWidth'))||innerWidth:innerWidth;
+let H = usagiLayer?Number(worldParams.get('worldHeight'))||innerHeight:innerHeight;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 function resize() {
-  W = innerWidth; H = innerHeight;
-  canvas.width = Math.round(W * devicePixelRatio); canvas.height = Math.round(H * devicePixelRatio);
+  if(!usagiLayer){W = innerWidth; H = innerHeight;}
+  canvas.width = Math.round(innerWidth * devicePixelRatio); canvas.height = Math.round(innerHeight * devicePixelRatio);
   ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
 }
 addEventListener('resize', resize); resize();
@@ -140,6 +159,8 @@ function encounter(now) {
   for (const set of [...sets].reverse()) {
     const group = set.ids.map(id => pets.find(p => p.id === id));
     if (group.some(p => !p || p === drag?.pet || now < p.petUntil) || !nearby(group)) continue;
+    if(!set.frames){loadShared(set);continue;}
+    set.lastUsed=now;
     const width = set.ids.length === 3 ? 230 : 170;
     shared = { set, group, start: now, x: Math.max(0, Math.min(W - width, group.reduce((s, p) => s + p.x, 0) / group.length)), w: width, bottom: Math.min(H - 3, group.reduce((sum, p) => sum + p.y + p.h, 0) / group.length),
       pose: set.poses.length ? set.poses[Math.floor(Math.random() * set.poses.length)] : null };
@@ -155,22 +176,48 @@ function paintShared(now) {
   const duration = trio ? (Number.isFinite(s.set.audio.duration) ? s.set.audio.duration * 1000 : s.set.frames.length / 9 * 1000) : 5200;
   if (elapsed >= duration) {
     s.group.forEach((p, i) => { p.x = Math.max(0, Math.min(W - p.w, s.x + i * 85)); p.y = Math.max(0, s.bottom - p.h); act(p, 'idle', now, 1200); });
-    s.set.audio.pause(); shared = null; nextEncounter = now + 60000 + Math.random() * 90000; return;
+    s.set.audio.pause();s.set.lastUsed=now;shared = null; nextEncounter = now + 60000 + Math.random() * 90000; return;
   }
   const index = trio ? Math.min(s.set.frames.length - 1, Math.floor(elapsed / duration * s.set.frames.length)) : Math.floor(elapsed / (1000 / 9)) % s.set.frames.length;
   const image = !trio && elapsed >= 3400 ? s.pose : s.set.frames[index];
   const height = s.w * image.height / image.width;
   ctx.drawImage(image, s.x, Math.max(0, s.bottom - height), s.w, height);
 }
+let lastPaint = 0;
+function scheduleFrame(){if(initialized&&!renderPaused&&!frameRequest)frameRequest=requestAnimationFrame(tick);}
+window.petsAPI.onPaused(value=>{
+  if(Boolean(value)===renderPaused)return;
+  renderPaused=Boolean(value);
+  if(renderPaused){pausedAt=performance.now();cancelAnimationFrame(frameRequest);frameRequest=0;shared?.set.audio.pause();}
+  else {
+    const delay=performance.now()-pausedAt;
+    for(const pet of pets){pet.start+=delay;pet.until+=delay;pet.petUntil+=delay;}
+    for(const speaker of teamSpeakers){speaker.next+=delay;speaker.until+=delay;}
+    nextSpeech+=delay;speechUntil+=delay;nextEncounter+=delay;
+    if(shared){shared.start+=delay;shared.set.audio.play().catch(()=>{});}
+    last=0;lastPaint=0;scheduleFrame();
+  }
+});
 function tick(now) {
   // Schedule first: an isolated drawing/bubble error must not kill every pet.
-  requestAnimationFrame(tick);
+  frameRequest=0;if(renderPaused)return;scheduleFrame();
+  if (now - lastPaint < 1000 / 30 - 1) return;
+  lastPaint = now;
   try { renderFrame(now); }
   catch (error) { console.error('PETS_FRAME_ERROR', error.stack || error.message); }
 }
 function renderFrame(now) {
   const dt = Math.min(.05, (now - (last || now)) / 1000); last = now;
-  ctx.clearRect(0, 0, W, H);
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  ctx.clearRect(0, 0, innerWidth, innerHeight);
+  if(usagiLayer&&pets[0]) {
+    const pet=pets[0];
+    const x=Math.max(0,Math.min(W-innerWidth,Math.floor(pet.x-20)));
+    const y=Math.max(0,Math.min(H-innerHeight,Math.floor(pet.y-40)));
+    if(x!==viewport.x||y!==viewport.y){viewport.x=x;viewport.y=y;window.petsAPI.moveCompact({x:pet.x,y:pet.y});}
+    ctx.translate(-viewport.x,-viewport.y);
+  }
+  for(const set of sets)if(set.frames&&shared?.set!==set&&now-set.lastUsed>90000)releaseShared(set);
   encounter(now);
   for (const p of pets) {
     if (shared?.group.includes(p)) continue;
@@ -203,7 +250,7 @@ function renderFrame(now) {
     }
     const elapsed = now - p.start;
     const hop = p.state === 'jump' && !reduced.matches ? Math.max(0, Math.sin(Math.min(1, elapsed / 700) * Math.PI)) * 24 : 0;
-    ctx.drawImage(p.image, frame * 192, row * 208, 192, 208, p.x, p.y - hop, p.w, p.h);
+    ctx.drawImage(p.image, frame * p.cellW, row * p.cellH, p.cellW, p.cellH, p.x, p.y - hop, p.w, p.h);
     if (now < p.petUntil) {
       ctx.font = '18px sans-serif'; ctx.fillStyle = '#ff8fac';
       ctx.fillText('♥', p.x + p.w / 2, p.y - 4 - ((now - p.start) / 100 % 12));
@@ -256,7 +303,7 @@ function renderFrame(now) {
     }
   }
   if (now - lastRegions > 80) {
-    window.petsAPI.regions(pets.filter(p => !shared?.group.includes(p)).map(rect)); lastRegions = now;
+    window.petsAPI.regions(pets.filter(p => !shared?.group.includes(p)).map(p=>{const r=rect(p);return {...r,x:r.x-viewport.x,y:r.y-viewport.y};})); lastRegions = now;
   }
 }
 canvas.addEventListener('contextmenu', event => {
@@ -264,7 +311,7 @@ canvas.addEventListener('contextmenu', event => {
   if (!usagiLayer) return;
   const hit = pets.some(p => {
     const r = rect(p);
-    return !shared?.group.includes(p) && event.clientX >= r.x && event.clientX <= r.x + r.w && event.clientY >= r.y && event.clientY <= r.y + r.h;
+    return !shared?.group.includes(p) && event.clientX+viewport.x >= r.x && event.clientX+viewport.x <= r.x + r.w && event.clientY+viewport.y >= r.y && event.clientY+viewport.y <= r.y + r.h;
   });
   if (hit) window.petsAPI.showContextMenu();
 });
@@ -273,11 +320,11 @@ canvas.addEventListener('click', event => {
   if (!usagiLayer || movedSincePress) return;
   const pet = pets.find(p => {
     const r = rect(p);
-    return p.id === 'usagi' && event.clientX >= r.x && event.clientX <= r.x + r.w && event.clientY >= r.y && event.clientY <= r.y + r.h;
+    return p.id === 'usagi' && event.clientX+viewport.x >= r.x && event.clientX+viewport.x <= r.x + r.w && event.clientY+viewport.y >= r.y && event.clientY+viewport.y <= r.y + r.h;
   });
   if (pet) {
     console.info('PETS_USAGI_CLICK');
-    window.petsAPI.openPowerBi({ x: pet.x, y: pet.y });
+    window.petsAPI.openPowerBi({ x: pet.x-viewport.x, y: pet.y-viewport.y });
   }
 });
 canvas.addEventListener('pointerdown', event => {
@@ -286,10 +333,10 @@ canvas.addEventListener('pointerdown', event => {
   const now = performance.now();
   const p = [...pets].reverse().find(p => {
     const r = rect(p);
-    return !shared?.group.includes(p) && event.clientX >= r.x && event.clientX <= r.x + r.w && event.clientY >= r.y && event.clientY <= r.y + r.h;
+    return !shared?.group.includes(p) && event.clientX+viewport.x >= r.x && event.clientX+viewport.x <= r.x + r.w && event.clientY+viewport.y >= r.y && event.clientY+viewport.y <= r.y + r.h;
   });
   if (p) {
-    drag = { pet: p, pointerId: event.pointerId, offsetX: event.clientX - p.x, offsetY: event.clientY - p.y, startX: event.clientX, startY: event.clientY, moved: false };
+    drag = { pet: p, pointerId: event.pointerId, offsetX: event.clientX+viewport.x - p.x, offsetY: event.clientY+viewport.y - p.y, startX: event.clientX+viewport.x, startY: event.clientY+viewport.y, moved: false };
     canvas.setPointerCapture(event.pointerId);
     window.petsAPI.dragging(true);
     act(p, 'idle', now, 1000);
@@ -299,10 +346,10 @@ canvas.addEventListener('pointerdown', event => {
 canvas.addEventListener('pointermove', event => {
   if (!drag || event.pointerId !== drag.pointerId) return;
   if (!(event.buttons & 1)) return;
-  if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 5) { drag.moved = true; movedSincePress = true; }
+  if (Math.hypot(event.clientX+viewport.x - drag.startX, event.clientY+viewport.y - drag.startY) > 5) { drag.moved = true; movedSincePress = true; }
   if (!drag.moved) return;
-  drag.pet.x = Math.max(0, Math.min(W - drag.pet.w, event.clientX - drag.offsetX));
-  drag.pet.y = Math.max(28, Math.min(H - drag.pet.h - 3, event.clientY - drag.offsetY));
+  drag.pet.x = Math.max(0, Math.min(W - drag.pet.w, event.clientX+viewport.x - drag.offsetX));
+  drag.pet.y = Math.max(28, Math.min(H - drag.pet.h - 3, event.clientY+viewport.y - drag.offsetY));
 });
 function endDrag(event) {
   if (!drag || (event.pointerId !== undefined && event.pointerId !== drag.pointerId)) return;
@@ -322,9 +369,11 @@ canvas.addEventListener('lostpointercapture', endDrag);
 window.addEventListener('blur', () => endDrag({ type: 'pointercancel' }));
 async function init() {
   await Promise.all(activeRoster.map(async ([id, name], index) => {
-    const image = await load(asset(`${id}.png`));
     const scale = id === 'momonga' ? 1.5 : 1;
-    pets.push({ id, name, image, w: 76 * scale, h: 208 / 192 * 76 * scale,
+    const cellW=[96,144,192].find(size=>size>=76*scale*devicePixelRatio)||192;
+    const cellH=cellW*208/192;
+    const image = await load(asset(`${id}.png`),{scale:cellW/192});
+    pets.push({ id, name, image, cellW, cellH, w: 76 * scale, h: 208 / 192 * 76 * scale,
       x: Math.random() * Math.max(0, W - 114), y: 28 + Math.random() * Math.max(0, H - 160), vx: Math.cos(index * 2.4), vy: Math.sin(index * 2.4), speed: 20 + index * 2.5,
       state: index % 2 ? 'left' : 'right', start: performance.now(), until: performance.now() + 2500 + index * 180,
       petUntil: 0, cycle: index % 9 });
@@ -334,12 +383,29 @@ async function init() {
     ['tanuki_trio', ['chiikawa', 'hachiware', 'usagi'], 51, 'tanuki']
   ]) {
     if (!ids.every(id => activeRoster.some(([petId]) => petId === id))) continue;
-    const frames = await Promise.all(Array.from({ length: count }, (_, i) => load(asset(`coanimations/${folder}/${i}.png`))));
-    const poses = folder === 'hc_walktogether' ? await Promise.all(['hc_heart.png', 'hc_handholding.png'].map(n => load(asset(`coanimations/${n}`)))) : [];
-    const audio = new Audio(asset(`coanimations/sounds/${audioName}.wav`)); audio.volume = .2;
-    sets.push({ ids, frames, poses, audio });
+    sets.push({ ids, folder, count, audioName, frames:null, poses:[], audio:null, loading:null, retryAfter:0,lastUsed:0 });
   }
   console.info('PETS_READY', pets.length, 'SHARED_SETS', sets.length);
-  requestAnimationFrame(tick);
+  initialized=true;scheduleFrame();
 }
+function releaseShared(set){
+  for(const image of [...(set.frames||[]),...set.poses])image.close();
+  set.frames=null;set.poses=[];
+  if(set.audio){set.audio.pause();set.audio.removeAttribute('src');set.audio.load();set.audio=null;}
+}
+function loadShared(set){
+  if(set.loading||performance.now()<set.retryAfter)return;
+  set.loading=(async()=>{
+    const frames=[],poses=[];
+    try {
+      const maxWidth=Math.ceil((set.ids.length===3?230:170)*devicePixelRatio);
+      // Sequential decode limits peak memory while shared assets are being loaded.
+      for(let i=0;i<set.count;i++)frames.push(await load(asset(`coanimations/${set.folder}/${i}.png`),{maxWidth}));
+      if(set.folder==='hc_walktogether')for(const name of ['hc_heart.png','hc_handholding.png'])poses.push(await load(asset(`coanimations/${name}`),{maxWidth}));
+      const audio=new Audio(asset(`coanimations/sounds/${set.audioName}.wav`));audio.volume=.2;
+      Object.assign(set,{frames,poses,audio,lastUsed:performance.now()});
+    }catch(error){for(const image of [...frames,...poses])image.close();set.retryAfter=performance.now()+60000;console.error('PETS_SHARED_LOAD_FAILED',error.message);}
+  })().finally(()=>{set.loading=null;});
+}
+window.addEventListener('beforeunload',()=>{cancelAnimationFrame(frameRequest);for(const pet of pets)pet.image.close();for(const set of sets)releaseShared(set);});
 init().catch(error => console.error('PETS_INIT_FAILED', error));

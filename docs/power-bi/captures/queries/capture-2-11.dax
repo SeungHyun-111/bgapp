@@ -1,0 +1,98 @@
+DEFINE
+	VAR __DS0FilterTable = 
+		TREATAS({"[알렌오](26FW)체크셔켓"}, 'BO'[편성코드])
+
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			ROLLUPADDISSUBTOTAL(
+				ROLLUPGROUP(
+					'BO'[방송일시],
+					'BO'[다원구분],
+					'BO'[MD분류],
+					'BO'[편성코드],
+					'BO'[대표업체명],
+					'BO'[대표상품명],
+					'BO'[편성 Comment],
+					'BO'[영상구분],
+					'BO'[거래형태],
+					'BO'[영상ID],
+					'BO'[MD명],
+					'BO'[기업구분],
+					'BO'[프로그램명],
+					'BO'[아이템명]
+				), "IsGrandTotalRowTotal"
+			),
+			__DS0FilterTable,
+			"Sumv_전체_방송중_제휴포인트", CALCULATE(SUM('BO'[(전체/방송중)제휴포인트])),
+			"Sum노출분", CALCULATE(SUM('BO'[노출분])),
+			"Sum가중분", CALCULATE(SUM('BO'[가중분])),
+			"v_전체_한계_분_", 'BO'[(전체)한계(분)],
+			"Sumv_연동_총주문량", CALCULATE(SUM('BO'[(연동)총주문량])),
+			"분당혼합비", 'BO'[분당혼합비],
+			"Sumv_전체_미리주문_예상취급액", CALCULATE(SUM('BO'[(전체/미리주문)예상취급액])),
+			"v_전체_취급달성률___", 'BO'[(전체)취급달성률(%)],
+			"v_전체_매출달성률___", 'BO'[(전체)매출달성률(%)],
+			"v_전체_매총달성률___", 'BO'[(전체)매총달성률(%)],
+			"v_전체_한계달성률___", 'BO'[(전체)한계달성률(%)],
+			"v_전체_미리주문_취급_목표___", 'BO'[(전체/미리주문)취급/목표(%)],
+			"Sum판매가_대표상품_", CALCULATE(SUM('BO'[판매가(대표상품)]))
+		)
+
+	VAR __DS0PrimaryWindowed = 
+		TOPN(
+			502,
+			__DS0Core,
+			[IsGrandTotalRowTotal],
+			0,
+			[Sumv_전체_방송중_제휴포인트],
+			0,
+			'BO'[방송일시],
+			1,
+			'BO'[다원구분],
+			1,
+			'BO'[MD분류],
+			1,
+			'BO'[편성코드],
+			1,
+			'BO'[대표업체명],
+			1,
+			'BO'[대표상품명],
+			1,
+			'BO'[편성 Comment],
+			1,
+			'BO'[영상구분],
+			1,
+			'BO'[거래형태],
+			1,
+			'BO'[영상ID],
+			1,
+			'BO'[MD명],
+			1,
+			'BO'[기업구분],
+			1,
+			'BO'[프로그램명],
+			1,
+			'BO'[아이템명],
+			1
+		)
+
+EVALUATE
+	__DS0PrimaryWindowed
+
+ORDER BY
+	[IsGrandTotalRowTotal] DESC,
+	[Sumv_전체_방송중_제휴포인트] DESC,
+	'BO'[방송일시],
+	'BO'[다원구분],
+	'BO'[MD분류],
+	'BO'[편성코드],
+	'BO'[대표업체명],
+	'BO'[대표상품명],
+	'BO'[편성 Comment],
+	'BO'[영상구분],
+	'BO'[거래형태],
+	'BO'[영상ID],
+	'BO'[MD명],
+	'BO'[기업구분],
+	'BO'[프로그램명],
+	'BO'[아이템명]

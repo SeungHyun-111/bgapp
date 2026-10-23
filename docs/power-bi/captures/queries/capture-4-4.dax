@@ -1,0 +1,29 @@
+DEFINE
+	VAR __DS0FilterTable = 
+		FILTER(
+			KEEPFILTERS(VALUES('BO'[방송일시])),
+			AND('BO'[방송일시] >= DATE(2025, 11, 1), 'BO'[방송일시] < DATE(2026, 1, 1))
+		)
+
+	VAR __DS0FilterTable2 = 
+		TREATAS({"유형"}, 'BO'[유/무형])
+
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			ROLLUPADDISSUBTOTAL('BO'[조직명], "IsGrandTotalRowTotal"),
+			__DS0FilterTable,
+			__DS0FilterTable2,
+			"v_전체_취급_분_", 'BO'[(전체)취급(분)],
+			"A1", CALCULATE(
+				DIVIDE(SUM('BO'[가중분]), CALCULATE(SUM('BO'[가중분]), ALLSELECTED('BO'[조직명])))
+			)
+		)
+
+	VAR __DS0PrimaryWindowed = 
+		TOPN(502, __DS0Core, [IsGrandTotalRowTotal], 0, 'BO'[조직명], 1)
+
+EVALUATE
+	__DS0PrimaryWindowed
+
+ORDER BY
+	[IsGrandTotalRowTotal] DESC, 'BO'[조직명]

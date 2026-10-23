@@ -1,0 +1,11 @@
+DEFINE VAR __DS0FilterTable = 
+	FILTER(
+		KEEPFILTERS(VALUES('BO'[방송일시])),
+		AND('BO'[방송일시] >= DATE(2026, 10, 21), 'BO'[방송일시] < DATE(2026, 10, 22))
+	)
+
+EVALUATE
+	SUMMARIZECOLUMNS(
+		__DS0FilterTable,
+		"v_전체_방송중_변동비_V__", IGNORE('BO'[(전체/방송중)변동비(V-)])
+	)

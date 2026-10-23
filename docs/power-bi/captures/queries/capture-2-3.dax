@@ -1,0 +1,8 @@
+DEFINE VAR __DS0FilterTable = 
+	TREATAS({"[알렌오](26FW)체크셔켓"}, 'BO'[편성코드])
+
+EVALUATE
+	SUMMARIZECOLUMNS(
+		__DS0FilterTable,
+		"v_전체_미리주문_한익률___", IGNORE('BO'[(전체/미리주문)한익률(%)])
+	)

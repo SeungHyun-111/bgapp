@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('scheduleApi', {
   load: () => ipcRenderer.invoke('schedule:load'),
   reload: () => ipcRenderer.invoke('schedule:load'),
+  getRtdbProjects: () => ipcRenderer.invoke('schedule:rtdb-projects'),
   refreshFutureOps: () => ipcRenderer.invoke('pgmdr:refresh-future-ops'),
   refreshGlobalPerformance: () => ipcRenderer.invoke('pgmdr:refresh-global-performance'),
   searchRemainingSchedules: (keyword) => ipcRenderer.invoke('pgmdr:search-remaining-schedules', keyword),

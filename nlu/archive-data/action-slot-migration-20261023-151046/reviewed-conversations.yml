@@ -1,0 +1,28 @@
+version: "3.1"
+nlu:
+  - intent: get_metric_fbe91fd24167
+    examples: |
+      - 헬스푸드팀 월별 편성비중
+      - 헬스푸드팀 9월 편성비중
+      - 2026년 9월에 헬스푸드팀 편성비중 못만들어?
+      - 문화팀 편성비중
+  - intent: get_metric_5f2623ed65f2
+    examples: |
+      - 9월 헬스푸드팀 가중분
+      - 헬스푸드팀 월별 가중분
+      - 문화팀 가중분
+  - intent: change_month_group
+    examples: |
+      - 26년 월별
+  - intent: change_target
+    examples: |
+      - [문화팀]{"entity":"organization","value":"문화서비스"} 찾으라니깐 왜 편성팀찾앗어
+  - intent: rank_organizations
+    examples: |
+      - 6월에 편성비중 제일 많이 쓴 팀
+  - intent: change_organization_group
+    examples: |
+      - 뭐야 6월 조직별 편성비중도 못만들어?
+      - 9월 말이야 그리고 이런건 좀 아래에 선택하는 식으로 제안하라고햇잖아.
+      - 9월 조직별 편성비중
+      - 하 왜또 조직별 편성비중이라는데 편성팀을 가져오지? 학습안했나? 포함된 팀들 있잖아 9월에 방송한 팀들의 각 편성비중을 가져오라는거잖아.

@@ -6,6 +6,18 @@ const PGMDR_DB_URL = 'https://pgmdr-87328-default-rtdb.asia-southeast1.firebased
 const COMPETITOR_DB_URL = 'https://schedule-7ec7a-default-rtdb.asia-southeast1.firebasedatabase.app';
 const COMPETITOR_ROOT = 'competitorInfo';
 const COMPETITOR_MAX_PARALLEL_READS = 30;
+const RTDB_PROJECTS = [
+  {
+    projectName: 'pgmdr-87328',
+    databaseUrl: PGMDR_DB_URL,
+    features: ['방송 운영 세션', '잔여 편성 검색', '전역 실적 캐시', '실적 히스토리']
+  },
+  {
+    projectName: 'schedule-7ec7a',
+    databaseUrl: COMPETITOR_DB_URL,
+    features: ['경쟁사 방송 정보 검색']
+  }
+];
 const MAIN_GAS_URL = 'https://script.google.com/macros/s/AKfycbzlnzcV5DkCNwAZcOrdtJnCfGpCLmu5-tA9eF8N2Rs4hS15N61p0h8m7BQqTVxwX7g3/exec';
 const OPS_GAS_URL = 'https://script.google.com/macros/s/AKfycbz9e0_2L6wX3Lm7uKWLfReZrm-LNRFxg8f_EeHVKwqaLZrx0neyHss9fORPhhvFppIA/exec';
 const VERSION_OPS = 'ops';
@@ -15,6 +27,13 @@ let cacheDirectory = '';
 
 function configureCacheDirectory(directory) {
   cacheDirectory = directory || '';
+}
+
+function getRtdbProjects() {
+  return RTDB_PROJECTS.map((project) => ({
+    ...project,
+    features: [...project.features]
+  }));
 }
 
 function getCachePath(name) {
@@ -1187,6 +1206,7 @@ module.exports = {
   loadSchedule,
   parseSchedule,
   configureCacheDirectory,
+  getRtdbProjects,
   refreshFutureOpsVersions,
   searchRemainingSchedules,
   refreshGlobalPerformance,

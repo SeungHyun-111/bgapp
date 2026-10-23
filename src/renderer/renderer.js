@@ -1,6 +1,18 @@
 const clock = document.querySelector('#clock');
 const schedule = document.querySelector('.schedule');
 const refreshScheduleButton = document.querySelector('#refreshSchedule');
+const DEFAULT_RTDB_PROJECTS = [
+  {
+    projectName: 'pgmdr-87328',
+    databaseUrl: 'https://pgmdr-87328-default-rtdb.asia-southeast1.firebasedatabase.app',
+    features: ['방송 운영 세션', '잔여 편성 검색', '전역 실적 캐시', '실적 히스토리']
+  },
+  {
+    projectName: 'schedule-7ec7a',
+    databaseUrl: 'https://schedule-7ec7a-default-rtdb.asia-southeast1.firebasedatabase.app',
+    features: ['경쟁사 방송 정보 검색']
+  }
+];
 
 let scheduleGroups = [];
 let statusTimer = null;
@@ -134,6 +146,27 @@ function renderProduct(item) {
   `;
 }
 
+function renderRtdbInfo(projects = []) {
+  const rows = projects.map((project) => `
+    <li>
+      <strong>${escapeHtml(project.projectName)}</strong>
+      <code>${escapeHtml(project.databaseUrl)}</code>
+      <span>${escapeHtml((project.features || []).join(', '))}</span>
+    </li>
+  `).join('');
+
+  if (!rows) {
+    return '';
+  }
+
+  return `
+    <aside class="rtdb-info" aria-label="Realtime Database information">
+      <p>사용 RTDB</p>
+      <ul>${rows}</ul>
+    </aside>
+  `;
+}
+
 function updateStatuses({ scrollToLive = false } = {}) {
   let liveElement = null;
 
@@ -206,15 +239,15 @@ function scheduleNextStatusUpdate() {
   statusTimer = setTimeout(() => updateStatuses({ scrollToLive: true }), delay);
 }
 
-function renderSchedule(items) {
+function renderSchedule(items, rtdbProjects = []) {
   scheduleGroups = groupByTime(items);
 
   if (!scheduleGroups.length) {
-    schedule.innerHTML = '<p class="loading">표시할 편성표가 없습니다.</p>';
+    schedule.innerHTML = `<p class="loading">표시할 편성표가 없습니다.</p>${renderRtdbInfo(rtdbProjects)}`;
     return;
   }
 
-  schedule.innerHTML = scheduleGroups.map((group, index) => `
+  schedule.innerHTML = `${scheduleGroups.map((group, index) => `
     <section class="${classNameForStatus(getStatus(group))}" data-index="${index}">
       <header class="time-head">
         <span>${escapeHtml(group.timeRange)}</span>
@@ -224,7 +257,7 @@ function renderSchedule(items) {
         ${group.items.map(renderProduct).join('')}
       </div>
     </section>
-  `).join('');
+  `).join('')}${renderRtdbInfo(rtdbProjects)}`;
 
   requestAnimationFrame(() => updateStatuses({ scrollToLive: true }));
 }
@@ -249,9 +282,13 @@ function setRefreshWorking(isWorking) {
 async function loadSchedule() {
   setRefreshWorking(true);
   try {
+    const rtdbProjectsPromise = typeof window.scheduleApi.getRtdbProjects === 'function'
+      ? window.scheduleApi.getRtdbProjects().catch(() => DEFAULT_RTDB_PROJECTS)
+      : Promise.resolve(DEFAULT_RTDB_PROJECTS);
     const result = await window.scheduleApi.reload();
     const items = Array.isArray(result) ? result : result.items;
-    renderSchedule(items);
+    const rtdbProjects = await rtdbProjectsPromise;
+    renderSchedule(items, rtdbProjects);
 
     if (result?.fromCache) {
       const loadedText = formatCacheTime(result.loadedAt);
@@ -264,7 +301,7 @@ async function loadSchedule() {
     }
   } catch (error) {
     console.error(error);
-    schedule.innerHTML = '<p class="loading">편성표를 불러오지 못했습니다.</p>';
+    schedule.innerHTML = `<p class="loading">편성표를 불러오지 못했습니다.</p>${renderRtdbInfo(DEFAULT_RTDB_PROJECTS)}`;
   } finally {
     setRefreshWorking(false);
   }

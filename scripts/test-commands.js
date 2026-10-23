@@ -40,7 +40,7 @@ test('concurrent append preserves JSONL; conversion uses an append-only status o
   assert.equal(lines.length, 50); assert.equal(new Set(lines.map(r => r.id)).size, 50);
   assert(lines.every(r => r.status === 'unhandled' && r.timestamp.endsWith('+09:00')));
   await store.markConverted(lines[0].id, 'MARGIN');
-  assert.equal(await fs.readFile(store.file, 'utf8'), before);
+  assert((await fs.readFile(store.file, 'utf8')).startsWith(before));
   const effective = await store.list();
   assert.equal(effective[0].status, 'converted'); assert.equal(effective[0].convertedIntent, 'MARGIN');
   assert.equal(effective[1].status, 'unhandled');

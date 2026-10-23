@@ -1,0 +1,10 @@
+{
+  "commission_rate": {
+    "intent": "get_commission_rate",
+    "label": "상품 수수료율",
+    "synonyms": ["상품수수료율", "수수료율", "수수료", "마진"],
+    "required": ["product", "period"],
+    "biMapping": "BO[(전체/방송중)제휴포인트]",
+    "mappingStatus": "사용자 확인: 마진/상품수수료율. 원본 값과 방송일시로 표시하며 단위·집계를 임의로 바꾸지 않음"
+  }
+}

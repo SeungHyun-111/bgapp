@@ -1,0 +1,18 @@
+DEFINE
+	VAR __DS0FilterTable = 
+		TREATAS({"[알렌오](26FW)체크셔켓"}, 'BO'[편성코드])
+
+	VAR __DS0Core = 
+		CALCULATETABLE(
+			DISTINCT('BO'[이미지]),
+			KEEPFILTERS(__DS0FilterTable)
+		)
+
+	VAR __DS0PrimaryWindowed = 
+		TOPN(101, __DS0Core, 'BO'[이미지], 1)
+
+EVALUATE
+	__DS0PrimaryWindowed
+
+ORDER BY
+	'BO'[이미지]

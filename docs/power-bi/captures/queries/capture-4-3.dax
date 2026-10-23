@@ -1,0 +1,38 @@
+DEFINE
+	VAR __DS0FilterTable = 
+		FILTER(
+			KEEPFILTERS(VALUES('BO'[방송일시])),
+			AND('BO'[방송일시] >= DATE(2025, 11, 1), 'BO'[방송일시] < DATE(2026, 1, 1))
+		)
+
+	VAR __DS0FilterTable2 = 
+		TREATAS({"유형"}, 'BO'[유/무형])
+
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			ROLLUPADDISSUBTOTAL(ROLLUPGROUP('BO'[조직명], 'BO'[MD분류], 'BO'[편성코드]), "IsGrandTotalRowTotal"),
+			__DS0FilterTable,
+			__DS0FilterTable2,
+			"DistinctCount방송일시", CALCULATE(DISTINCTCOUNT('BO'[방송일시])),
+			"A1", CALCULATE(
+				DIVIDE(DISTINCTCOUNT('BO'[방송일시]), CALCULATE(
+					DISTINCTCOUNT('BO'[방송일시]),
+					ALLSELECTED('BO'[조직명]),
+					ALLSELECTED('BO'[MD분류]),
+					ALLSELECTED('BO'[편성코드])
+				))
+			),
+			"v_연동_방송중_정액外취급_분_", 'BO'[(연동/방송중)정액外취급(분)],
+			"v_전체_취급_분_", 'BO'[(전체)취급(분)],
+			"v_전체_한계_분_", 'BO'[(전체)한계(분)],
+			"Sum가중분", CALCULATE(SUM('BO'[가중분]))
+		)
+
+	VAR __DS0PrimaryWindowed = 
+		TOPN(502, __DS0Core, [IsGrandTotalRowTotal], 0, 'BO'[MD분류], 1, 'BO'[조직명], 1, 'BO'[편성코드], 1)
+
+EVALUATE
+	__DS0PrimaryWindowed
+
+ORDER BY
+	[IsGrandTotalRowTotal] DESC, 'BO'[MD분류], 'BO'[조직명], 'BO'[편성코드]

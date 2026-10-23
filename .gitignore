@@ -19,3 +19,8 @@ Desktop.ini
 
 # Personal learning notes and locally cached program names.
 /data/
+.venv-rasa/
+nlu/models/
+nlu/results/
+__pycache__/
+nlu/.rasa/

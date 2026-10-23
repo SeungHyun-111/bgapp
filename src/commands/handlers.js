@@ -2,7 +2,7 @@ const { parse } = require('./parser');
 const intents = require('./intents');
 const responses = require('./responses');
 
-function createCommandSystem(store) {
+function createCommandSystem(store, { dialogue = null } = {}) {
   const handlers = new Map([
     [intents.PERFORMANCE_SEARCH, command => ({ kind: 'search', keyword: command.keyword })],
     [intents.GREETING, () => ({ kind: 'reply', message: responses.greeting })],
@@ -15,6 +15,7 @@ function createCommandSystem(store) {
       if (command.error) return { kind: 'reply', message: command.error };
       if (command.blocked) return { kind: 'reply', blocked: true, message: responses.blocked };
       if (handlers.has(command.intent)) return handlers.get(command.intent)(command);
+      if (dialogue && options.mode !== 'search') return dialogue.execute(input.trim());
       const result = await store.append(input, options.mode || 'talk');
       return result.blocked ? { kind: 'reply', blocked: true, message: responses.blocked } : { kind: 'reply', saved: true, id: result.id, message: responses.unhandled };
     },

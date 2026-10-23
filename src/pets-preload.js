@@ -9,6 +9,8 @@ contextBridge.exposeInMainWorld('petsAPI', {
   onSearchVisible: callback => ipcRenderer.on('pets:search-visible', (_event, value) => callback(value)),
   onAboveChanged: callback => ipcRenderer.on('pets:above-changed', (_event, value) => callback(value)),
   dragging: value => ipcRenderer.send('pets:dragging', value),
+  moveCompact: point => ipcRenderer.send('pets:compact-position', point),
+  onPaused: callback => ipcRenderer.on('pets:paused', (_event,value) => callback(value)),
   regions: regions => ipcRenderer.send('pets:hit-regions', regions),
   onCursor: callback => ipcRenderer.on('pets:cursor', (_event, point) => callback(point))
 });

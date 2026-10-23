@@ -1,10 +1,20 @@
-const { BrowserWindow, ipcMain, screen, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, Menu, powerMonitor } = require('electron');
 const path = require('path');
+const {COMPACT_WIDTH,COMPACT_HEIGHT,compactOrigin}=require('./pet-geometry');
 
 // Independent from the hidden legacy widgets and their data services.
 module.exports = function startPets() {
   const log = message => require('fs').appendFileSync(path.join(require('os').tmpdir(), 'bgapp-pets.log'), new Date().toISOString() + ' ' + message + '\n');
   const windows = new Set();
+  const pausedReasons=new Set();
+  const setPaused=(reason,value)=>{
+    if(value)pausedReasons.add(reason);else pausedReasons.delete(reason);
+    for(const win of windows)if(!win.isDestroyed())win.webContents.send('pets:paused',pausedReasons.size>0);
+  };
+  const powerHandlers={ 'lock-screen':()=>setPaused('locked',true),'unlock-screen':()=>setPaused('locked',false),
+    suspend:()=>setPaused('sleep',true),resume:()=>setPaused('sleep',false) };
+  for(const [event,handler] of Object.entries(powerHandlers))powerMonitor.on(event,handler);
+  const stopDisplayPower=require('./display-power').watchDisplayPower(path.join(app.getPath('userData'),'runtime'),off=>setPaused('display',off));
   const powerBi = require('./power-bi')();
   ipcMain.on('pets:power-bi', (event, point) => {
     const win = BrowserWindow.fromWebContents(event.sender);
@@ -103,9 +113,17 @@ module.exports = function startPets() {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (windows.has(win)) win.petDragging = Boolean(value);
   });
+  ipcMain.on('pets:compact-position',(event,point)=>{
+    const win=BrowserWindow.fromWebContents(event.sender);
+    if(!windows.has(win)||!win.petUsagi||!Number.isFinite(point?.x)||!Number.isFinite(point?.y))return;
+    const origin=compactOrigin(point.x,point.y,win.petArea);
+    const x=win.petArea.x+origin.x,y=win.petArea.y+origin.y;
+    const [previousX,previousY]=win.getPosition();
+    if(previousX!==x||previousY!==y)win.setPosition(x,y,false);
+  });
   function create(display, monitorId, usagi = false) {
     const win = new BrowserWindow({
-      ...display.workArea, frame: false, transparent: true, hasShadow: false,
+      ...display.workArea, ...(usagi?{width:COMPACT_WIDTH,height:COMPACT_HEIGHT}:{}), frame: false, transparent: true, hasShadow: false,
       resizable: false, skipTaskbar: true, alwaysOnTop: usagi ? usagiAbove : display.id === monitorId && aboveWindows, focusable: usagi,
       show: true, backgroundColor: '#00000000',
       webPreferences: { preload: path.join(__dirname, 'pets-preload.js'),
@@ -113,6 +131,7 @@ module.exports = function startPets() {
     });
     win.petMonitorOne = display.id === monitorId;
     win.petUsagi = usagi;
+    win.petArea=display.workArea;
     applyLayer(win);
     log("PET_CREATED usagi=" + usagi + " visible=" + win.isVisible() + " top=" + win.isAlwaysOnTop());
     windows.add(win);
@@ -120,8 +139,8 @@ module.exports = function startPets() {
       if (message.includes('PETS_')) require('fs').appendFileSync(path.join(require('os').tmpdir(), 'bgapp-pets.log'), message + '\n');
     });
     win.setIgnoreMouseEvents(true, { forward: true });
-    win.loadFile(path.join(__dirname, 'renderer/pets.html'), { query: { layer: usagi ? 'usagi' : 'friends' } }).catch(error => log('PET_LOAD_ERROR ' + error.message));
-    win.webContents.once('did-finish-load', () => { win.showInactive(); applyLayer(win); log('PET_WINDOW ' + JSON.stringify(win.getBounds()) + ' top=' + win.isAlwaysOnTop()); });
+    win.loadFile(path.join(__dirname, 'renderer/pets.html'), { query: { layer: usagi ? 'usagi' : 'friends', worldWidth:String(display.workArea.width),worldHeight:String(display.workArea.height) } }).catch(error => log('PET_LOAD_ERROR ' + error.message));
+    win.webContents.once('did-finish-load', () => { win.webContents.send('pets:paused',pausedReasons.size>0);win.showInactive(); applyLayer(win); log('PET_WINDOW ' + JSON.stringify(win.getBounds()) + ' top=' + win.isAlwaysOnTop()); });
     win.on('closed', () => windows.delete(win));
   }
   function createAll() {
@@ -147,6 +166,7 @@ module.exports = function startPets() {
   }
   createAll();
   const timer = setInterval(() => {
+    if(pausedReasons.size)return;
     const cursor = screen.getCursorScreenPoint();
     for (const win of windows) {
       const bounds = win.getBounds();
@@ -157,7 +177,10 @@ module.exports = function startPets() {
         win.setIgnoreMouseEvents(ignore, { forward: true });
         win.petIgnore = ignore;
       }
-      win.webContents.send('pets:cursor', { x, y });
+      if (win.petCursorX !== x || win.petCursorY !== y) {
+        win.webContents.send('pets:cursor', { x, y });
+        win.petCursorX = x; win.petCursorY = y;
+      }
       // Keep ordinary application windows above the desktop pets.
 
     }
@@ -170,5 +193,7 @@ module.exports = function startPets() {
   screen.on('display-added', rebuild);
   screen.on('display-removed', rebuild);
   screen.on('display-metrics-changed', rebuild);
-  return { stop() { clearInterval(timer); powerBi.stop(); controlWindow?.close(); for (const win of [...windows]) win.close(); } };
+  const stop=()=>{clearInterval(timer);stopDisplayPower();for(const [event,handler]of Object.entries(powerHandlers))powerMonitor.removeListener(event,handler);powerBi.stop();controlWindow?.close();for(const win of [...windows])win.close();};
+  app.once('before-quit',stop);
+  return { stop };
 };

@@ -2,7 +2,7 @@ const { app, BrowserWindow, Menu, Tray, ipcMain, nativeImage, screen, shell } = 
 const fs = require('fs');
 const path = require('path');
 const startPets = require('./pets');
-const { loadSchedule, refreshFutureOpsVersions, searchRemainingSchedules, refreshGlobalPerformance, searchPerformanceHistory, searchCompetitorInfo, warmPerformanceCache, getPerformanceCacheStatus, configureCacheDirectory } = require('./schedule');
+const { loadSchedule, refreshFutureOpsVersions, searchRemainingSchedules, refreshGlobalPerformance, searchPerformanceHistory, searchCompetitorInfo, warmPerformanceCache, getPerformanceCacheStatus, configureCacheDirectory, getRtdbProjects } = require('./schedule');
 
 let mainWindow;
 let floatingWindow;
@@ -332,6 +332,7 @@ function createWindow() {
   mainWindow.on('moved', scheduleSaveBounds);
   mainWindow.on('move', scheduleSaveBounds);
   mainWindow.on('close', saveBounds);
+  mainWindow.on('closed', () => { mainWindow = null; });
 }
 
 function createFloatingWindow() {
@@ -478,7 +479,12 @@ function createTray() {
   tray = new Tray(icon);
   tray.setToolTip('방송 편성표 위젯');
   tray.setContextMenu(Menu.buildFromTemplate([
-    { label: '보이기', click: () => mainWindow?.show() },
+    { label: '보이기', click: () => {
+      if (!mainWindow || mainWindow.isDestroyed()) {
+        createWindow();
+        mainWindow.once('ready-to-show', () => mainWindow?.show());
+      } else mainWindow.show();
+    } },
     { label: '숨기기', click: () => mainWindow?.hide() },
     { type: 'separator' },
     { label: '종료', click: () => app.quit() }
@@ -486,11 +492,14 @@ function createTray() {
 }
 
 app.whenReady().then(() => {
+  const stopLearningLoop=require('./commands/learning-loop').startLearningLoop();
+  app.on('before-quit',stopLearningLoop);
   enableAutoLaunch();
   configureCacheDirectory(path.join(app.getPath('userData'), 'data-cache'));
   require('./data-cache').configureCache(path.join(app.getPath('userData'), 'data-cache', 'shared'));
 
   ipcMain.handle('schedule:load', loadSchedule);
+  ipcMain.handle('schedule:rtdb-projects', getRtdbProjects);
   ipcMain.handle('pgmdr:refresh-future-ops', refreshFutureOpsVersions);
   ipcMain.handle('pgmdr:refresh-global-performance', refreshGlobalPerformance);
   ipcMain.handle('pgmdr:search-remaining-schedules', (_event, keyword) => searchRemainingSchedules(keyword));
@@ -537,12 +546,8 @@ app.whenReady().then(() => {
     }
   });
 
-  createWindow();
-  createFloatingWindow();
-  createPerformanceWindow();
-  createSearchWindow();
-  createHistoryWindow();
-  createCompetitorWindow();
+  // Data IPC/services live in the main process. Legacy UI windows are created
+  // only when opened, rather than keeping six invisible renderers resident.
   createTray();
   const stopWallpaper = require('./day-night-wallpaper').startDayNightWallpaper();
   app.on('before-quit', stopWallpaper);

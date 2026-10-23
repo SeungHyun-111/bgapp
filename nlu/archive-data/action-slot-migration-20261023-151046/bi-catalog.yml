@@ -1,0 +1,502 @@
+version: "3.1"
+nlu:
+  - intent: get_metric_e04eb29020ea
+    examples: |
+      - 이번달 상품 [(전체)예상취급액]{"entity":"metric","value":"sales"} 알려줘
+      - 상품 [(전체)예상취급액]{"entity":"metric","value":"sales"} 궁금해
+      - 이번달 상품 [취급액]{"entity":"metric","value":"sales"} 알려줘
+      - 상품 [취급액]{"entity":"metric","value":"sales"} 궁금해
+      - 이번달 상품 [예상취급액]{"entity":"metric","value":"sales"} 알려줘
+      - 상품 [예상취급액]{"entity":"metric","value":"sales"} 궁금해
+  - intent: get_metric_1c168adb00d2
+    examples: |
+      - 이번달 상품 [(전체)총주문량]{"entity":"metric","value":"orders"} 알려줘
+      - 상품 [(전체)총주문량]{"entity":"metric","value":"orders"} 궁금해
+      - 이번달 상품 [주문량]{"entity":"metric","value":"orders"} 알려줘
+      - 상품 [주문량]{"entity":"metric","value":"orders"} 궁금해
+      - 이번달 상품 [총주문량]{"entity":"metric","value":"orders"} 알려줘
+      - 상품 [총주문량]{"entity":"metric","value":"orders"} 궁금해
+      - 이번달 상품 [주문수량]{"entity":"metric","value":"orders"} 알려줘
+      - 상품 [주문수량]{"entity":"metric","value":"orders"} 궁금해
+  - intent: get_metric_371f7e422380
+    examples: |
+      - 이번달 상품 [(전체)예상매출액(V-)]{"entity":"metric","value":"revenue"} 알려줘
+      - 상품 [(전체)예상매출액(V-)]{"entity":"metric","value":"revenue"} 궁금해
+      - 이번달 상품 [매출액]{"entity":"metric","value":"revenue"} 알려줘
+      - 상품 [매출액]{"entity":"metric","value":"revenue"} 궁금해
+      - 이번달 상품 [예상매출액]{"entity":"metric","value":"revenue"} 알려줘
+      - 상품 [예상매출액]{"entity":"metric","value":"revenue"} 궁금해
+  - intent: get_metric_52a1b406f50d
+    examples: |
+      - 이번달 상품 [(전체)예상매출총이익액(V-)]{"entity":"metric","value":"gross_profit"} 알려줘
+      - 상품 [(전체)예상매출총이익액(V-)]{"entity":"metric","value":"gross_profit"} 궁금해
+      - 이번달 상품 [매출총이익]{"entity":"metric","value":"gross_profit"} 알려줘
+      - 상품 [매출총이익]{"entity":"metric","value":"gross_profit"} 궁금해
+      - 이번달 상품 [매총]{"entity":"metric","value":"gross_profit"} 알려줘
+      - 상품 [매총]{"entity":"metric","value":"gross_profit"} 궁금해
+  - intent: get_metric_d23be8d11414
+    examples: |
+      - 이번달 상품 [(전체)한계이익]{"entity":"metric","value":"profit"} 알려줘
+      - 상품 [(전체)한계이익]{"entity":"metric","value":"profit"} 궁금해
+      - 이번달 상품 [한계이익]{"entity":"metric","value":"profit"} 알려줘
+      - 상품 [한계이익]{"entity":"metric","value":"profit"} 궁금해
+      - 이번달 상품 [한익]{"entity":"metric","value":"profit"} 알려줘
+      - 상품 [한익]{"entity":"metric","value":"profit"} 궁금해
+  - intent: get_metric_5f2623ed65f2
+    examples: |
+      - 이번달 상품 [가중분]{"entity":"metric","value":"weighted_minutes"} 알려줘
+      - 상품 [가중분]{"entity":"metric","value":"weighted_minutes"} 궁금해
+      - 이번달 상품 [가중시간]{"entity":"metric","value":"weighted_minutes"} 알려줘
+      - 상품 [가중시간]{"entity":"metric","value":"weighted_minutes"} 궁금해
+  - intent: get_metric_cd9ddf82234f
+    examples: |
+      - 이번달 상품 [노출분]{"entity":"metric","value":"exposure_minutes"} 알려줘
+      - 상품 [노출분]{"entity":"metric","value":"exposure_minutes"} 궁금해
+      - 이번달 상품 [노출시간]{"entity":"metric","value":"exposure_minutes"} 알려줘
+      - 상품 [노출시간]{"entity":"metric","value":"exposure_minutes"} 궁금해
+  - intent: get_metric_3640bea8f485
+    examples: |
+      - 이번달 상품 [(전체)목표취급액]{"entity":"metric","value":"target_sales"} 알려줘
+      - 상품 [(전체)목표취급액]{"entity":"metric","value":"target_sales"} 궁금해
+      - 이번달 상품 [목표취급액]{"entity":"metric","value":"target_sales"} 알려줘
+      - 상품 [목표취급액]{"entity":"metric","value":"target_sales"} 궁금해
+      - 이번달 상품 [취급목표]{"entity":"metric","value":"target_sales"} 알려줘
+      - 상품 [취급목표]{"entity":"metric","value":"target_sales"} 궁금해
+  - intent: get_metric_fe4531a12f06
+    examples: |
+      - 이번달 상품 [(전체)한계이익목표]{"entity":"metric","value":"target_profit"} 알려줘
+      - 상품 [(전체)한계이익목표]{"entity":"metric","value":"target_profit"} 궁금해
+      - 이번달 상품 [한계이익목표]{"entity":"metric","value":"target_profit"} 알려줘
+      - 상품 [한계이익목표]{"entity":"metric","value":"target_profit"} 궁금해
+      - 이번달 상품 [한익목표]{"entity":"metric","value":"target_profit"} 알려줘
+      - 상품 [한익목표]{"entity":"metric","value":"target_profit"} 궁금해
+  - intent: get_metric_df17816ea442
+    examples: |
+      - 이번달 상품 [정액수수료(원)]{"entity":"metric","value":"fixed_fee"} 알려줘
+      - 상품 [정액수수료(원)]{"entity":"metric","value":"fixed_fee"} 궁금해
+      - 이번달 상품 [정액수수료]{"entity":"metric","value":"fixed_fee"} 알려줘
+      - 상품 [정액수수료]{"entity":"metric","value":"fixed_fee"} 궁금해
+  - intent: get_metric_d781a368271d
+    examples: |
+      - 이번달 상품 [(전체)PG수수료]{"entity":"metric","value":"pg_fee"} 알려줘
+      - 상품 [(전체)PG수수료]{"entity":"metric","value":"pg_fee"} 궁금해
+      - 이번달 상품 [PG수수료]{"entity":"metric","value":"pg_fee"} 알려줘
+      - 상품 [PG수수료]{"entity":"metric","value":"pg_fee"} 궁금해
+      - 이번달 상품 [피지수수료]{"entity":"metric","value":"pg_fee"} 알려줘
+      - 상품 [피지수수료]{"entity":"metric","value":"pg_fee"} 궁금해
+  - intent: get_metric_e17c2ce147f1
+    examples: |
+      - 이번달 상품 [(전체)제휴수수료]{"entity":"metric","value":"affiliate_fee"} 알려줘
+      - 상품 [(전체)제휴수수료]{"entity":"metric","value":"affiliate_fee"} 궁금해
+      - 이번달 상품 [제휴수수료]{"entity":"metric","value":"affiliate_fee"} 알려줘
+      - 상품 [제휴수수료]{"entity":"metric","value":"affiliate_fee"} 궁금해
+  - intent: get_metric_41b3ee6f0e3f
+    examples: |
+      - 이번달 상품 [분당혼합비]{"entity":"metric","value":"mix_per_minute"} 알려줘
+      - 상품 [분당혼합비]{"entity":"metric","value":"mix_per_minute"} 궁금해
+      - 이번달 상품 [혼합비]{"entity":"metric","value":"mix_per_minute"} 알려줘
+      - 상품 [혼합비]{"entity":"metric","value":"mix_per_minute"} 궁금해
+  - intent: get_metric_bab9fe679708
+    examples: |
+      - 이번달 상품 [분당한계이익]{"entity":"metric","value":"profit_per_minute"} 알려줘
+      - 상품 [분당한계이익]{"entity":"metric","value":"profit_per_minute"} 궁금해
+      - 이번달 상품 [분당한익]{"entity":"metric","value":"profit_per_minute"} 알려줘
+      - 상품 [분당한익]{"entity":"metric","value":"profit_per_minute"} 궁금해
+      - 이번달 상품 [한계(분)]{"entity":"metric","value":"profit_per_minute"} 알려줘
+      - 상품 [한계(분)]{"entity":"metric","value":"profit_per_minute"} 궁금해
+  - intent: get_metric_1a09b3a3c2d4
+    examples: |
+      - 이번달 상품 [취급달성률]{"entity":"metric","value":"sales_achievement"} 알려줘
+      - 상품 [취급달성률]{"entity":"metric","value":"sales_achievement"} 궁금해
+  - intent: get_metric_e0d151776d54
+    examples: |
+      - 이번달 상품 [한계달성률]{"entity":"metric","value":"profit_achievement"} 알려줘
+      - 상품 [한계달성률]{"entity":"metric","value":"profit_achievement"} 궁금해
+      - 이번달 상품 [한익달성률]{"entity":"metric","value":"profit_achievement"} 알려줘
+      - 상품 [한익달성률]{"entity":"metric","value":"profit_achievement"} 궁금해
+  - intent: get_product_metric
+    examples: |
+      - 이번달 상품 [방송일시]{"entity":"metric","value":"column:방송일시"} 알려줘
+      - 상품 [방송일시]{"entity":"metric","value":"column:방송일시"} 궁금해
+      - 이번달 상품 [다원구분]{"entity":"metric","value":"column:다원구분"} 알려줘
+      - 상품 [다원구분]{"entity":"metric","value":"column:다원구분"} 궁금해
+      - 이번달 상품 [프라임구분]{"entity":"metric","value":"column:프라임구분"} 알려줘
+      - 상품 [프라임구분]{"entity":"metric","value":"column:프라임구분"} 궁금해
+      - 이번달 상품 [혼합조정분]{"entity":"metric","value":"column:혼합조정분"} 알려줘
+      - 상품 [혼합조정분]{"entity":"metric","value":"column:혼합조정분"} 궁금해
+      - 이번달 상품 [채널1기준분]{"entity":"metric","value":"column:채널1기준분"} 알려줘
+      - 상품 [채널1기준분]{"entity":"metric","value":"column:채널1기준분"} 궁금해
+      - 이번달 상품 [프로그램명]{"entity":"metric","value":"column:프로그램명"} 알려줘
+      - 상품 [프로그램명]{"entity":"metric","value":"column:프로그램명"} 궁금해
+      - 이번달 상품 [편성코드]{"entity":"metric","value":"column:편성코드"} 알려줘
+      - 상품 [편성코드]{"entity":"metric","value":"column:편성코드"} 궁금해
+      - 이번달 상품 [거래형태]{"entity":"metric","value":"column:거래형태"} 알려줘
+      - 상품 [거래형태]{"entity":"metric","value":"column:거래형태"} 궁금해
+      - 이번달 상품 [판매가(대표상품)]{"entity":"metric","value":"column:판매가(대표상품)"} 알려줘
+      - 상품 [판매가(대표상품)]{"entity":"metric","value":"column:판매가(대표상품)"} 궁금해
+      - 이번달 상품 [아이템명]{"entity":"metric","value":"column:아이템명"} 알려줘
+      - 상품 [아이템명]{"entity":"metric","value":"column:아이템명"} 궁금해
+      - 이번달 상품 [MD명]{"entity":"metric","value":"column:MD명"} 알려줘
+      - 상품 [MD명]{"entity":"metric","value":"column:MD명"} 궁금해
+      - 이번달 상품 [MD분류]{"entity":"metric","value":"column:MD분류"} 알려줘
+      - 상품 [MD분류]{"entity":"metric","value":"column:MD분류"} 궁금해
+      - 이번달 상품 [조직명]{"entity":"metric","value":"column:조직명"} 알려줘
+      - 상품 [조직명]{"entity":"metric","value":"column:조직명"} 궁금해
+      - 이번달 상품 [대표상품ID]{"entity":"metric","value":"column:대표상품ID"} 알려줘
+      - 상품 [대표상품ID]{"entity":"metric","value":"column:대표상품ID"} 궁금해
+      - 이번달 상품 [대표상품명]{"entity":"metric","value":"column:대표상품명"} 알려줘
+      - 상품 [대표상품명]{"entity":"metric","value":"column:대표상품명"} 궁금해
+      - 이번달 상품 [대표업체명]{"entity":"metric","value":"column:대표업체명"} 알려줘
+      - 상품 [대표업체명]{"entity":"metric","value":"column:대표업체명"} 궁금해
+      - 이번달 상품 [기업구분]{"entity":"metric","value":"column:기업구분"} 알려줘
+      - 상품 [기업구분]{"entity":"metric","value":"column:기업구분"} 궁금해
+      - 이번달 상품 [영상구분]{"entity":"metric","value":"column:영상구분"} 알려줘
+      - 상품 [영상구분]{"entity":"metric","value":"column:영상구분"} 궁금해
+      - 이번달 상품 [영상ID]{"entity":"metric","value":"column:영상ID"} 알려줘
+      - 상품 [영상ID]{"entity":"metric","value":"column:영상ID"} 궁금해
+      - 이번달 상품 [영상명]{"entity":"metric","value":"column:영상명"} 알려줘
+      - 상품 [영상명]{"entity":"metric","value":"column:영상명"} 궁금해
+      - 이번달 상품 [소재ID]{"entity":"metric","value":"column:소재ID"} 알려줘
+      - 상품 [소재ID]{"entity":"metric","value":"column:소재ID"} 궁금해
+      - 이번달 상품 [PD명]{"entity":"metric","value":"column:PD명"} 알려줘
+      - 상품 [PD명]{"entity":"metric","value":"column:PD명"} 궁금해
+      - 이번달 상품 [쇼호스트1]{"entity":"metric","value":"column:쇼호스트1"} 알려줘
+      - 상품 [쇼호스트1]{"entity":"metric","value":"column:쇼호스트1"} 궁금해
+      - 이번달 상품 [쇼호스트2]{"entity":"metric","value":"column:쇼호스트2"} 알려줘
+      - 상품 [쇼호스트2]{"entity":"metric","value":"column:쇼호스트2"} 궁금해
+      - 이번달 상품 [(전체)목표매출액(V-)]{"entity":"metric","value":"column:(전체)목표매출액(V-)"} 알려줘
+      - 상품 [(전체)목표매출액(V-)]{"entity":"metric","value":"column:(전체)목표매출액(V-)"} 궁금해
+      - 이번달 상품 [(전체)목표매출총이익액]{"entity":"metric","value":"column:(전체)목표매출총이익액"} 알려줘
+      - 상품 [(전체)목표매출총이익액]{"entity":"metric","value":"column:(전체)목표매출총이익액"} 궁금해
+      - 이번달 상품 [(전체/방송중)목표취급액]{"entity":"metric","value":"column:(전체/방송중)목표취급액"} 알려줘
+      - 상품 [(전체/방송중)목표취급액]{"entity":"metric","value":"column:(전체/방송중)목표취급액"} 궁금해
+      - 이번달 상품 [(전체/방송중)목표매출액(V-)]{"entity":"metric","value":"column:(전체/방송중)목표매출액(V-)"} 알려줘
+      - 상품 [(전체/방송중)목표매출액(V-)]{"entity":"metric","value":"column:(전체/방송중)목표매출액(V-)"} 궁금해
+      - 이번달 상품 [(전체/방송중)목표매출총이익액]{"entity":"metric","value":"column:(전체/방송중)목표매출총이익액"} 알려줘
+      - 상품 [(전체/방송중)목표매출총이익액]{"entity":"metric","value":"column:(전체/방송중)목표매출총이익액"} 궁금해
+      - 이번달 상품 [(전체/방송중)한계이익율(%)]{"entity":"metric","value":"column:(전체/방송중)한계이익율(%)"} 알려줘
+      - 상품 [(전체/방송중)한계이익율(%)]{"entity":"metric","value":"column:(전체/방송중)한계이익율(%)"} 궁금해
+      - 이번달 상품 [(총주문)총주문액]{"entity":"metric","value":"column:(총주문)총주문액"} 알려줘
+      - 상품 [(총주문)총주문액]{"entity":"metric","value":"column:(총주문)총주문액"} 궁금해
+      - 이번달 상품 [(전체)예상취급액(V-)]{"entity":"metric","value":"column:(전체)예상취급액(V-)"} 알려줘
+      - 상품 [(전체)예상취급액(V-)]{"entity":"metric","value":"column:(전체)예상취급액(V-)"} 궁금해
+      - 이번달 상품 [(전체)예상매출총이익액(V-)배송료 제외]{"entity":"metric","value":"column:(전체)예상매출총이익액(V-)배송료 제외"} 알려줘
+      - 상품 [(전체)예상매출총이익액(V-)배송료 제외]{"entity":"metric","value":"column:(전체)예상매출총이익액(V-)배송료 제외"} 궁금해
+      - 이번달 상품 [(전체/방송중)총주문량]{"entity":"metric","value":"column:(전체/방송중)총주문량"} 알려줘
+      - 상품 [(전체/방송중)총주문량]{"entity":"metric","value":"column:(전체/방송중)총주문량"} 궁금해
+      - 이번달 상품 [(총주문)방송주문액]{"entity":"metric","value":"column:(총주문)방송주문액"} 알려줘
+      - 상품 [(총주문)방송주문액]{"entity":"metric","value":"column:(총주문)방송주문액"} 궁금해
+      - 이번달 상품 [(전체/방송중)예상매출액(V-)]{"entity":"metric","value":"column:(전체/방송중)예상매출액(V-)"} 알려줘
+      - 상품 [(전체/방송중)예상매출액(V-)]{"entity":"metric","value":"column:(전체/방송중)예상매출액(V-)"} 궁금해
+      - 이번달 상품 [(전체/방송중)예상취급액]{"entity":"metric","value":"column:(전체/방송중)예상취급액"} 알려줘
+      - 상품 [(전체/방송중)예상취급액]{"entity":"metric","value":"column:(전체/방송중)예상취급액"} 궁금해
+      - 이번달 상품 [(전체/방송중)예상취급액(V-)]{"entity":"metric","value":"column:(전체/방송중)예상취급액(V-)"} 알려줘
+      - 상품 [(전체/방송중)예상취급액(V-)]{"entity":"metric","value":"column:(전체/방송중)예상취급액(V-)"} 궁금해
+      - 이번달 상품 [(전체/방송중)매출총이익액(V-)]{"entity":"metric","value":"column:(전체/방송중)매출총이익액(V-)"} 알려줘
+      - 상품 [(전체/방송중)매출총이익액(V-)]{"entity":"metric","value":"column:(전체/방송중)매출총이익액(V-)"} 궁금해
+      - 이번달 상품 [(전체/방송중)한계이익]{"entity":"metric","value":"column:(전체/방송중)한계이익"} 알려줘
+      - 상품 [(전체/방송중)한계이익]{"entity":"metric","value":"column:(전체/방송중)한계이익"} 궁금해
+      - 이번달 상품 [(전체/미리주문)총주문량]{"entity":"metric","value":"column:(전체/미리주문)총주문량"} 알려줘
+      - 상품 [(전체/미리주문)총주문량]{"entity":"metric","value":"column:(전체/미리주문)총주문량"} 궁금해
+      - 이번달 상품 [(총주문)미리주문액]{"entity":"metric","value":"column:(총주문)미리주문액"} 알려줘
+      - 상품 [(총주문)미리주문액]{"entity":"metric","value":"column:(총주문)미리주문액"} 궁금해
+      - 이번달 상품 [(전체/미리주문)예상매출액(V-)]{"entity":"metric","value":"column:(전체/미리주문)예상매출액(V-)"} 알려줘
+      - 상품 [(전체/미리주문)예상매출액(V-)]{"entity":"metric","value":"column:(전체/미리주문)예상매출액(V-)"} 궁금해
+      - 이번달 상품 [(전체/미리주문)예상취급액]{"entity":"metric","value":"column:(전체/미리주문)예상취급액"} 알려줘
+      - 상품 [(전체/미리주문)예상취급액]{"entity":"metric","value":"column:(전체/미리주문)예상취급액"} 궁금해
+      - 이번달 상품 [(전체/미리주문)예상취급액(V-)]{"entity":"metric","value":"column:(전체/미리주문)예상취급액(V-)"} 알려줘
+      - 상품 [(전체/미리주문)예상취급액(V-)]{"entity":"metric","value":"column:(전체/미리주문)예상취급액(V-)"} 궁금해
+      - 이번달 상품 [(전체/미리주문)매출총이익액(V-)]{"entity":"metric","value":"column:(전체/미리주문)매출총이익액(V-)"} 알려줘
+      - 상품 [(전체/미리주문)매출총이익액(V-)]{"entity":"metric","value":"column:(전체/미리주문)매출총이익액(V-)"} 궁금해
+      - 이번달 상품 [(연동/방송중)총주문량]{"entity":"metric","value":"column:(연동/방송중)총주문량"} 알려줘
+      - 상품 [(연동/방송중)총주문량]{"entity":"metric","value":"column:(연동/방송중)총주문량"} 궁금해
+      - 이번달 상품 [(연동/방송중)총주문량_1]{"entity":"metric","value":"column:(연동/방송중)총주문량_1"} 알려줘
+      - 상품 [(연동/방송중)총주문량_1]{"entity":"metric","value":"column:(연동/방송중)총주문량_1"} 궁금해
+      - 이번달 상품 [(연동/방송중)예상취급액]{"entity":"metric","value":"column:(연동/방송중)예상취급액"} 알려줘
+      - 상품 [(연동/방송중)예상취급액]{"entity":"metric","value":"column:(연동/방송중)예상취급액"} 궁금해
+      - 이번달 상품 [(연동/방송중)예상취급액(V-)]{"entity":"metric","value":"column:(연동/방송중)예상취급액(V-)"} 알려줘
+      - 상품 [(연동/방송중)예상취급액(V-)]{"entity":"metric","value":"column:(연동/방송중)예상취급액(V-)"} 궁금해
+      - 이번달 상품 [(연동/방송중)매출총이익액(V-)]{"entity":"metric","value":"column:(연동/방송중)매출총이익액(V-)"} 알려줘
+      - 상품 [(연동/방송중)매출총이익액(V-)]{"entity":"metric","value":"column:(연동/방송중)매출총이익액(V-)"} 궁금해
+      - 이번달 상품 [(연동/방송중)예상매출총이익액(V-)배송료 제외]{"entity":"metric","value":"column:(연동/방송중)예상매출총이익액(V-)배송료 제외"} 알려줘
+      - 상품 [(연동/방송중)예상매출총이익액(V-)배송료 제외]{"entity":"metric","value":"column:(연동/방송중)예상매출총이익액(V-)배송료 제외"} 궁금해
+      - 이번달 상품 [(연동/미리주문)총주문량]{"entity":"metric","value":"column:(연동/미리주문)총주문량"} 알려줘
+      - 상품 [(연동/미리주문)총주문량]{"entity":"metric","value":"column:(연동/미리주문)총주문량"} 궁금해
+      - 이번달 상품 [(연동/미리주문)예상매출액(V-)]{"entity":"metric","value":"column:(연동/미리주문)예상매출액(V-)"} 알려줘
+      - 상품 [(연동/미리주문)예상매출액(V-)]{"entity":"metric","value":"column:(연동/미리주문)예상매출액(V-)"} 궁금해
+      - 이번달 상품 [(연동/미리주문)예상취급액]{"entity":"metric","value":"column:(연동/미리주문)예상취급액"} 알려줘
+      - 상품 [(연동/미리주문)예상취급액]{"entity":"metric","value":"column:(연동/미리주문)예상취급액"} 궁금해
+      - 이번달 상품 [(연동/미리주문)예상취급액(V-)]{"entity":"metric","value":"column:(연동/미리주문)예상취급액(V-)"} 알려줘
+      - 상품 [(연동/미리주문)예상취급액(V-)]{"entity":"metric","value":"column:(연동/미리주문)예상취급액(V-)"} 궁금해
+      - 이번달 상품 [(연동/미리주문)매출총이익액(V-)]{"entity":"metric","value":"column:(연동/미리주문)매출총이익액(V-)"} 알려줘
+      - 상품 [(연동/미리주문)매출총이익액(V-)]{"entity":"metric","value":"column:(연동/미리주문)매출총이익액(V-)"} 궁금해
+      - 이번달 상품 [(연동)총주문량]{"entity":"metric","value":"column:(연동)총주문량"} 알려줘
+      - 상품 [(연동)총주문량]{"entity":"metric","value":"column:(연동)총주문량"} 궁금해
+      - 이번달 상품 [(연동)예상매출액(V-)]{"entity":"metric","value":"column:(연동)예상매출액(V-)"} 알려줘
+      - 상품 [(연동)예상매출액(V-)]{"entity":"metric","value":"column:(연동)예상매출액(V-)"} 궁금해
+      - 이번달 상품 [(연동)예상취급액]{"entity":"metric","value":"column:(연동)예상취급액"} 알려줘
+      - 상품 [(연동)예상취급액]{"entity":"metric","value":"column:(연동)예상취급액"} 궁금해
+      - 이번달 상품 [(연동)예상취급액(V-)]{"entity":"metric","value":"column:(연동)예상취급액(V-)"} 알려줘
+      - 상품 [(연동)예상취급액(V-)]{"entity":"metric","value":"column:(연동)예상취급액(V-)"} 궁금해
+      - 이번달 상품 [(연동)매출총이익액(V-)]{"entity":"metric","value":"column:(연동)매출총이익액(V-)"} 알려줘
+      - 상품 [(연동)매출총이익액(V-)]{"entity":"metric","value":"column:(연동)매출총이익액(V-)"} 궁금해
+      - 이번달 상품 [(연동)예상매출총이익액(V-)배송료 제외]{"entity":"metric","value":"column:(연동)예상매출총이익액(V-)배송료 제외"} 알려줘
+      - 상품 [(연동)예상매출총이익액(V-)배송료 제외]{"entity":"metric","value":"column:(연동)예상매출총이익액(V-)배송료 제외"} 궁금해
+      - 이번달 상품 [(비연동)총주문량]{"entity":"metric","value":"column:(비연동)총주문량"} 알려줘
+      - 상품 [(비연동)총주문량]{"entity":"metric","value":"column:(비연동)총주문량"} 궁금해
+      - 이번달 상품 [(비연동)예상매출액(V-)]{"entity":"metric","value":"column:(비연동)예상매출액(V-)"} 알려줘
+      - 상품 [(비연동)예상매출액(V-)]{"entity":"metric","value":"column:(비연동)예상매출액(V-)"} 궁금해
+      - 이번달 상품 [(비연동)예상취급액]{"entity":"metric","value":"column:(비연동)예상취급액"} 알려줘
+      - 상품 [(비연동)예상취급액]{"entity":"metric","value":"column:(비연동)예상취급액"} 궁금해
+      - 이번달 상품 [(비연동)예상취급액(V-)]{"entity":"metric","value":"column:(비연동)예상취급액(V-)"} 알려줘
+      - 상품 [(비연동)예상취급액(V-)]{"entity":"metric","value":"column:(비연동)예상취급액(V-)"} 궁금해
+      - 이번달 상품 [(비연동/방송중)매출총이익액(V-)]{"entity":"metric","value":"column:(비연동/방송중)매출총이익액(V-)"} 알려줘
+      - 상품 [(비연동/방송중)매출총이익액(V-)]{"entity":"metric","value":"column:(비연동/방송중)매출총이익액(V-)"} 궁금해
+      - 이번달 상품 [(비연동/미리주문)총주문량]{"entity":"metric","value":"column:(비연동/미리주문)총주문량"} 알려줘
+      - 상품 [(비연동/미리주문)총주문량]{"entity":"metric","value":"column:(비연동/미리주문)총주문량"} 궁금해
+      - 이번달 상품 [(비연동/미리주문)예상매출액(V-)]{"entity":"metric","value":"column:(비연동/미리주문)예상매출액(V-)"} 알려줘
+      - 상품 [(비연동/미리주문)예상매출액(V-)]{"entity":"metric","value":"column:(비연동/미리주문)예상매출액(V-)"} 궁금해
+      - 이번달 상품 [(비연동/미리주문)예상취급액]{"entity":"metric","value":"column:(비연동/미리주문)예상취급액"} 알려줘
+      - 상품 [(비연동/미리주문)예상취급액]{"entity":"metric","value":"column:(비연동/미리주문)예상취급액"} 궁금해
+      - 이번달 상품 [(비연동/미리주문)예상취급액(V-)]{"entity":"metric","value":"column:(비연동/미리주문)예상취급액(V-)"} 알려줘
+      - 상품 [(비연동/미리주문)예상취급액(V-)]{"entity":"metric","value":"column:(비연동/미리주문)예상취급액(V-)"} 궁금해
+      - 이번달 상품 [(비연동/미리주문)매출총이익액(V-)]{"entity":"metric","value":"column:(비연동/미리주문)매출총이익액(V-)"} 알려줘
+      - 상품 [(비연동/미리주문)매출총이익액(V-)]{"entity":"metric","value":"column:(비연동/미리주문)매출총이익액(V-)"} 궁금해
+      - 이번달 상품 [(비연동/미리주문)매출총이익액(V-)_2]{"entity":"metric","value":"column:(비연동/미리주문)매출총이익액(V-)_2"} 알려줘
+      - 상품 [(비연동/미리주문)매출총이익액(V-)_2]{"entity":"metric","value":"column:(비연동/미리주문)매출총이익액(V-)_2"} 궁금해
+      - 이번달 상품 [(전체)무이자수수료]{"entity":"metric","value":"column:(전체)무이자수수료"} 알려줘
+      - 상품 [(전체)무이자수수료]{"entity":"metric","value":"column:(전체)무이자수수료"} 궁금해
+      - 이번달 상품 [(전체)청구할인]{"entity":"metric","value":"column:(전체)청구할인"} 알려줘
+      - 상품 [(전체)청구할인]{"entity":"metric","value":"column:(전체)청구할인"} 궁금해
+      - 이번달 상품 [(전체)배송보관비]{"entity":"metric","value":"column:(전체)배송보관비"} 알려줘
+      - 상품 [(전체)배송보관비]{"entity":"metric","value":"column:(전체)배송보관비"} 궁금해
+      - 이번달 상품 [(전체)양품화비]{"entity":"metric","value":"column:(전체)양품화비"} 알려줘
+      - 상품 [(전체)양품화비]{"entity":"metric","value":"column:(전체)양품화비"} 궁금해
+      - 이번달 상품 [(전체)주문상담비]{"entity":"metric","value":"column:(전체)주문상담비"} 알려줘
+      - 상품 [(전체)주문상담비]{"entity":"metric","value":"column:(전체)주문상담비"} 궁금해
+      - 이번달 상품 [(전체)적립금]{"entity":"metric","value":"column:(전체)적립금"} 알려줘
+      - 상품 [(전체)적립금]{"entity":"metric","value":"column:(전체)적립금"} 궁금해
+      - 이번달 상품 [(전체)사은품]{"entity":"metric","value":"column:(전체)사은품"} 알려줘
+      - 상품 [(전체)사은품]{"entity":"metric","value":"column:(전체)사은품"} 궁금해
+      - 이번달 상품 [(전체)제휴포인트]{"entity":"metric","value":"column:(전체)제휴포인트"} 알려줘
+      - 상품 [(전체)제휴포인트]{"entity":"metric","value":"column:(전체)제휴포인트"} 궁금해
+      - 이번달 상품 [(전체/방송중)PG수수료]{"entity":"metric","value":"column:(전체/방송중)PG수수료"} 알려줘
+      - 상품 [(전체/방송중)PG수수료]{"entity":"metric","value":"column:(전체/방송중)PG수수료"} 궁금해
+      - 이번달 상품 [(전체/방송중)무이자수수료]{"entity":"metric","value":"column:(전체/방송중)무이자수수료"} 알려줘
+      - 상품 [(전체/방송중)무이자수수료]{"entity":"metric","value":"column:(전체/방송중)무이자수수료"} 궁금해
+      - 이번달 상품 [(전체/방송중)청구할인]{"entity":"metric","value":"column:(전체/방송중)청구할인"} 알려줘
+      - 상품 [(전체/방송중)청구할인]{"entity":"metric","value":"column:(전체/방송중)청구할인"} 궁금해
+      - 이번달 상품 [(전체/방송중)제휴수수료]{"entity":"metric","value":"column:(전체/방송중)제휴수수료"} 알려줘
+      - 상품 [(전체/방송중)제휴수수료]{"entity":"metric","value":"column:(전체/방송중)제휴수수료"} 궁금해
+      - 이번달 상품 [(전체/방송중)배송보관비]{"entity":"metric","value":"column:(전체/방송중)배송보관비"} 알려줘
+      - 상품 [(전체/방송중)배송보관비]{"entity":"metric","value":"column:(전체/방송중)배송보관비"} 궁금해
+      - 이번달 상품 [(전체/방송중)양품화비]{"entity":"metric","value":"column:(전체/방송중)양품화비"} 알려줘
+      - 상품 [(전체/방송중)양품화비]{"entity":"metric","value":"column:(전체/방송중)양품화비"} 궁금해
+      - 이번달 상품 [(전체/방송중)주문상담비]{"entity":"metric","value":"column:(전체/방송중)주문상담비"} 알려줘
+      - 상품 [(전체/방송중)주문상담비]{"entity":"metric","value":"column:(전체/방송중)주문상담비"} 궁금해
+      - 이번달 상품 [(전체/방송중)적립금]{"entity":"metric","value":"column:(전체/방송중)적립금"} 알려줘
+      - 상품 [(전체/방송중)적립금]{"entity":"metric","value":"column:(전체/방송중)적립금"} 궁금해
+      - 이번달 상품 [(전체/방송중)사은품]{"entity":"metric","value":"column:(전체/방송중)사은품"} 알려줘
+      - 상품 [(전체/방송중)사은품]{"entity":"metric","value":"column:(전체/방송중)사은품"} 궁금해
+      - 이번달 상품 [심야구분]{"entity":"metric","value":"column:심야구분"} 알려줘
+      - 상품 [심야구분]{"entity":"metric","value":"column:심야구분"} 궁금해
+      - 이번달 상품 [방송일체크]{"entity":"metric","value":"column:방송일체크"} 알려줘
+      - 상품 [방송일체크]{"entity":"metric","value":"column:방송일체크"} 궁금해
+      - 이번달 상품 [분]{"entity":"metric","value":"column:분"} 알려줘
+      - 상품 [분]{"entity":"metric","value":"column:분"} 궁금해
+      - 이번달 상품 [WEEKDAY(DAX)]{"entity":"metric","value":"column:WEEKDAY(DAX)"} 알려줘
+      - 상품 [WEEKDAY(DAX)]{"entity":"metric","value":"column:WEEKDAY(DAX)"} 궁금해
+      - 이번달 상품 [요일(DAX)]{"entity":"metric","value":"column:요일(DAX)"} 알려줘
+      - 상품 [요일(DAX)]{"entity":"metric","value":"column:요일(DAX)"} 궁금해
+      - 이번달 상품 [상한가]{"entity":"metric","value":"column:상한가"} 알려줘
+      - 상품 [상한가]{"entity":"metric","value":"column:상한가"} 궁금해
+      - 이번달 상품 [메모코드]{"entity":"metric","value":"column:메모코드"} 알려줘
+      - 상품 [메모코드]{"entity":"metric","value":"column:메모코드"} 궁금해
+      - 이번달 상품 [(연동/방송중)정액外 취급액]{"entity":"metric","value":"column:(연동/방송중)정액外 취급액"} 알려줘
+      - 상품 [(연동/방송중)정액外 취급액]{"entity":"metric","value":"column:(연동/방송중)정액外 취급액"} 궁금해
+      - 이번달 상품 [YEAR(DAX)]{"entity":"metric","value":"column:YEAR(DAX)"} 알려줘
+      - 상품 [YEAR(DAX)]{"entity":"metric","value":"column:YEAR(DAX)"} 궁금해
+      - 이번달 상품 [MONTH(DAX)]{"entity":"metric","value":"column:MONTH(DAX)"} 알려줘
+      - 상품 [MONTH(DAX)]{"entity":"metric","value":"column:MONTH(DAX)"} 궁금해
+      - 이번달 상품 [HOUR(DAX)]{"entity":"metric","value":"column:HOUR(DAX)"} 알려줘
+      - 상품 [HOUR(DAX)]{"entity":"metric","value":"column:HOUR(DAX)"} 궁금해
+      - 이번달 상품 [방송일]{"entity":"metric","value":"column:방송일"} 알려줘
+      - 상품 [방송일]{"entity":"metric","value":"column:방송일"} 궁금해
+      - 이번달 상품 [브랜드]{"entity":"metric","value":"column:브랜드"} 알려줘
+      - 상품 [브랜드]{"entity":"metric","value":"column:브랜드"} 궁금해
+      - 이번달 상품 [시즌]{"entity":"metric","value":"column:시즌"} 알려줘
+      - 상품 [시즌]{"entity":"metric","value":"column:시즌"} 궁금해
+      - 이번달 상품 [아이템]{"entity":"metric","value":"column:아이템"} 알려줘
+      - 상품 [아이템]{"entity":"metric","value":"column:아이템"} 궁금해
+      - 이번달 상품 [주차명]{"entity":"metric","value":"column:주차명"} 알려줘
+      - 상품 [주차명]{"entity":"metric","value":"column:주차명"} 궁금해
+      - 이번달 상품 [이미지]{"entity":"metric","value":"column:이미지"} 알려줘
+      - 상품 [이미지]{"entity":"metric","value":"column:이미지"} 궁금해
+      - 이번달 상품 [성공구분]{"entity":"metric","value":"column:성공구분"} 알려줘
+      - 상품 [성공구분]{"entity":"metric","value":"column:성공구분"} 궁금해
+      - 이번달 상품 [유/무형]{"entity":"metric","value":"column:유/무형"} 알려줘
+      - 상품 [유/무형]{"entity":"metric","value":"column:유/무형"} 궁금해
+      - 이번달 상품 [월일]{"entity":"metric","value":"column:월일"} 알려줘
+      - 상품 [월일]{"entity":"metric","value":"column:월일"} 궁금해
+      - 이번달 상품 [신상품구분]{"entity":"metric","value":"column:신상품구분"} 알려줘
+      - 상품 [신상품구분]{"entity":"metric","value":"column:신상품구분"} 궁금해
+      - 이번달 상품 [표준조직]{"entity":"metric","value":"column:표준조직"} 알려줘
+      - 상품 [표준조직]{"entity":"metric","value":"column:표준조직"} 궁금해
+      - 이번달 상품 [편성 Comment]{"entity":"metric","value":"column:편성 Comment"} 알려줘
+      - 상품 [편성 Comment]{"entity":"metric","value":"column:편성 Comment"} 궁금해
+  - intent: get_commission_rate
+    examples: |
+      - 이번달 상품 [(전체/방송중)제휴포인트]{"entity":"metric","value":"commission_rate"} 알려줘
+      - 상품 [(전체/방송중)제휴포인트]{"entity":"metric","value":"commission_rate"} 궁금해
+      - 이번달 상품 [상품수수료율]{"entity":"metric","value":"commission_rate"} 알려줘
+      - 상품 [상품수수료율]{"entity":"metric","value":"commission_rate"} 궁금해
+      - 이번달 상품 [수수료율]{"entity":"metric","value":"commission_rate"} 알려줘
+      - 상품 [수수료율]{"entity":"metric","value":"commission_rate"} 궁금해
+      - 이번달 상품 [수수료]{"entity":"metric","value":"commission_rate"} 알려줘
+      - 상품 [수수료]{"entity":"metric","value":"commission_rate"} 궁금해
+      - 이번달 상품 [마진]{"entity":"metric","value":"commission_rate"} 알려줘
+      - 상품 [마진]{"entity":"metric","value":"commission_rate"} 궁금해
+  - intent: get_metric_729ba317bae0
+    examples: |
+      - 이번달 상품 [(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]{"entity":"metric","value":"measure:(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값"} 알려줘
+      - 상품 [(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]{"entity":"metric","value":"measure:(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값"} 궁금해
+  - intent: get_metric_c9a8ef28d3eb
+    examples: |
+      - 이번달 상품 [(전체/미리주문)한익률(%)]{"entity":"metric","value":"measure:(전체/미리주문)한익률(%)"} 알려줘
+      - 상품 [(전체/미리주문)한익률(%)]{"entity":"metric","value":"measure:(전체/미리주문)한익률(%)"} 궁금해
+      - 이번달 상품 [미리주문한익률]{"entity":"metric","value":"measure:(전체/미리주문)한익률(%)"} 알려줘
+      - 상품 [미리주문한익률]{"entity":"metric","value":"measure:(전체/미리주문)한익률(%)"} 궁금해
+      - 이번달 상품 [미리주문한계이익률]{"entity":"metric","value":"measure:(전체/미리주문)한익률(%)"} 알려줘
+      - 상품 [미리주문한계이익률]{"entity":"metric","value":"measure:(전체/미리주문)한익률(%)"} 궁금해
+  - intent: get_metric_7b08ac2ed83f
+    examples: |
+      - 이번달 상품 [(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]{"entity":"metric","value":"measure:(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값"} 알려줘
+      - 상품 [(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]{"entity":"metric","value":"measure:(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값"} 궁금해
+  - intent: get_metric_d9794ab6d1d1
+    examples: |
+      - 이번달 상품 [(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]{"entity":"metric","value":"measure:(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값"} 알려줘
+      - 상품 [(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]{"entity":"metric","value":"measure:(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값"} 궁금해
+  - intent: get_metric_038c3d0b39b6
+    examples: |
+      - 이번달 상품 [(연동/방송중)예상취급(%)]{"entity":"metric","value":"measure:(연동/방송중)예상취급(%)"} 알려줘
+      - 상품 [(연동/방송중)예상취급(%)]{"entity":"metric","value":"measure:(연동/방송중)예상취급(%)"} 궁금해
+      - 이번달 상품 [연동방송중취급비율]{"entity":"metric","value":"measure:(연동/방송중)예상취급(%)"} 알려줘
+      - 상품 [연동방송중취급비율]{"entity":"metric","value":"measure:(연동/방송중)예상취급(%)"} 궁금해
+  - intent: get_metric_27fba626f54b
+    examples: |
+      - 이번달 상품 [(전체/방송중)한계달성률(%)]{"entity":"metric","value":"measure:(전체/방송중)한계달성률(%)"} 알려줘
+      - 상품 [(전체/방송중)한계달성률(%)]{"entity":"metric","value":"measure:(전체/방송중)한계달성률(%)"} 궁금해
+      - 이번달 상품 [방송중한계달성률]{"entity":"metric","value":"measure:(전체/방송중)한계달성률(%)"} 알려줘
+      - 상품 [방송중한계달성률]{"entity":"metric","value":"measure:(전체/방송중)한계달성률(%)"} 궁금해
+  - intent: get_metric_b9a676639a10
+    examples: |
+      - 이번달 상품 [(전체)매출달성률(%)]{"entity":"metric","value":"measure:(전체)매출달성률(%)"} 알려줘
+      - 상품 [(전체)매출달성률(%)]{"entity":"metric","value":"measure:(전체)매출달성률(%)"} 궁금해
+      - 이번달 상품 [매출달성률]{"entity":"metric","value":"measure:(전체)매출달성률(%)"} 알려줘
+      - 상품 [매출달성률]{"entity":"metric","value":"measure:(전체)매출달성률(%)"} 궁금해
+  - intent: get_metric_a0e3dbe124a5
+    examples: |
+      - 이번달 상품 [(전체)매총달성률(%)]{"entity":"metric","value":"measure:(전체)매총달성률(%)"} 알려줘
+      - 상품 [(전체)매총달성률(%)]{"entity":"metric","value":"measure:(전체)매총달성률(%)"} 궁금해
+      - 이번달 상품 [매총달성률]{"entity":"metric","value":"measure:(전체)매총달성률(%)"} 알려줘
+      - 상품 [매총달성률]{"entity":"metric","value":"measure:(전체)매총달성률(%)"} 궁금해
+      - 이번달 상품 [매출총이익달성률]{"entity":"metric","value":"measure:(전체)매총달성률(%)"} 알려줘
+      - 상품 [매출총이익달성률]{"entity":"metric","value":"measure:(전체)매총달성률(%)"} 궁금해
+  - intent: get_metric_3f12be54336a
+    examples: |
+      - 이번달 상품 [(전체/미리주문)취급/목표(%)]{"entity":"metric","value":"measure:(전체/미리주문)취급/목표(%)"} 알려줘
+      - 상품 [(전체/미리주문)취급/목표(%)]{"entity":"metric","value":"measure:(전체/미리주문)취급/목표(%)"} 궁금해
+      - 이번달 상품 [미리주문취급달성률]{"entity":"metric","value":"measure:(전체/미리주문)취급/목표(%)"} 알려줘
+      - 상품 [미리주문취급달성률]{"entity":"metric","value":"measure:(전체/미리주문)취급/목표(%)"} 궁금해
+  - intent: get_metric_1f0c36316413
+    examples: |
+      - 이번달 상품 [(전체)취급(분)]{"entity":"metric","value":"measure:(전체)취급(분)"} 알려줘
+      - 상품 [(전체)취급(분)]{"entity":"metric","value":"measure:(전체)취급(분)"} 궁금해
+      - 이번달 상품 [분당취급액]{"entity":"metric","value":"measure:(전체)취급(분)"} 알려줘
+      - 상품 [분당취급액]{"entity":"metric","value":"measure:(전체)취급(분)"} 궁금해
+      - 이번달 상품 [분당취급]{"entity":"metric","value":"measure:(전체)취급(분)"} 알려줘
+      - 상품 [분당취급]{"entity":"metric","value":"measure:(전체)취급(분)"} 궁금해
+  - intent: get_metric_14bd233024fc
+    examples: |
+      - 이번달 상품 [(전체)예상매출액(V-)(분)]{"entity":"metric","value":"measure:(전체)예상매출액(V-)(분)"} 알려줘
+      - 상품 [(전체)예상매출액(V-)(분)]{"entity":"metric","value":"measure:(전체)예상매출액(V-)(분)"} 궁금해
+      - 이번달 상품 [분당매출액]{"entity":"metric","value":"measure:(전체)예상매출액(V-)(분)"} 알려줘
+      - 상품 [분당매출액]{"entity":"metric","value":"measure:(전체)예상매출액(V-)(분)"} 궁금해
+      - 이번달 상품 [분당예상매출액]{"entity":"metric","value":"measure:(전체)예상매출액(V-)(분)"} 알려줘
+      - 상품 [분당예상매출액]{"entity":"metric","value":"measure:(전체)예상매출액(V-)(분)"} 궁금해
+  - intent: get_metric_795edea05f1c
+    examples: |
+      - 이번달 상품 [(연동/방송중)정액外취급(분)]{"entity":"metric","value":"measure:(연동/방송중)정액外취급(분)"} 알려줘
+      - 상품 [(연동/방송중)정액外취급(분)]{"entity":"metric","value":"measure:(연동/방송중)정액外취급(분)"} 궁금해
+      - 이번달 상품 [연동방송중정액외분당취급액]{"entity":"metric","value":"measure:(연동/방송중)정액外취급(분)"} 알려줘
+      - 상품 [연동방송중정액외분당취급액]{"entity":"metric","value":"measure:(연동/방송중)정액外취급(분)"} 궁금해
+  - intent: get_metric_9a8ec2543e7c
+    examples: |
+      - 이번달 상품 [(전체)예상매출총이익액(V-)(분)]{"entity":"metric","value":"measure:(전체)예상매출총이익액(V-)(분)"} 알려줘
+      - 상품 [(전체)예상매출총이익액(V-)(분)]{"entity":"metric","value":"measure:(전체)예상매출총이익액(V-)(분)"} 궁금해
+      - 이번달 상품 [분당매출총이익]{"entity":"metric","value":"measure:(전체)예상매출총이익액(V-)(분)"} 알려줘
+      - 상품 [분당매출총이익]{"entity":"metric","value":"measure:(전체)예상매출총이익액(V-)(분)"} 궁금해
+      - 이번달 상품 [분당매총]{"entity":"metric","value":"measure:(전체)예상매출총이익액(V-)(분)"} 알려줘
+      - 상품 [분당매총]{"entity":"metric","value":"measure:(전체)예상매출총이익액(V-)(분)"} 궁금해
+  - intent: get_metric_bcd4a3ec9248
+    examples: |
+      - 이번달 상품 [(연동/방송중)매출총이익액(V-)(분)]{"entity":"metric","value":"measure:(연동/방송중)매출총이익액(V-)(분)"} 알려줘
+      - 상품 [(연동/방송중)매출총이익액(V-)(분)]{"entity":"metric","value":"measure:(연동/방송중)매출총이익액(V-)(분)"} 궁금해
+      - 이번달 상품 [연동방송중분당매출총이익]{"entity":"metric","value":"measure:(연동/방송중)매출총이익액(V-)(분)"} 알려줘
+      - 상품 [연동방송중분당매출총이익]{"entity":"metric","value":"measure:(연동/방송중)매출총이익액(V-)(분)"} 궁금해
+  - intent: get_metric_cee30f4b2b2f
+    examples: |
+      - 이번달 상품 [(전체/방송중)한계(분)]{"entity":"metric","value":"measure:(전체/방송중)한계(분)"} 알려줘
+      - 상품 [(전체/방송중)한계(분)]{"entity":"metric","value":"measure:(전체/방송중)한계(분)"} 궁금해
+      - 이번달 상품 [방송중분당한계이익]{"entity":"metric","value":"measure:(전체/방송중)한계(분)"} 알려줘
+      - 상품 [방송중분당한계이익]{"entity":"metric","value":"measure:(전체/방송중)한계(분)"} 궁금해
+      - 이번달 상품 [방송중분당한익]{"entity":"metric","value":"measure:(전체/방송중)한계(분)"} 알려줘
+      - 상품 [방송중분당한익]{"entity":"metric","value":"measure:(전체/방송중)한계(분)"} 궁금해
+  - intent: get_metric_6bb1c48a0214
+    examples: |
+      - 이번달 상품 [(연동/방송중)취급액(분)]{"entity":"metric","value":"measure:(연동/방송중)취급액(분)"} 알려줘
+      - 상품 [(연동/방송중)취급액(분)]{"entity":"metric","value":"measure:(연동/방송중)취급액(분)"} 궁금해
+      - 이번달 상품 [연동방송중분당취급액]{"entity":"metric","value":"measure:(연동/방송중)취급액(분)"} 알려줘
+      - 상품 [연동방송중분당취급액]{"entity":"metric","value":"measure:(연동/방송중)취급액(분)"} 궁금해
+  - intent: get_metric_cd7b7587697b
+    examples: |
+      - 이번달 상품 [(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값]{"entity":"metric","value":"measure:(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값"} 알려줘
+      - 상품 [(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값]{"entity":"metric","value":"measure:(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값"} 궁금해
+      - 이번달 상품 [노출분당정액외취급액]{"entity":"metric","value":"measure:(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값"} 알려줘
+      - 상품 [노출분당정액외취급액]{"entity":"metric","value":"measure:(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값"} 궁금해
+  - intent: get_metric_8ae1f1b691d0
+    examples: |
+      - 이번달 상품 [(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값]{"entity":"metric","value":"measure:(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값"} 알려줘
+      - 상품 [(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값]{"entity":"metric","value":"measure:(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값"} 궁금해
+      - 이번달 상품 [방송중정액제외취급액]{"entity":"metric","value":"measure:(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값"} 알려줘
+      - 상품 [방송중정액제외취급액]{"entity":"metric","value":"measure:(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값"} 궁금해
+  - intent: get_metric_5fb74c351bfe
+    examples: |
+      - 이번달 상품 [(전체/방송중)변동비(V-)]{"entity":"metric","value":"measure:(전체/방송중)변동비(V-)"} 알려줘
+      - 상품 [(전체/방송중)변동비(V-)]{"entity":"metric","value":"measure:(전체/방송중)변동비(V-)"} 궁금해
+      - 이번달 상품 [방송중변동비]{"entity":"metric","value":"measure:(전체/방송중)변동비(V-)"} 알려줘
+      - 상품 [방송중변동비]{"entity":"metric","value":"measure:(전체/방송중)변동비(V-)"} 궁금해
+  - intent: get_metric_b8594670e300
+    examples: |
+      - 이번달 상품 [(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값]{"entity":"metric","value":"measure:(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값"} 알려줘
+      - 상품 [(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값]{"entity":"metric","value":"measure:(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값"} 궁금해
+      - 이번달 상품 [방송중정액제외한계이익]{"entity":"metric","value":"measure:(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값"} 알려줘
+      - 상품 [방송중정액제외한계이익]{"entity":"metric","value":"measure:(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값"} 궁금해
+  - intent: get_metric_fbe91fd24167
+    examples: |
+      - 이번달 상품 [가중분편성비중]{"entity":"metric","value":"organization_weighted_share"} 알려줘
+      - 상품 [가중분편성비중]{"entity":"metric","value":"organization_weighted_share"} 궁금해
+      - 이번달 상품 [가중분비중]{"entity":"metric","value":"organization_weighted_share"} 알려줘
+      - 상품 [가중분비중]{"entity":"metric","value":"organization_weighted_share"} 궁금해
+      - 이번달 상품 [가중편성비중]{"entity":"metric","value":"organization_weighted_share"} 알려줘
+      - 상품 [가중편성비중]{"entity":"metric","value":"organization_weighted_share"} 궁금해
+  - intent: get_metric_8a927d94673e
+    examples: |
+      - 이번달 상품 [방송횟수편성비중]{"entity":"metric","value":"organization_broadcast_share"} 알려줘
+      - 상품 [방송횟수편성비중]{"entity":"metric","value":"organization_broadcast_share"} 궁금해
+      - 이번달 상품 [방송횟수비중]{"entity":"metric","value":"organization_broadcast_share"} 알려줘
+      - 상품 [방송횟수비중]{"entity":"metric","value":"organization_broadcast_share"} 궁금해
+      - 이번달 상품 [방송건수비중]{"entity":"metric","value":"organization_broadcast_share"} 알려줘
+      - 상품 [방송건수비중]{"entity":"metric","value":"organization_broadcast_share"} 궁금해
+      - 이번달 상품 [횟수기준편성비중]{"entity":"metric","value":"organization_broadcast_share"} 알려줘
+      - 상품 [횟수기준편성비중]{"entity":"metric","value":"organization_broadcast_share"} 궁금해

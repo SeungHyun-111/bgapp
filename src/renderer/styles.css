@@ -151,6 +151,53 @@ h1 {
   font-weight: 800;
 }
 
+.rtdb-info {
+  display: grid;
+  gap: 8px;
+  padding: 11px 12px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.52);
+  color: #cbd5e1;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.rtdb-info p {
+  color: #7dd3fc;
+  font-weight: 900;
+}
+
+.rtdb-info ul {
+  display: grid;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.rtdb-info li {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rtdb-info strong {
+  color: #f8fafc;
+  font-size: 12px;
+}
+
+.rtdb-info code {
+  color: #bae6fd;
+  font-family: "Segoe UI", "Malgun Gothic", Arial, sans-serif;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+
+.rtdb-info span {
+  overflow-wrap: anywhere;
+}
+
 .time-block {
   width: 100%;
   min-width: 0;

@@ -1,0 +1,10 @@
+DEFINE VAR __DS0FilterTable = 
+	TREATAS({"[알렌오](26FW)체크셔켓"}, 'BO'[편성코드])
+
+EVALUATE
+	SUMMARIZECOLUMNS(
+		__DS0FilterTable,
+		"v_전체_한계이익에서__전체_방송중_한계이익을_를__뺀_값", IGNORE(
+			'BO'[(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]
+		)
+	)

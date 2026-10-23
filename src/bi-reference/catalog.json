@@ -1,0 +1,3031 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "file": "PowerBIPerformanceData (1).json",
+      "archiveFile": "docs/power-bi/captures/PowerBIPerformanceData (1).json",
+      "sha256": "c39dabb2bb47aeccad578fcd220185ddda93e6b691130b155b83ae0e3dcde112",
+      "queryCount": 5
+    },
+    {
+      "file": "PowerBIPerformanceData (2).json",
+      "archiveFile": "docs/power-bi/captures/PowerBIPerformanceData (2).json",
+      "sha256": "e612b40f66d75bd55af9b77c7cfd5d5397acfd2bd6303c74d58e5d23c89b0a2a",
+      "queryCount": 11
+    },
+    {
+      "file": "PowerBIPerformanceData (3).json",
+      "archiveFile": "docs/power-bi/captures/PowerBIPerformanceData (3).json",
+      "sha256": "8dc2fe6a51431079f37684ef5dcb28b927f2adb1fc6c408ce2bc221616ab1b32",
+      "queryCount": 4
+    },
+    {
+      "file": "PowerBIPerformanceData (4).json",
+      "archiveFile": "docs/power-bi/captures/PowerBIPerformanceData (4).json",
+      "sha256": "0892c62c46bcb9a4a19ef2c9912bf63020acebf213295992800f35fef63f146a",
+      "queryCount": 6
+    },
+    {
+      "file": "PowerBIPerformanceData (5).json",
+      "archiveFile": "docs/power-bi/captures/PowerBIPerformanceData (5).json",
+      "sha256": "b92abe04170e13795e88563ecad645d3763165a8dae3a95134ceef27a74ecfd0",
+      "queryCount": 5
+    },
+    {
+      "file": "PowerBIPerformanceData.json",
+      "archiveFile": "docs/power-bi/captures/PowerBIPerformanceData.json",
+      "sha256": "4103f9f08f5f15ea3dabfd48fd99bd2c30923056730d3fd37523867ba47d884c",
+      "queryCount": 11
+    }
+  ],
+  "queryCount": 42,
+  "referenceCount": 73,
+  "measures": [
+    {
+      "reference": "'BO'[(전체)한계달성률(%)]",
+      "sourceQueries": [
+        "capture-1-2",
+        "capture-1-4",
+        "capture-1-5",
+        "capture-2-11",
+        "capture-3-2",
+        "capture-6-11"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체)취급달성률(%)]",
+      "sourceQueries": [
+        "capture-1-2",
+        "capture-1-4",
+        "capture-1-5",
+        "capture-2-11",
+        "capture-3-2",
+        "capture-6-11"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체)매출달성률(%)]",
+      "sourceQueries": [
+        "capture-1-2",
+        "capture-1-4",
+        "capture-1-5",
+        "capture-2-11",
+        "capture-3-2",
+        "capture-6-11"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체)한계(분)]",
+      "sourceQueries": [
+        "capture-1-4",
+        "capture-1-5",
+        "capture-2-4",
+        "capture-2-11",
+        "capture-3-2",
+        "capture-3-3",
+        "capture-4-3",
+        "capture-5-2",
+        "capture-6-2",
+        "capture-6-11"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체)취급(분)]",
+      "sourceQueries": [
+        "capture-1-4",
+        "capture-1-5",
+        "capture-3-4",
+        "capture-4-3",
+        "capture-4-4",
+        "capture-6-2",
+        "capture-6-11"
+      ],
+      "alreadyRegistered": false,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체)예상매출액(V-)(분)]",
+      "sourceQueries": [
+        "capture-1-4",
+        "capture-3-4",
+        "capture-6-2"
+      ],
+      "alreadyRegistered": false,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체/미리주문)취급/목표(%)]",
+      "sourceQueries": [
+        "capture-1-4",
+        "capture-1-5",
+        "capture-2-11",
+        "capture-3-2",
+        "capture-6-11"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]",
+      "sourceQueries": [
+        "capture-2-2"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체/미리주문)한익률(%)]",
+      "sourceQueries": [
+        "capture-2-3",
+        "capture-6-3"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]",
+      "sourceQueries": [
+        "capture-2-5",
+        "capture-6-4",
+        "capture-6-11"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]",
+      "sourceQueries": [
+        "capture-2-6",
+        "capture-6-5"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(연동/방송중)예상취급(%)]",
+      "sourceQueries": [
+        "capture-2-8",
+        "capture-2-9",
+        "capture-2-10",
+        "capture-4-2",
+        "capture-4-6",
+        "capture-5-3"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체/방송중)한계달성률(%)]",
+      "sourceQueries": [
+        "capture-2-8",
+        "capture-2-10",
+        "capture-5-5"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[분당혼합비]",
+      "sourceQueries": [
+        "capture-2-11",
+        "capture-6-11"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체)매총달성률(%)]",
+      "sourceQueries": [
+        "capture-2-11",
+        "capture-3-2",
+        "capture-6-11"
+      ],
+      "alreadyRegistered": true,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(연동/방송중)정액外취급(분)]",
+      "sourceQueries": [
+        "capture-3-2",
+        "capture-3-4",
+        "capture-4-3",
+        "capture-4-5"
+      ],
+      "alreadyRegistered": false,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체)예상매출총이익액(V-)(분)]",
+      "sourceQueries": [
+        "capture-3-3",
+        "capture-6-2"
+      ],
+      "alreadyRegistered": false,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(연동/방송중)매출총이익액(V-)(분)]",
+      "sourceQueries": [
+        "capture-3-3"
+      ],
+      "alreadyRegistered": false,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체/방송중)한계(분)]",
+      "sourceQueries": [
+        "capture-3-3",
+        "capture-5-2",
+        "capture-5-4",
+        "capture-6-11"
+      ],
+      "alreadyRegistered": false,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(연동/방송중)취급액(분)]",
+      "sourceQueries": [
+        "capture-3-4",
+        "capture-6-11"
+      ],
+      "alreadyRegistered": false,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값]",
+      "sourceQueries": [
+        "capture-6-2"
+      ],
+      "alreadyRegistered": false,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값]",
+      "sourceQueries": [
+        "capture-6-6"
+      ],
+      "alreadyRegistered": false,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체/방송중)변동비(V-)]",
+      "sourceQueries": [
+        "capture-6-7"
+      ],
+      "alreadyRegistered": false,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    },
+    {
+      "reference": "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값]",
+      "sourceQueries": [
+        "capture-6-8"
+      ],
+      "alreadyRegistered": false,
+      "definition": null,
+      "status": "referenced-in-capture-not-definition"
+    }
+  ],
+  "queries": [
+    {
+      "id": "capture-1-1",
+      "sourceFile": "PowerBIPerformanceData (1).json",
+      "visualId": "3cad9f6001d3637715c7",
+      "title": "가중분, 조직명",
+      "visualType": "pieChart",
+      "recordedAt": "2026-10-22T10:11:43.396Z",
+      "rowCount": 8,
+      "queryFile": "docs/power-bi/captures/queries/capture-1-1.dax",
+      "groupingReferences": [
+        "'BO'[조직명]"
+      ],
+      "allReferences": [
+        "'BO'[YEAR(DAX)]",
+        "'BO'[MONTH(DAX)]",
+        "'BO'[조직명]",
+        "'BO'[가중분]"
+      ],
+      "measureReferences": [],
+      "outputs": [
+        {
+          "alias": "Sum가중분",
+          "expression": "CALCULATE(SUM('BO'[가중분]))",
+          "references": [
+            "'BO'[가중분]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{2026}",
+            "fields": [
+              "'BO'[YEAR(DAX)]"
+            ]
+          },
+          {
+            "kind": "TREATAS",
+            "values": "{9}",
+            "fields": [
+              "'BO'[MONTH(DAX)]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-1-2",
+      "sourceFile": "PowerBIPerformanceData (1).json",
+      "visualId": "7f743f981ad8d05a556a",
+      "title": "(전체)취급달성률(%), (전체)매출달성률(%) 및 (전체)한계달성률(%), 조직명",
+      "visualType": "clusteredBarChart",
+      "recordedAt": "2026-10-22T10:11:43.396Z",
+      "rowCount": 7,
+      "queryFile": "docs/power-bi/captures/queries/capture-1-2.dax",
+      "groupingReferences": [
+        "'BO'[조직명]"
+      ],
+      "allReferences": [
+        "'BO'[YEAR(DAX)]",
+        "'BO'[MONTH(DAX)]",
+        "'BO'[조직명]",
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_한계달성률___",
+          "expression": "'BO'[(전체)한계달성률(%)]",
+          "references": [
+            "'BO'[(전체)한계달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_취급달성률___",
+          "expression": "'BO'[(전체)취급달성률(%)]",
+          "references": [
+            "'BO'[(전체)취급달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_매출달성률___",
+          "expression": "'BO'[(전체)매출달성률(%)]",
+          "references": [
+            "'BO'[(전체)매출달성률(%)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{2026}",
+            "fields": [
+              "'BO'[YEAR(DAX)]"
+            ]
+          },
+          {
+            "kind": "TREATAS",
+            "values": "{9}",
+            "fields": [
+              "'BO'[MONTH(DAX)]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-1-3",
+      "sourceFile": "PowerBIPerformanceData (1).json",
+      "visualId": "7267f8960bad3d789b01",
+      "title": "가중분, 거래형태",
+      "visualType": "hundredPercentStackedBarChart",
+      "recordedAt": "2026-10-22T10:11:43.396Z",
+      "rowCount": 7,
+      "queryFile": "docs/power-bi/captures/queries/capture-1-3.dax",
+      "groupingReferences": [
+        "'BO'[거래형태]"
+      ],
+      "allReferences": [
+        "'BO'[YEAR(DAX)]",
+        "'BO'[MONTH(DAX)]",
+        "'BO'[거래형태]",
+        "'BO'[가중분]"
+      ],
+      "measureReferences": [],
+      "outputs": [
+        {
+          "alias": "Sum가중분",
+          "expression": "CALCULATE(SUM('BO'[가중분]))",
+          "references": [
+            "'BO'[가중분]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{2026}",
+            "fields": [
+              "'BO'[YEAR(DAX)]"
+            ]
+          },
+          {
+            "kind": "TREATAS",
+            "values": "{9}",
+            "fields": [
+              "'BO'[MONTH(DAX)]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-1-4",
+      "sourceFile": "PowerBIPerformanceData (1).json",
+      "visualId": "1dde54ff7407899eedb4",
+      "title": "테이블",
+      "visualType": "tableEx",
+      "recordedAt": "2026-10-22T10:11:43.396Z",
+      "rowCount": 241,
+      "queryFile": "docs/power-bi/captures/queries/capture-1-4.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[YEAR(DAX)]",
+        "'BO'[MONTH(DAX)]",
+        "'BO'[브랜드]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(전체)취급(분)]",
+        "'BO'[(전체)예상매출액(V-)(분)]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]",
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체/미리주문)취급/목표(%)]",
+        "'BO'[(전체)예상취급액]",
+        "'BO'[(전체)예상매출액(V-)]",
+        "'BO'[(전체)한계이익]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(전체)취급(분)]",
+        "'BO'[(전체)예상매출액(V-)(분)]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]",
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체/미리주문)취급/목표(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_한계_분_",
+          "expression": "'BO'[(전체)한계(분)]",
+          "references": [
+            "'BO'[(전체)한계(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_취급_분_",
+          "expression": "'BO'[(전체)취급(분)]",
+          "references": [
+            "'BO'[(전체)취급(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_예상매출액_V___분_",
+          "expression": "'BO'[(전체)예상매출액(V-)(분)]",
+          "references": [
+            "'BO'[(전체)예상매출액(V-)(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_취급달성률___",
+          "expression": "'BO'[(전체)취급달성률(%)]",
+          "references": [
+            "'BO'[(전체)취급달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_매출달성률___",
+          "expression": "'BO'[(전체)매출달성률(%)]",
+          "references": [
+            "'BO'[(전체)매출달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계달성률___",
+          "expression": "'BO'[(전체)한계달성률(%)]",
+          "references": [
+            "'BO'[(전체)한계달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_미리주문_취급_목표___",
+          "expression": "'BO'[(전체/미리주문)취급/목표(%)]",
+          "references": [
+            "'BO'[(전체/미리주문)취급/목표(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_예상취급액",
+          "expression": "CALCULATE(SUM('BO'[(전체)예상취급액]))",
+          "references": [
+            "'BO'[(전체)예상취급액]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_예상매출액_V__",
+          "expression": "CALCULATE(\n\t\t\t\tSUM('BO'[(전체)예상매출액(V-)])\n\t\t\t)",
+          "references": [
+            "'BO'[(전체)예상매출액(V-)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_한계이익",
+          "expression": "CALCULATE(SUM('BO'[(전체)한계이익]))",
+          "references": [
+            "'BO'[(전체)한계이익]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{2026}",
+            "fields": [
+              "'BO'[YEAR(DAX)]"
+            ]
+          },
+          {
+            "kind": "TREATAS",
+            "values": "{9}",
+            "fields": [
+              "'BO'[MONTH(DAX)]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-1-5",
+      "sourceFile": "PowerBIPerformanceData (1).json",
+      "visualId": "261fe85205067000e4d9",
+      "title": "테이블",
+      "visualType": "tableEx",
+      "recordedAt": "2026-10-22T10:11:43.396Z",
+      "rowCount": 5,
+      "queryFile": "docs/power-bi/captures/queries/capture-1-5.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[YEAR(DAX)]",
+        "'BO'[MONTH(DAX)]",
+        "'BO'[영상구분]",
+        "'BO'[(전체/미리주문)취급/목표(%)]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(전체)취급(분)]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]",
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체)예상매출총이익액(V-)배송료 제외]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/미리주문)취급/목표(%)]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(전체)취급(분)]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]",
+        "'BO'[(전체)한계달성률(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_미리주문_취급_목표___",
+          "expression": "'BO'[(전체/미리주문)취급/목표(%)]",
+          "references": [
+            "'BO'[(전체/미리주문)취급/목표(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계_분_",
+          "expression": "'BO'[(전체)한계(분)]",
+          "references": [
+            "'BO'[(전체)한계(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_취급_분_",
+          "expression": "'BO'[(전체)취급(분)]",
+          "references": [
+            "'BO'[(전체)취급(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_취급달성률___",
+          "expression": "'BO'[(전체)취급달성률(%)]",
+          "references": [
+            "'BO'[(전체)취급달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_매출달성률___",
+          "expression": "'BO'[(전체)매출달성률(%)]",
+          "references": [
+            "'BO'[(전체)매출달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계달성률___",
+          "expression": "'BO'[(전체)한계달성률(%)]",
+          "references": [
+            "'BO'[(전체)한계달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_예상매출총이익액_V__배송료_제외",
+          "expression": "CALCULATE(\n\t\t\t\tSUM('BO'[(전체)예상매출총이익액(V-)배송료 제외])\n\t\t\t)",
+          "references": [
+            "'BO'[(전체)예상매출총이익액(V-)배송료 제외]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{2026}",
+            "fields": [
+              "'BO'[YEAR(DAX)]"
+            ]
+          },
+          {
+            "kind": "TREATAS",
+            "values": "{9}",
+            "fields": [
+              "'BO'[MONTH(DAX)]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-2-1",
+      "sourceFile": "PowerBIPerformanceData (2).json",
+      "visualId": "5390bc27b07030e7314c",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:49.712Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-2-1.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[편성코드]",
+        "'BO'[(전체/미리주문)예상취급액(V-)]"
+      ],
+      "measureReferences": [],
+      "outputs": [
+        {
+          "alias": "Sumv_전체_미리주문_예상취급액_V__",
+          "expression": "IGNORE(\n\t\t\tCALCULATE(\n\t\t\t\tSUM('BO'[(전체/미리주문)예상취급액(V-)])\n\t\t\t)\n\t\t)",
+          "references": [
+            "'BO'[(전체/미리주문)예상취급액(V-)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"[알렌오](26FW)체크셔켓\"}",
+            "fields": [
+              "'BO'[편성코드]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-2-2",
+      "sourceFile": "PowerBIPerformanceData (2).json",
+      "visualId": "b51b01f08c58cae7d8e6",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:49.712Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-2-2.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[편성코드]",
+        "'BO'[(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_한계이익에서__전체_방송중_한계이익을_를__뺀_값",
+          "expression": "IGNORE(\n\t\t\t'BO'[(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]\n\t\t)",
+          "references": [
+            "'BO'[(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"[알렌오](26FW)체크셔켓\"}",
+            "fields": [
+              "'BO'[편성코드]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-2-3",
+      "sourceFile": "PowerBIPerformanceData (2).json",
+      "visualId": "79d09be78a20373dc9a6",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:49.728Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-2-3.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[편성코드]",
+        "'BO'[(전체/미리주문)한익률(%)]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/미리주문)한익률(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_미리주문_한익률___",
+          "expression": "IGNORE('BO'[(전체/미리주문)한익률(%)])",
+          "references": [
+            "'BO'[(전체/미리주문)한익률(%)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"[알렌오](26FW)체크셔켓\"}",
+            "fields": [
+              "'BO'[편성코드]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-2-4",
+      "sourceFile": "PowerBIPerformanceData (2).json",
+      "visualId": "1c0a959f026b927c9b28",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:49.728Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-2-4.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[편성코드]",
+        "'BO'[(전체)한계(분)]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체)한계(분)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_한계_분_",
+          "expression": "IGNORE('BO'[(전체)한계(분)])",
+          "references": [
+            "'BO'[(전체)한계(분)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"[알렌오](26FW)체크셔켓\"}",
+            "fields": [
+              "'BO'[편성코드]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-2-5",
+      "sourceFile": "PowerBIPerformanceData (2).json",
+      "visualId": "56cbe1e473da2e4aeefd",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:49.728Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-2-5.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[편성코드]",
+        "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_한계이익에서_정액수수료_원_을_를__뺀_값을_를___전체_방송중_예상취급액_V__에서_정액수수료_원_을_를__뺀_값_으_로_나눈_값",
+          "expression": "IGNORE(\n\t\t\t'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]\n\t\t)",
+          "references": [
+            "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"[알렌오](26FW)체크셔켓\"}",
+            "fields": [
+              "'BO'[편성코드]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-2-6",
+      "sourceFile": "PowerBIPerformanceData (2).json",
+      "visualId": "d2c42d330675513f14b6",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:49.786Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-2-6.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[편성코드]",
+        "'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_변동비_V__을_를___전체_방송중_예상취급액_V__에서_정액수수료_원_을_를__뺀_값_으_로_나눈_값",
+          "expression": "IGNORE(\n\t\t\t'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]\n\t\t)",
+          "references": [
+            "'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"[알렌오](26FW)체크셔켓\"}",
+            "fields": [
+              "'BO'[편성코드]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-2-7",
+      "sourceFile": "PowerBIPerformanceData (2).json",
+      "visualId": "f40317861c9460856e83",
+      "title": "Simple Image",
+      "visualType": "simpleImageEBC4593F96F1425FB3D84C5BF02B5075",
+      "recordedAt": "2026-10-22T10:11:49.786Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-2-7.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[편성코드]",
+        "'BO'[이미지]"
+      ],
+      "measureReferences": [],
+      "outputs": [],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"[알렌오](26FW)체크셔켓\"}",
+            "fields": [
+              "'BO'[편성코드]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-2-8",
+      "sourceFile": "PowerBIPerformanceData (2).json",
+      "visualId": "f5c437d5797bbbbf2b46",
+      "title": "테이블",
+      "visualType": "tableEx",
+      "recordedAt": "2026-10-22T10:11:49.786Z",
+      "rowCount": 3,
+      "queryFile": "docs/power-bi/captures/queries/capture-2-8.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[편성코드]",
+        "'BO'[MONTH(DAX)]",
+        "'BO'[(연동/방송중)예상취급(%)]",
+        "'BO'[(전체/방송중)한계달성률(%)]"
+      ],
+      "measureReferences": [
+        "'BO'[(연동/방송중)예상취급(%)]",
+        "'BO'[(전체/방송중)한계달성률(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_연동_방송중_예상취급___",
+          "expression": "'BO'[(연동/방송중)예상취급(%)]",
+          "references": [
+            "'BO'[(연동/방송중)예상취급(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_방송중_한계달성률___",
+          "expression": "'BO'[(전체/방송중)한계달성률(%)]",
+          "references": [
+            "'BO'[(전체/방송중)한계달성률(%)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"[알렌오](26FW)체크셔켓\"}",
+            "fields": [
+              "'BO'[편성코드]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-2-9",
+      "sourceFile": "PowerBIPerformanceData (2).json",
+      "visualId": "1a280d82c19a30eebd37",
+      "title": "행렬",
+      "visualType": "pivotTable",
+      "recordedAt": "2026-10-22T10:11:49.728Z",
+      "rowCount": 14,
+      "queryFile": "docs/power-bi/captures/queries/capture-2-9.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[편성코드]",
+        "'BO'[HOUR(DAX)]",
+        "'BO'[WEEKDAY(DAX)]",
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "measureReferences": [
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_연동_방송중_예상취급___",
+          "expression": "'BO'[(연동/방송중)예상취급(%)]",
+          "references": [
+            "'BO'[(연동/방송중)예상취급(%)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"[알렌오](26FW)체크셔켓\"}",
+            "fields": [
+              "'BO'[편성코드]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-2-10",
+      "sourceFile": "PowerBIPerformanceData (2).json",
+      "visualId": "4d44c16cb5cd964873d8",
+      "title": "테이블",
+      "visualType": "tableEx",
+      "recordedAt": "2026-10-22T10:11:49.728Z",
+      "rowCount": 2,
+      "queryFile": "docs/power-bi/captures/queries/capture-2-10.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[편성코드]",
+        "'BO'[YEAR(DAX)]",
+        "'BO'[(전체/방송중)한계달성률(%)]",
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)한계달성률(%)]",
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_한계달성률___",
+          "expression": "'BO'[(전체/방송중)한계달성률(%)]",
+          "references": [
+            "'BO'[(전체/방송중)한계달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_연동_방송중_예상취급___",
+          "expression": "'BO'[(연동/방송중)예상취급(%)]",
+          "references": [
+            "'BO'[(연동/방송중)예상취급(%)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"[알렌오](26FW)체크셔켓\"}",
+            "fields": [
+              "'BO'[편성코드]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-2-11",
+      "sourceFile": "PowerBIPerformanceData (2).json",
+      "visualId": "cd29081ceb95be52a04a",
+      "title": "테이블",
+      "visualType": "tableEx",
+      "recordedAt": "2026-10-22T10:11:49.776Z",
+      "rowCount": 4,
+      "queryFile": "docs/power-bi/captures/queries/capture-2-11.dax",
+      "groupingReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]"
+      ],
+      "allReferences": [
+        "'BO'[편성코드]",
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[대표업체명]",
+        "'BO'[대표상품명]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[영상ID]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[아이템명]",
+        "'BO'[(전체/방송중)제휴포인트]",
+        "'BO'[노출분]",
+        "'BO'[가중분]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(연동)총주문량]",
+        "'BO'[분당혼합비]",
+        "'BO'[(전체/미리주문)예상취급액]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]",
+        "'BO'[(전체)매총달성률(%)]",
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체/미리주문)취급/목표(%)]",
+        "'BO'[판매가(대표상품)]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체)한계(분)]",
+        "'BO'[분당혼합비]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]",
+        "'BO'[(전체)매총달성률(%)]",
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체/미리주문)취급/목표(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "Sumv_전체_방송중_제휴포인트",
+          "expression": "CALCULATE(SUM('BO'[(전체/방송중)제휴포인트]))",
+          "references": [
+            "'BO'[(전체/방송중)제휴포인트]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sum노출분",
+          "expression": "CALCULATE(SUM('BO'[노출분]))",
+          "references": [
+            "'BO'[노출분]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sum가중분",
+          "expression": "CALCULATE(SUM('BO'[가중분]))",
+          "references": [
+            "'BO'[가중분]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계_분_",
+          "expression": "'BO'[(전체)한계(분)]",
+          "references": [
+            "'BO'[(전체)한계(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_연동_총주문량",
+          "expression": "CALCULATE(SUM('BO'[(연동)총주문량]))",
+          "references": [
+            "'BO'[(연동)총주문량]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "분당혼합비",
+          "expression": "'BO'[분당혼합비]",
+          "references": [
+            "'BO'[분당혼합비]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_미리주문_예상취급액",
+          "expression": "CALCULATE(SUM('BO'[(전체/미리주문)예상취급액]))",
+          "references": [
+            "'BO'[(전체/미리주문)예상취급액]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_취급달성률___",
+          "expression": "'BO'[(전체)취급달성률(%)]",
+          "references": [
+            "'BO'[(전체)취급달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_매출달성률___",
+          "expression": "'BO'[(전체)매출달성률(%)]",
+          "references": [
+            "'BO'[(전체)매출달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_매총달성률___",
+          "expression": "'BO'[(전체)매총달성률(%)]",
+          "references": [
+            "'BO'[(전체)매총달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계달성률___",
+          "expression": "'BO'[(전체)한계달성률(%)]",
+          "references": [
+            "'BO'[(전체)한계달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_미리주문_취급_목표___",
+          "expression": "'BO'[(전체/미리주문)취급/목표(%)]",
+          "references": [
+            "'BO'[(전체/미리주문)취급/목표(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sum판매가_대표상품_",
+          "expression": "CALCULATE(SUM('BO'[판매가(대표상품)]))",
+          "references": [
+            "'BO'[판매가(대표상품)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"[알렌오](26FW)체크셔켓\"}",
+            "fields": [
+              "'BO'[편성코드]"
+            ]
+          }
+        ],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-3-1",
+      "sourceFile": "PowerBIPerformanceData (3).json",
+      "visualId": "882be5dd6a8f6e3af62d",
+      "title": "(전체)무이자수수료, (전체)배송보관비, (전체)사은품, (전체)양품화비, (전체)적립금, (전체)제휴수수료, (전체)주문상담비, (전체)청구할인, (전체)PG수수료 및 (전체)제휴포인트",
+      "visualType": "donutChart",
+      "recordedAt": "2026-10-22T10:12:04.431Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-3-1.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[(전체)무이자수수료]",
+        "'BO'[(전체)배송보관비]",
+        "'BO'[(전체)사은품]",
+        "'BO'[(전체)양품화비]",
+        "'BO'[(전체)적립금]",
+        "'BO'[(전체)제휴수수료]",
+        "'BO'[(전체)주문상담비]",
+        "'BO'[(전체)청구할인]",
+        "'BO'[(전체)PG수수료]",
+        "'BO'[(전체)제휴포인트]"
+      ],
+      "measureReferences": [],
+      "outputs": [
+        {
+          "alias": "Sumv_전체_무이자수수료",
+          "expression": "CALCULATE(SUM('BO'[(전체)무이자수수료]))",
+          "references": [
+            "'BO'[(전체)무이자수수료]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_배송보관비",
+          "expression": "CALCULATE(SUM('BO'[(전체)배송보관비]))",
+          "references": [
+            "'BO'[(전체)배송보관비]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_사은품",
+          "expression": "CALCULATE(SUM('BO'[(전체)사은품]))",
+          "references": [
+            "'BO'[(전체)사은품]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_양품화비",
+          "expression": "CALCULATE(SUM('BO'[(전체)양품화비]))",
+          "references": [
+            "'BO'[(전체)양품화비]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_적립금",
+          "expression": "CALCULATE(SUM('BO'[(전체)적립금]))",
+          "references": [
+            "'BO'[(전체)적립금]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_제휴수수료",
+          "expression": "CALCULATE(SUM('BO'[(전체)제휴수수료]))",
+          "references": [
+            "'BO'[(전체)제휴수수료]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_주문상담비",
+          "expression": "CALCULATE(SUM('BO'[(전체)주문상담비]))",
+          "references": [
+            "'BO'[(전체)주문상담비]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_청구할인",
+          "expression": "CALCULATE(SUM('BO'[(전체)청구할인]))",
+          "references": [
+            "'BO'[(전체)청구할인]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_PG수수료",
+          "expression": "CALCULATE(SUM('BO'[(전체)PG수수료]))",
+          "references": [
+            "'BO'[(전체)PG수수료]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_제휴포인트",
+          "expression": "CALCULATE(SUM('BO'[(전체)제휴포인트]))",
+          "references": [
+            "'BO'[(전체)제휴포인트]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-3-2",
+      "sourceFile": "PowerBIPerformanceData (3).json",
+      "visualId": "7f0efb6de6cd8319d5be",
+      "title": "테이블",
+      "visualType": "tableEx",
+      "recordedAt": "2026-10-22T10:12:04.431Z",
+      "rowCount": 501,
+      "queryFile": "docs/power-bi/captures/queries/capture-3-2.dax",
+      "groupingReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[대표상품명]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[프로그램명]"
+      ],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[대표상품명]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[프로그램명]",
+        "'BO'[노출분]",
+        "'BO'[가중분]",
+        "'BO'[판매가(대표상품)]",
+        "'BO'[(연동/방송중)정액外취급(분)]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]",
+        "'BO'[(전체)매총달성률(%)]",
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체/미리주문)취급/목표(%)]"
+      ],
+      "measureReferences": [
+        "'BO'[(연동/방송중)정액外취급(분)]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]",
+        "'BO'[(전체)매총달성률(%)]",
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체/미리주문)취급/목표(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "Sum노출분",
+          "expression": "CALCULATE(SUM('BO'[노출분]))",
+          "references": [
+            "'BO'[노출분]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sum가중분",
+          "expression": "CALCULATE(SUM('BO'[가중분]))",
+          "references": [
+            "'BO'[가중분]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sum판매가_대표상품_",
+          "expression": "CALCULATE(SUM('BO'[판매가(대표상품)]))",
+          "references": [
+            "'BO'[판매가(대표상품)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_연동_방송중_정액外취급_분_",
+          "expression": "'BO'[(연동/방송중)정액外취급(분)]",
+          "references": [
+            "'BO'[(연동/방송중)정액外취급(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계_분_",
+          "expression": "'BO'[(전체)한계(분)]",
+          "references": [
+            "'BO'[(전체)한계(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_취급달성률___",
+          "expression": "'BO'[(전체)취급달성률(%)]",
+          "references": [
+            "'BO'[(전체)취급달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_매출달성률___",
+          "expression": "'BO'[(전체)매출달성률(%)]",
+          "references": [
+            "'BO'[(전체)매출달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_매총달성률___",
+          "expression": "'BO'[(전체)매총달성률(%)]",
+          "references": [
+            "'BO'[(전체)매총달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계달성률___",
+          "expression": "'BO'[(전체)한계달성률(%)]",
+          "references": [
+            "'BO'[(전체)한계달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_미리주문_취급_목표___",
+          "expression": "'BO'[(전체/미리주문)취급/목표(%)]",
+          "references": [
+            "'BO'[(전체/미리주문)취급/목표(%)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-3-3",
+      "sourceFile": "PowerBIPerformanceData (3).json",
+      "visualId": "5a255c885be784bcd82e",
+      "title": "테이블",
+      "visualType": "tableEx",
+      "recordedAt": "2026-10-22T10:12:04.463Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-3-3.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[(전체)예상매출총이익액(V-)(분)]",
+        "'BO'[(연동/방송중)매출총이익액(V-)(분)]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(전체/방송중)한계(분)]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체)예상매출총이익액(V-)(분)]",
+        "'BO'[(연동/방송중)매출총이익액(V-)(분)]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(전체/방송중)한계(분)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_예상매출총이익액_V___분_",
+          "expression": "'BO'[(전체)예상매출총이익액(V-)(분)]",
+          "references": [
+            "'BO'[(전체)예상매출총이익액(V-)(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_연동_방송중_매출총이익액_V___분_",
+          "expression": "'BO'[(연동/방송중)매출총이익액(V-)(분)]",
+          "references": [
+            "'BO'[(연동/방송중)매출총이익액(V-)(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계_분_",
+          "expression": "'BO'[(전체)한계(분)]",
+          "references": [
+            "'BO'[(전체)한계(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_방송중_한계_분_",
+          "expression": "'BO'[(전체/방송중)한계(분)]",
+          "references": [
+            "'BO'[(전체/방송중)한계(분)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-3-4",
+      "sourceFile": "PowerBIPerformanceData (3).json",
+      "visualId": "07360300b7328240a986",
+      "title": "테이블",
+      "visualType": "tableEx",
+      "recordedAt": "2026-10-22T10:12:04.431Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-3-4.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[(전체)취급(분)]",
+        "'BO'[(연동/방송중)취급액(분)]",
+        "'BO'[(연동/방송중)정액外취급(분)]",
+        "'BO'[(전체)예상매출액(V-)(분)]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체)취급(분)]",
+        "'BO'[(연동/방송중)취급액(분)]",
+        "'BO'[(연동/방송중)정액外취급(분)]",
+        "'BO'[(전체)예상매출액(V-)(분)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_취급_분_",
+          "expression": "'BO'[(전체)취급(분)]",
+          "references": [
+            "'BO'[(전체)취급(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_연동_방송중_취급액_분_",
+          "expression": "'BO'[(연동/방송중)취급액(분)]",
+          "references": [
+            "'BO'[(연동/방송중)취급액(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_연동_방송중_정액外취급_분_",
+          "expression": "'BO'[(연동/방송중)정액外취급(분)]",
+          "references": [
+            "'BO'[(연동/방송중)정액外취급(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_예상매출액_V___분_",
+          "expression": "'BO'[(전체)예상매출액(V-)(분)]",
+          "references": [
+            "'BO'[(전체)예상매출액(V-)(분)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-4-1",
+      "sourceFile": "PowerBIPerformanceData (4).json",
+      "visualId": "927d0e470dcc079a19e3",
+      "title": "슬라이서",
+      "visualType": "slicer",
+      "recordedAt": "2026-10-22T10:12:20.054Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-4-1.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]"
+      ],
+      "measureReferences": [],
+      "outputs": [
+        {
+          "alias": "Min방송일시",
+          "expression": "CALCULATE(MIN('BO'[방송일시]))",
+          "references": [
+            "'BO'[방송일시]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Max방송일시",
+          "expression": "CALCULATE(MAX('BO'[방송일시]))",
+          "references": [
+            "'BO'[방송일시]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-4-2",
+      "sourceFile": "PowerBIPerformanceData (4).json",
+      "visualId": "86cf59e3c8cdf80d4579",
+      "title": "행렬",
+      "visualType": "pivotTable",
+      "recordedAt": "2026-10-22T10:12:20.054Z",
+      "rowCount": 209,
+      "queryFile": "docs/power-bi/captures/queries/capture-4-2.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[유/무형]",
+        "'BO'[HOUR(DAX)]",
+        "'BO'[WEEKDAY(DAX)]",
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "measureReferences": [
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_연동_방송중_예상취급___",
+          "expression": "'BO'[(연동/방송중)예상취급(%)]",
+          "references": [
+            "'BO'[(연동/방송중)예상취급(%)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"유형\"}",
+            "fields": [
+              "'BO'[유/무형]"
+            ]
+          }
+        ],
+        "dateLiterals": [
+          "2025-11-01",
+          "2026-01-01"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-4-3",
+      "sourceFile": "PowerBIPerformanceData (4).json",
+      "visualId": "3fb91781fe32fa4ccec0",
+      "title": "테이블",
+      "visualType": "tableEx",
+      "recordedAt": "2026-10-22T10:12:20.054Z",
+      "rowCount": 502,
+      "queryFile": "docs/power-bi/captures/queries/capture-4-3.dax",
+      "groupingReferences": [
+        "'BO'[조직명]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]"
+      ],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[유/무형]",
+        "'BO'[조직명]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[(연동/방송중)정액外취급(분)]",
+        "'BO'[(전체)취급(분)]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[가중분]"
+      ],
+      "measureReferences": [
+        "'BO'[(연동/방송중)정액外취급(분)]",
+        "'BO'[(전체)취급(분)]",
+        "'BO'[(전체)한계(분)]"
+      ],
+      "outputs": [
+        {
+          "alias": "DistinctCount방송일시",
+          "expression": "CALCULATE(DISTINCTCOUNT('BO'[방송일시]))",
+          "references": [
+            "'BO'[방송일시]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "A1",
+          "expression": "CALCULATE(\n\t\t\t\tDIVIDE(DISTINCTCOUNT('BO'[방송일시]), CALCULATE(\n\t\t\t\t\tDISTINCTCOUNT('BO'[방송일시]),\n\t\t\t\t\tALLSELECTED('BO'[조직명]),\n\t\t\t\t\tALLSELECTED('BO'[MD분류]),\n\t\t\t\t\tALLSELECTED('BO'[편성코드])\n\t\t\t\t))\n\t\t\t)",
+          "references": [
+            "'BO'[방송일시]",
+            "'BO'[조직명]",
+            "'BO'[MD분류]",
+            "'BO'[편성코드]"
+          ],
+          "contextSensitive": true
+        },
+        {
+          "alias": "v_연동_방송중_정액外취급_분_",
+          "expression": "'BO'[(연동/방송중)정액外취급(분)]",
+          "references": [
+            "'BO'[(연동/방송중)정액外취급(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_취급_분_",
+          "expression": "'BO'[(전체)취급(분)]",
+          "references": [
+            "'BO'[(전체)취급(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계_분_",
+          "expression": "'BO'[(전체)한계(분)]",
+          "references": [
+            "'BO'[(전체)한계(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sum가중분",
+          "expression": "CALCULATE(SUM('BO'[가중분]))",
+          "references": [
+            "'BO'[가중분]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"유형\"}",
+            "fields": [
+              "'BO'[유/무형]"
+            ]
+          }
+        ],
+        "dateLiterals": [
+          "2025-11-01",
+          "2026-01-01"
+        ],
+        "hasAllSelected": true
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-4-4",
+      "sourceFile": "PowerBIPerformanceData (4).json",
+      "visualId": "4423c8f4d9617c0dab43",
+      "title": "테이블",
+      "visualType": "tableEx",
+      "recordedAt": "2026-10-22T10:12:20.038Z",
+      "rowCount": 8,
+      "queryFile": "docs/power-bi/captures/queries/capture-4-4.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[유/무형]",
+        "'BO'[조직명]",
+        "'BO'[(전체)취급(분)]",
+        "'BO'[가중분]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체)취급(분)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_취급_분_",
+          "expression": "'BO'[(전체)취급(분)]",
+          "references": [
+            "'BO'[(전체)취급(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "A1",
+          "expression": "CALCULATE(\n\t\t\t\tDIVIDE(SUM('BO'[가중분]), CALCULATE(SUM('BO'[가중분]), ALLSELECTED('BO'[조직명])))\n\t\t\t)",
+          "references": [
+            "'BO'[가중분]",
+            "'BO'[조직명]"
+          ],
+          "contextSensitive": true
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"유형\"}",
+            "fields": [
+              "'BO'[유/무형]"
+            ]
+          }
+        ],
+        "dateLiterals": [
+          "2025-11-01",
+          "2026-01-01"
+        ],
+        "hasAllSelected": true
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-4-5",
+      "sourceFile": "PowerBIPerformanceData (4).json",
+      "visualId": "2110e521b10eaa4525b8",
+      "title": "행렬",
+      "visualType": "pivotTable",
+      "recordedAt": "2026-10-22T10:12:20.054Z",
+      "rowCount": 208,
+      "queryFile": "docs/power-bi/captures/queries/capture-4-5.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[유/무형]",
+        "'BO'[HOUR(DAX)]",
+        "'BO'[WEEKDAY(DAX)]",
+        "'BO'[(연동/방송중)정액外취급(분)]"
+      ],
+      "measureReferences": [
+        "'BO'[(연동/방송중)정액外취급(분)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_연동_방송중_정액外취급_분_",
+          "expression": "'BO'[(연동/방송중)정액外취급(분)]",
+          "references": [
+            "'BO'[(연동/방송중)정액外취급(분)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"유형\"}",
+            "fields": [
+              "'BO'[유/무형]"
+            ]
+          }
+        ],
+        "dateLiterals": [
+          "2025-11-01",
+          "2026-01-01"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-4-6",
+      "sourceFile": "PowerBIPerformanceData (4).json",
+      "visualId": "46626d3e4bb4e2ffd986",
+      "title": "행렬",
+      "visualType": "pivotTable",
+      "recordedAt": "2026-10-22T10:12:20.054Z",
+      "rowCount": 208,
+      "queryFile": "docs/power-bi/captures/queries/capture-4-6.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[유/무형]",
+        "'BO'[HOUR(DAX)]",
+        "'BO'[WEEKDAY(DAX)]",
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "measureReferences": [
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_연동_방송중_예상취급___",
+          "expression": "'BO'[(연동/방송중)예상취급(%)]",
+          "references": [
+            "'BO'[(연동/방송중)예상취급(%)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"유형\"}",
+            "fields": [
+              "'BO'[유/무형]"
+            ]
+          }
+        ],
+        "dateLiterals": [
+          "2025-11-01",
+          "2026-01-01"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-5-1",
+      "sourceFile": "PowerBIPerformanceData (5).json",
+      "visualId": "fb9452eb40287ab09bb1",
+      "title": "슬라이서",
+      "visualType": "slicer",
+      "recordedAt": "2026-10-22T10:12:24.619Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-5-1.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]"
+      ],
+      "measureReferences": [],
+      "outputs": [
+        {
+          "alias": "Min방송일시",
+          "expression": "CALCULATE(MIN('BO'[방송일시]))",
+          "references": [
+            "'BO'[방송일시]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Max방송일시",
+          "expression": "CALCULATE(MAX('BO'[방송일시]))",
+          "references": [
+            "'BO'[방송일시]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-5-2",
+      "sourceFile": "PowerBIPerformanceData (5).json",
+      "visualId": "34a34eaba08c18ea37e4",
+      "title": "테이블",
+      "visualType": "tableEx",
+      "recordedAt": "2026-10-22T10:12:24.635Z",
+      "rowCount": 419,
+      "queryFile": "docs/power-bi/captures/queries/capture-5-2.dax",
+      "groupingReferences": [
+        "'BO'[조직명]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]"
+      ],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[유/무형]",
+        "'BO'[조직명]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[(전체/방송중)한계(분)]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[가중분]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)한계(분)]",
+        "'BO'[(전체)한계(분)]"
+      ],
+      "outputs": [
+        {
+          "alias": "DistinctCount방송일시",
+          "expression": "CALCULATE(DISTINCTCOUNT('BO'[방송일시]))",
+          "references": [
+            "'BO'[방송일시]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "A1",
+          "expression": "CALCULATE(\n\t\t\t\tDIVIDE(DISTINCTCOUNT('BO'[방송일시]), CALCULATE(\n\t\t\t\t\tDISTINCTCOUNT('BO'[방송일시]),\n\t\t\t\t\tALLSELECTED('BO'[조직명]),\n\t\t\t\t\tALLSELECTED('BO'[MD분류]),\n\t\t\t\t\tALLSELECTED('BO'[편성코드])\n\t\t\t\t))\n\t\t\t)",
+          "references": [
+            "'BO'[방송일시]",
+            "'BO'[조직명]",
+            "'BO'[MD분류]",
+            "'BO'[편성코드]"
+          ],
+          "contextSensitive": true
+        },
+        {
+          "alias": "v_전체_방송중_한계_분_",
+          "expression": "'BO'[(전체/방송중)한계(분)]",
+          "references": [
+            "'BO'[(전체/방송중)한계(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계_분_",
+          "expression": "'BO'[(전체)한계(분)]",
+          "references": [
+            "'BO'[(전체)한계(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sum가중분",
+          "expression": "CALCULATE(SUM('BO'[가중분]))",
+          "references": [
+            "'BO'[가중분]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"유형\"}",
+            "fields": [
+              "'BO'[유/무형]"
+            ]
+          }
+        ],
+        "dateLiterals": [
+          "2026-04-01",
+          "2026-05-12"
+        ],
+        "hasAllSelected": true
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-5-3",
+      "sourceFile": "PowerBIPerformanceData (5).json",
+      "visualId": "e72b854ebdad15209326",
+      "title": "행렬",
+      "visualType": "pivotTable",
+      "recordedAt": "2026-10-22T10:12:24.635Z",
+      "rowCount": 209,
+      "queryFile": "docs/power-bi/captures/queries/capture-5-3.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[유/무형]",
+        "'BO'[HOUR(DAX)]",
+        "'BO'[WEEKDAY(DAX)]",
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "measureReferences": [
+        "'BO'[(연동/방송중)예상취급(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_연동_방송중_예상취급___",
+          "expression": "'BO'[(연동/방송중)예상취급(%)]",
+          "references": [
+            "'BO'[(연동/방송중)예상취급(%)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"유형\"}",
+            "fields": [
+              "'BO'[유/무형]"
+            ]
+          }
+        ],
+        "dateLiterals": [
+          "2026-04-01",
+          "2026-05-12"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-5-4",
+      "sourceFile": "PowerBIPerformanceData (5).json",
+      "visualId": "a027cf7b0c762608ac9d",
+      "title": "행렬",
+      "visualType": "pivotTable",
+      "recordedAt": "2026-10-22T10:12:24.635Z",
+      "rowCount": 208,
+      "queryFile": "docs/power-bi/captures/queries/capture-5-4.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[유/무형]",
+        "'BO'[HOUR(DAX)]",
+        "'BO'[WEEKDAY(DAX)]",
+        "'BO'[(전체/방송중)한계(분)]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)한계(분)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_한계_분_",
+          "expression": "'BO'[(전체/방송중)한계(분)]",
+          "references": [
+            "'BO'[(전체/방송중)한계(분)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"유형\"}",
+            "fields": [
+              "'BO'[유/무형]"
+            ]
+          }
+        ],
+        "dateLiterals": [
+          "2026-04-01",
+          "2026-05-12"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-5-5",
+      "sourceFile": "PowerBIPerformanceData (5).json",
+      "visualId": "2abe4b5449e070cca798",
+      "title": "행렬",
+      "visualType": "pivotTable",
+      "recordedAt": "2026-10-22T10:12:24.635Z",
+      "rowCount": 208,
+      "queryFile": "docs/power-bi/captures/queries/capture-5-5.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[유/무형]",
+        "'BO'[HOUR(DAX)]",
+        "'BO'[WEEKDAY(DAX)]",
+        "'BO'[(전체/방송중)한계달성률(%)]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)한계달성률(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_한계달성률___",
+          "expression": "'BO'[(전체/방송중)한계달성률(%)]",
+          "references": [
+            "'BO'[(전체/방송중)한계달성률(%)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [
+          {
+            "kind": "TREATAS",
+            "values": "{\"유형\"}",
+            "fields": [
+              "'BO'[유/무형]"
+            ]
+          }
+        ],
+        "dateLiterals": [
+          "2026-04-01",
+          "2026-05-12"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-6-1",
+      "sourceFile": "PowerBIPerformanceData.json",
+      "visualId": "fc5d39f375d6ac084e00",
+      "title": "슬라이서",
+      "visualType": "slicer",
+      "recordedAt": "2026-10-22T10:11:28.586Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-6-1.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]"
+      ],
+      "measureReferences": [],
+      "outputs": [
+        {
+          "alias": "Min방송일시",
+          "expression": "CALCULATE(MIN('BO'[방송일시]))",
+          "references": [
+            "'BO'[방송일시]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Max방송일시",
+          "expression": "CALCULATE(MAX('BO'[방송일시]))",
+          "references": [
+            "'BO'[방송일시]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-6-2",
+      "sourceFile": "PowerBIPerformanceData.json",
+      "visualId": "405feef20a2b86ee7dee",
+      "title": "여러 행 카드",
+      "visualType": "multiRowCard",
+      "recordedAt": "2026-10-22T10:11:28.586Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-6-2.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[(전체)취급(분)]",
+        "'BO'[(전체)예상매출액(V-)(분)]",
+        "'BO'[(전체)예상매출총이익액(V-)(분)]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체)취급(분)]",
+        "'BO'[(전체)예상매출액(V-)(분)]",
+        "'BO'[(전체)예상매출총이익액(V-)(분)]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_취급_분_",
+          "expression": "IGNORE('BO'[(전체)취급(분)])",
+          "references": [
+            "'BO'[(전체)취급(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_예상매출액_V___분_",
+          "expression": "IGNORE(\n\t\t\t'BO'[(전체)예상매출액(V-)(분)]\n\t\t)",
+          "references": [
+            "'BO'[(전체)예상매출액(V-)(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_예상매출총이익액_V___분_",
+          "expression": "IGNORE(\n\t\t\t'BO'[(전체)예상매출총이익액(V-)(분)]\n\t\t)",
+          "references": [
+            "'BO'[(전체)예상매출총이익액(V-)(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계_분_",
+          "expression": "IGNORE('BO'[(전체)한계(분)])",
+          "references": [
+            "'BO'[(전체)한계(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_연동_방송중_정액外_취급액을_를__노출분_으_로_나눈_값",
+          "expression": "IGNORE(\n\t\t\t'BO'[(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값]\n\t\t)",
+          "references": [
+            "'BO'[(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [
+          "2026-10-21",
+          "2026-10-22"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-6-3",
+      "sourceFile": "PowerBIPerformanceData.json",
+      "visualId": "c2761d68ba73319b83a0",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:28.602Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-6-3.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[(전체/미리주문)한익률(%)]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/미리주문)한익률(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_미리주문_한익률___",
+          "expression": "IGNORE('BO'[(전체/미리주문)한익률(%)])",
+          "references": [
+            "'BO'[(전체/미리주문)한익률(%)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [
+          "2026-10-21",
+          "2026-10-22"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-6-4",
+      "sourceFile": "PowerBIPerformanceData.json",
+      "visualId": "4edd67bb9b9bc2f37f7f",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:28.586Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-6-4.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_한계이익에서_정액수수료_원_을_를__뺀_값을_를___전체_방송중_예상취급액_V__에서_정액수수료_원_을_를__뺀_값_으_로_나눈_값",
+          "expression": "IGNORE(\n\t\t\t'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]\n\t\t)",
+          "references": [
+            "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [
+          "2026-10-21",
+          "2026-10-22"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-6-5",
+      "sourceFile": "PowerBIPerformanceData.json",
+      "visualId": "131293b0dbaf98b7e1db",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:28.586Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-6-5.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_변동비_V__을_를___전체_방송중_예상취급액_V__에서_정액수수료_원_을_를__뺀_값_으_로_나눈_값",
+          "expression": "IGNORE(\n\t\t\t'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]\n\t\t)",
+          "references": [
+            "'BO'[(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [
+          "2026-10-21",
+          "2026-10-22"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-6-6",
+      "sourceFile": "PowerBIPerformanceData.json",
+      "visualId": "cc8d1607f2bca846fa18",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:28.602Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-6-6.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_예상취급액_V__에서_정액수수료_원_을_를__뺀_값",
+          "expression": "IGNORE(\n\t\t\t'BO'[(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값]\n\t\t)",
+          "references": [
+            "'BO'[(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [
+          "2026-10-21",
+          "2026-10-22"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-6-7",
+      "sourceFile": "PowerBIPerformanceData.json",
+      "visualId": "3a0327ed17af8db0c6c7",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:28.602Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-6-7.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[(전체/방송중)변동비(V-)]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)변동비(V-)]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_변동비_V__",
+          "expression": "IGNORE('BO'[(전체/방송중)변동비(V-)])",
+          "references": [
+            "'BO'[(전체/방송중)변동비(V-)]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [
+          "2026-10-21",
+          "2026-10-22"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-6-8",
+      "sourceFile": "PowerBIPerformanceData.json",
+      "visualId": "f84f9483db4177cd34f2",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:28.602Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-6-8.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값]"
+      ],
+      "outputs": [
+        {
+          "alias": "v_전체_방송중_한계이익에서_정액수수료_원_을_를__뺀_값",
+          "expression": "IGNORE(\n\t\t\t'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값]\n\t\t)",
+          "references": [
+            "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [
+          "2026-10-21",
+          "2026-10-22"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-6-9",
+      "sourceFile": "PowerBIPerformanceData.json",
+      "visualId": "e25feb862be5b3e41000",
+      "title": "카드",
+      "visualType": "card",
+      "recordedAt": "2026-10-22T10:11:28.617Z",
+      "rowCount": 1,
+      "queryFile": "docs/power-bi/captures/queries/capture-6-9.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[가중분]"
+      ],
+      "measureReferences": [],
+      "outputs": [
+        {
+          "alias": "Sum가중분",
+          "expression": "IGNORE(CALCULATE(SUM('BO'[가중분])))",
+          "references": [
+            "'BO'[가중분]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [
+          "2026-10-21",
+          "2026-10-22"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-6-10",
+      "sourceFile": "PowerBIPerformanceData.json",
+      "visualId": "e5fec7eac38616d84e7e",
+      "title": "Simple Image",
+      "visualType": "simpleImageEBC4593F96F1425FB3D84C5BF02B5075",
+      "recordedAt": "2026-10-22T10:11:28.633Z",
+      "rowCount": 34,
+      "queryFile": "docs/power-bi/captures/queries/capture-6-10.dax",
+      "groupingReferences": [],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[이미지]"
+      ],
+      "measureReferences": [],
+      "outputs": [],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [
+          "2026-10-21",
+          "2026-10-22"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    },
+    {
+      "id": "capture-6-11",
+      "sourceFile": "PowerBIPerformanceData.json",
+      "visualId": "74a18ea06ef6cb2edfc9",
+      "title": "테이블",
+      "visualType": "tableEx",
+      "recordedAt": "2026-10-22T10:11:28.633Z",
+      "rowCount": 35,
+      "queryFile": "docs/power-bi/captures/queries/capture-6-11.dax",
+      "groupingReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상ID]",
+        "'BO'[대표업체명]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[메모코드]"
+      ],
+      "allReferences": [
+        "'BO'[방송일시]",
+        "'BO'[다원구분]",
+        "'BO'[MD분류]",
+        "'BO'[편성코드]",
+        "'BO'[영상구분]",
+        "'BO'[거래형태]",
+        "'BO'[편성 Comment]",
+        "'BO'[영상ID]",
+        "'BO'[대표업체명]",
+        "'BO'[MD명]",
+        "'BO'[기업구분]",
+        "'BO'[프로그램명]",
+        "'BO'[메모코드]",
+        "'BO'[노출분]",
+        "'BO'[가중분]",
+        "'BO'[(전체)취급(분)]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(전체/방송중)한계(분)]",
+        "'BO'[(연동/방송중)취급액(분)]",
+        "'BO'[분당혼합비]",
+        "'BO'[(전체/방송중)제휴포인트]",
+        "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]",
+        "'BO'[(연동)총주문량]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]",
+        "'BO'[(전체)매총달성률(%)]",
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체/미리주문)취급/목표(%)]",
+        "'BO'[판매가(대표상품)]",
+        "'BO'[정액수수료(원)]",
+        "'BO'[(연동/방송중)정액外 취급액]",
+        "'BO'[(전체)목표매출액(V-)]",
+        "'BO'[(전체)예상매출액(V-)]",
+        "'BO'[(전체)한계이익]",
+        "'BO'[(전체)한계이익목표]",
+        "'BO'[(전체)예상취급액]",
+        "'BO'[(전체)목표취급액]"
+      ],
+      "measureReferences": [
+        "'BO'[(전체)취급(분)]",
+        "'BO'[(전체)한계(분)]",
+        "'BO'[(전체/방송중)한계(분)]",
+        "'BO'[(연동/방송중)취급액(분)]",
+        "'BO'[분당혼합비]",
+        "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]",
+        "'BO'[(전체)취급달성률(%)]",
+        "'BO'[(전체)매출달성률(%)]",
+        "'BO'[(전체)매총달성률(%)]",
+        "'BO'[(전체)한계달성률(%)]",
+        "'BO'[(전체/미리주문)취급/목표(%)]"
+      ],
+      "outputs": [
+        {
+          "alias": "Sum노출분",
+          "expression": "CALCULATE(SUM('BO'[노출분]))",
+          "references": [
+            "'BO'[노출분]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sum가중분",
+          "expression": "CALCULATE(SUM('BO'[가중분]))",
+          "references": [
+            "'BO'[가중분]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_취급_분_",
+          "expression": "'BO'[(전체)취급(분)]",
+          "references": [
+            "'BO'[(전체)취급(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계_분_",
+          "expression": "'BO'[(전체)한계(분)]",
+          "references": [
+            "'BO'[(전체)한계(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_방송중_한계_분_",
+          "expression": "'BO'[(전체/방송중)한계(분)]",
+          "references": [
+            "'BO'[(전체/방송중)한계(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_연동_방송중_취급액_분_",
+          "expression": "'BO'[(연동/방송중)취급액(분)]",
+          "references": [
+            "'BO'[(연동/방송중)취급액(분)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "분당혼합비",
+          "expression": "'BO'[분당혼합비]",
+          "references": [
+            "'BO'[분당혼합비]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_방송중_제휴포인트",
+          "expression": "CALCULATE(SUM('BO'[(전체/방송중)제휴포인트]))",
+          "references": [
+            "'BO'[(전체/방송중)제휴포인트]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_방송중_한계이익에서_정액수수료_원_을_를__뺀_값을_를___전체_방송중_예상취급액_V__에서_정액수수료_원_을_를__뺀_값_으_로_나눈_값",
+          "expression": "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]",
+          "references": [
+            "'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_연동_총주문량",
+          "expression": "CALCULATE(SUM('BO'[(연동)총주문량]))",
+          "references": [
+            "'BO'[(연동)총주문량]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_취급달성률___",
+          "expression": "'BO'[(전체)취급달성률(%)]",
+          "references": [
+            "'BO'[(전체)취급달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_매출달성률___",
+          "expression": "'BO'[(전체)매출달성률(%)]",
+          "references": [
+            "'BO'[(전체)매출달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_매총달성률___",
+          "expression": "'BO'[(전체)매총달성률(%)]",
+          "references": [
+            "'BO'[(전체)매총달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_한계달성률___",
+          "expression": "'BO'[(전체)한계달성률(%)]",
+          "references": [
+            "'BO'[(전체)한계달성률(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "v_전체_미리주문_취급_목표___",
+          "expression": "'BO'[(전체/미리주문)취급/목표(%)]",
+          "references": [
+            "'BO'[(전체/미리주문)취급/목표(%)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sum판매가_대표상품_",
+          "expression": "CALCULATE(SUM('BO'[판매가(대표상품)]))",
+          "references": [
+            "'BO'[판매가(대표상품)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sum정액수수료_원_",
+          "expression": "CALCULATE(SUM('BO'[정액수수료(원)]))",
+          "references": [
+            "'BO'[정액수수료(원)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_연동_방송중_정액外_취급액",
+          "expression": "CALCULATE(SUM('BO'[(연동/방송중)정액外 취급액]))",
+          "references": [
+            "'BO'[(연동/방송중)정액外 취급액]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_목표매출액_V__",
+          "expression": "CALCULATE(\n\t\t\t\tSUM('BO'[(전체)목표매출액(V-)])\n\t\t\t)",
+          "references": [
+            "'BO'[(전체)목표매출액(V-)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_예상매출액_V__",
+          "expression": "CALCULATE(\n\t\t\t\tSUM('BO'[(전체)예상매출액(V-)])\n\t\t\t)",
+          "references": [
+            "'BO'[(전체)예상매출액(V-)]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_한계이익",
+          "expression": "CALCULATE(SUM('BO'[(전체)한계이익]))",
+          "references": [
+            "'BO'[(전체)한계이익]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_한계이익목표",
+          "expression": "CALCULATE(SUM('BO'[(전체)한계이익목표]))",
+          "references": [
+            "'BO'[(전체)한계이익목표]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_예상취급액",
+          "expression": "CALCULATE(SUM('BO'[(전체)예상취급액]))",
+          "references": [
+            "'BO'[(전체)예상취급액]"
+          ],
+          "contextSensitive": false
+        },
+        {
+          "alias": "Sumv_전체_목표취급액",
+          "expression": "CALCULATE(SUM('BO'[(전체)목표취급액]))",
+          "references": [
+            "'BO'[(전체)목표취급액]"
+          ],
+          "contextSensitive": false
+        }
+      ],
+      "recordedFilters": {
+        "treatAs": [],
+        "dateLiterals": [
+          "2026-10-21",
+          "2026-10-22"
+        ],
+        "hasAllSelected": false
+      },
+      "execution": "reference-only: captured constants/filters must not be executed as a generic query"
+    }
+  ],
+  "limitations": [
+    "No full model definitions or result data.",
+    "Captured dates, product and type filters are examples, not application defaults.",
+    "Model measures are invoked by reference; their formulas are not reconstructed.",
+    "ALLSELECTED ratios depend on the selected dimensions and filters.",
+    "Captures do not embed a verified dataset/page binding."
+  ]
+}

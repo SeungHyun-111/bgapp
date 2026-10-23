@@ -1,0 +1,23 @@
+version: "3.1"
+nlu:
+  - intent: query
+    examples: |
+      - 헬스푸드팀 [월별]{"entity":"groupBy","value":"month"} 편성비중
+      - 헬스푸드팀 9월 편성비중
+      - 2026년 9월에 헬스푸드팀 편성비중 못만들어?
+      - 9월 헬스푸드팀 [가중분]{"entity":"metric","value":"weighted_minutes"}
+      - 헬스푸드팀 [월별]{"entity":"groupBy","value":"month"} [가중분]{"entity":"metric","value":"weighted_minutes"}
+      - [문화팀]{"entity":"organization","value":"문화서비스"} [가중분]{"entity":"metric","value":"weighted_minutes"}
+      - [문화팀]{"entity":"organization","value":"문화서비스"} 편성비중
+      - 6월에 편성비중 [제일]{"entity":"limit","value":1} 많이 쓴 [팀]{"entity":"groupBy","value":"organization"}
+      - 뭐야 6월 [조직별]{"entity":"groupBy","value":"organization"} 편성비중도 못만들어?
+      - 9월 [조직별]{"entity":"groupBy","value":"organization"} 편성비중
+  - intent: change_grouping
+    examples: |
+      - 26년 [월별]{"entity":"groupBy","value":"month"}
+      - [조직별]{"entity":"groupBy","value":"organization"} 편성비중말이야.  못만드나보네 뭐이렇게 집계를 못하냐 병신아
+  - intent: modify_condition
+    examples: |
+      - [문화팀]{"entity":"organization","value":"문화서비스"} 찾으라니깐 왜 편성팀찾앗어
+      - 9월 말이야 그리고 이런건 좀 아래에 선택하는 식으로 제안하라고햇잖아.
+      - 하 왜또 [조직별]{"entity":"groupBy","value":"organization"} 편성비중이라는데 편성팀을 가져오지? 학습안했나? 포함된 팀들 있잖아 9월에 방송한 [팀들의]{"entity":"groupBy","value":"organization"} 각 편성비중을 가져오라는거잖아.

@@ -1,0 +1,18 @@
+DEFINE
+	VAR __DS0FilterTable = 
+		TREATAS({2026}, 'BO'[YEAR(DAX)])
+
+	VAR __DS0FilterTable2 = 
+		TREATAS({9}, 'BO'[MONTH(DAX)])
+
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS('BO'[조직명], __DS0FilterTable, __DS0FilterTable2, "Sum가중분", CALCULATE(SUM('BO'[가중분])))
+
+	VAR __DS0BodyLimited = 
+		TOPN(1002, __DS0Core, [Sum가중분], 0, 'BO'[조직명], 1)
+
+EVALUATE
+	__DS0BodyLimited
+
+ORDER BY
+	[Sum가중분] DESC, 'BO'[조직명]

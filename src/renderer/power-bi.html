@@ -7,10 +7,8 @@
 <form id="search-form"><label class="row-label" for="keyword">1. 실적 검색 :</label><div class="input-wrap"><input id="keyword" role="combobox" aria-label="편성코드명" aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false" placeholder="편성코드명" maxlength="2000" autocomplete="off"><div id="suggestions" role="listbox" hidden></div></div><button id="search" type="submit">검색</button><button id="clear" type="button">초기화</button></form>
 <form id="talk-form"><label class="row-label" for="talk-input">2. 다른 이야기하기 :</label><input id="talk-input" aria-label="다른 이야기하기" placeholder="우사기에게 이야기해주세요" maxlength="2000" autocomplete="off"><button id="talk-send" type="submit">말하기</button></form>
 </div>
-<div id="code-tools"><button id="refresh-codes" type="button">자동완성 목록 갱신</button><span id="code-status">편성코드 자동완성 · ↑↓ 선택 / Enter 검색</span></div>
-<p id="status" role="status">검색하면 상품별 실적을 한 화면에서 볼 수 있어요.</p>
+<p id="status" role="status" hidden></p>
 <section id="conversation" aria-label="다른 이야기" hidden></section>
-<p id="talk-note">아직 모르는 질문은 이 기기에만 기록해요. 외부 AI로 보내지 않아요.</p>
 <div id="content" hidden>
 <div class="report-top">
 <div class="slicers">
@@ -32,5 +30,4 @@
 </div>
 <details id="extra"><summary>선택 방송의 전체 구분 필드 · 원본 지표 이름</summary><div id="extra-content"></div></details>
 </div>
-<footer>표 좌우 스크롤 · 방송 행 선택 시 카드와 하단 지표에 적용 · Esc / 바깥 클릭으로 닫기</footer>
 </main><script src="power-bi.js"></script></body></html>

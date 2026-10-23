@@ -1,0 +1,21 @@
+DEFINE VAR __DS0FilterTable = 
+	FILTER(
+		KEEPFILTERS(VALUES('BO'[방송일시])),
+		AND('BO'[방송일시] >= DATE(2026, 10, 21), 'BO'[방송일시] < DATE(2026, 10, 22))
+	)
+
+EVALUATE
+	SUMMARIZECOLUMNS(
+		__DS0FilterTable,
+		"v_전체_취급_분_", IGNORE('BO'[(전체)취급(분)]),
+		"v_전체_예상매출액_V___분_", IGNORE(
+			'BO'[(전체)예상매출액(V-)(분)]
+		),
+		"v_전체_예상매출총이익액_V___분_", IGNORE(
+			'BO'[(전체)예상매출총이익액(V-)(분)]
+		),
+		"v_전체_한계_분_", IGNORE('BO'[(전체)한계(분)]),
+		"v_연동_방송중_정액外_취급액을_를__노출분_으_로_나눈_값", IGNORE(
+			'BO'[(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값]
+		)
+	)

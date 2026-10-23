@@ -1,0 +1,5 @@
+EVALUATE
+	ROW(
+		"Min방송일시", CALCULATE(MIN('BO'[방송일시])),
+		"Max방송일시", CALCULATE(MAX('BO'[방송일시]))
+	)

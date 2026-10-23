@@ -24,7 +24,7 @@ class PowerBiBridge {
       let message;
       try { message = JSON.parse(line.replace(/^\uFEFF/, '')); } catch { return; }
       if (message.event === 'fatal') {
-        this.failAll(new Error(message.message));
+        this.failAll(Object.assign(new Error(message.message),{code:message.code}));
         child.kill();
         return;
       }
@@ -66,6 +66,7 @@ class PowerBiBridge {
     return new Promise((resolve, reject) => {
       const id = ++this.nextId;
       const timer = setTimeout(() => {
+        this.failAll(Object.assign(new Error('Power BI response timed out'),{code:'BI_TIMEOUT'}));
         this.stop();
       }, this.timeoutMs);
       this.pending.set(id, { resolve, reject, timer });

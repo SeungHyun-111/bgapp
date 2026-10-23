@@ -1,0 +1,13 @@
+EVALUATE
+	ROW(
+		"Sumv_전체_무이자수수료", CALCULATE(SUM('BO'[(전체)무이자수수료])),
+		"Sumv_전체_배송보관비", CALCULATE(SUM('BO'[(전체)배송보관비])),
+		"Sumv_전체_사은품", CALCULATE(SUM('BO'[(전체)사은품])),
+		"Sumv_전체_양품화비", CALCULATE(SUM('BO'[(전체)양품화비])),
+		"Sumv_전체_적립금", CALCULATE(SUM('BO'[(전체)적립금])),
+		"Sumv_전체_제휴수수료", CALCULATE(SUM('BO'[(전체)제휴수수료])),
+		"Sumv_전체_주문상담비", CALCULATE(SUM('BO'[(전체)주문상담비])),
+		"Sumv_전체_청구할인", CALCULATE(SUM('BO'[(전체)청구할인])),
+		"Sumv_전체_PG수수료", CALCULATE(SUM('BO'[(전체)PG수수료])),
+		"Sumv_전체_제휴포인트", CALCULATE(SUM('BO'[(전체)제휴포인트]))
+	)

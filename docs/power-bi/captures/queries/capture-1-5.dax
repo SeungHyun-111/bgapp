@@ -1,0 +1,31 @@
+DEFINE
+	VAR __DS0FilterTable = 
+		TREATAS({2026}, 'BO'[YEAR(DAX)])
+
+	VAR __DS0FilterTable2 = 
+		TREATAS({9}, 'BO'[MONTH(DAX)])
+
+	VAR __DS0Core = 
+		SUMMARIZECOLUMNS(
+			ROLLUPADDISSUBTOTAL('BO'[영상구분], "IsGrandTotalRowTotal"),
+			__DS0FilterTable,
+			__DS0FilterTable2,
+			"v_전체_미리주문_취급_목표___", 'BO'[(전체/미리주문)취급/목표(%)],
+			"v_전체_한계_분_", 'BO'[(전체)한계(분)],
+			"v_전체_취급_분_", 'BO'[(전체)취급(분)],
+			"v_전체_취급달성률___", 'BO'[(전체)취급달성률(%)],
+			"v_전체_매출달성률___", 'BO'[(전체)매출달성률(%)],
+			"v_전체_한계달성률___", 'BO'[(전체)한계달성률(%)],
+			"Sumv_전체_예상매출총이익액_V__배송료_제외", CALCULATE(
+				SUM('BO'[(전체)예상매출총이익액(V-)배송료 제외])
+			)
+		)
+
+	VAR __DS0PrimaryWindowed = 
+		TOPN(502, __DS0Core, [IsGrandTotalRowTotal], 0, [v_전체_미리주문_취급_목표___], 0, 'BO'[영상구분], 1)
+
+EVALUATE
+	__DS0PrimaryWindowed
+
+ORDER BY
+	[IsGrandTotalRowTotal] DESC, [v_전체_미리주문_취급_목표___] DESC, 'BO'[영상구분]

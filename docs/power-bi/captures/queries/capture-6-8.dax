@@ -1,0 +1,13 @@
+DEFINE VAR __DS0FilterTable = 
+	FILTER(
+		KEEPFILTERS(VALUES('BO'[방송일시])),
+		AND('BO'[방송일시] >= DATE(2026, 10, 21), 'BO'[방송일시] < DATE(2026, 10, 22))
+	)
+
+EVALUATE
+	SUMMARIZECOLUMNS(
+		__DS0FilterTable,
+		"v_전체_방송중_한계이익에서_정액수수료_원_을_를__뺀_값", IGNORE(
+			'BO'[(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값]
+		)
+	)
