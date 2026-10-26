@@ -45,3 +45,16 @@ test('BI failure remains distinguishable from Qwen failure and is never replaced
   await assert.rejects(executor.execute(plan()),e=>e.code==='BI_QUERY_FAILED');
   assert.match(formatAnswer({kind:'error',error:{code:'BI_QUERY_FAILED'}},catalog),/실제 BI 조회에 실패/);
 });
+
+test('set-valued filters support multiple selected targets without text interpretation',()=>{
+  const p={...plan(),metrics:['weighted_minutes'],target:null,filters:[...filters,{field:'BO[편성코드]',operator:'prefix_any',value:['[A]','[B]']}],groupBy:[]};
+  assert.match(compilePlan(p,catalog,entities).dax,/LEFT\('BO'\[편성코드\], 3\) = "\[A\]" \|\| LEFT/);
+  assert.throws(()=>compilePlan({...p,filters:[...filters,{field:'BO[편성코드]',operator:'eq',value:['A','B']}]},catalog,entities),/Scalar filter/);
+});
+
+test('dimension value exploration validates the column and projects only real BI response values',async()=>{
+  let calls=0;
+  const executor=createLiveExecutor({catalog,entities,query:async dax=>{calls++;assert.match(dax,/DISTINCT\(SELECTCOLUMNS/);return {results:[{tables:[{rows:[{'[__value]':'로봇청소기'}]}]}]};}});
+  assert.deepEqual(await executor.searchValues({field:'BO[대표상품명]',query:'로봇'}),[{field:'BO[대표상품명]',value:'로봇청소기'}]);
+  await assert.rejects(executor.searchValues({field:'invented',query:'anything'}));assert.equal(calls,1);
+});

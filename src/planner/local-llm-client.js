@@ -4,10 +4,11 @@ const {spawn}=require('child_process');
 const {randomBytes}=require('crypto');
 const turnSchema=require('./turn-schema.json');
 const {definitions}=require('./bi-tool-catalog');
+const {responseContract}=require('./conversation-contract');
 const {withinBudget}=require('./request-budget');
 const fail=(code,message)=>Object.assign(new Error(message),{code});
 function localUrl(value){const url=new URL(value);if(url.protocol!=='http:'||url.hostname!=='127.0.0.1'||url.username||url.password||url.search||url.hash||url.pathname!=='/')throw fail('LLM_CONFIG','Only http://127.0.0.1:<port> is allowed');return url.origin;}
-function responseSchema(){return {oneOf:[turnSchema,{type:'object',additionalProperties:false,required:['tool'],properties:{tool:{type:'object',additionalProperties:false,required:['name','arguments'],properties:{name:{type:'string',enum:definitions.map(t=>t.name)},arguments:{type:'object'}}}}}]};}
+function responseSchema(){return responseContract(definitions);}
 class LocalLlmClient{
   constructor({directory=path.resolve(__dirname,'../../data/llm'),baseUrl=process.env.LLAMA_SERVER_URL,modelPath=process.env.LOCAL_LLM_MODEL_PATH||process.env.LLAMA_MODEL_PATH,activeManifest=path.resolve(directory,'../learning/active-model.json'),port=Number(process.env.LOCAL_LLM_PORT||8080),timeoutMs=90000,startupMs=90000,idleMs=5*60000,onStatus=()=>{},recordRaw=async()=>{},fetchImpl=fetch}={}){
     this.directory=directory;this.external=Boolean(baseUrl);this.base=baseUrl?localUrl(baseUrl):null;this.modelPath=modelPath;this.timeoutMs=timeoutMs;this.startupMs=startupMs;this.idleMs=idleMs;this.onStatus=onStatus;this.recordRaw=recordRaw;this.fetch=fetchImpl;this.key=process.env.LLAMA_API_KEY||randomBytes(24).toString('hex');this.child=null;this.starting=null;this.timer=null;this.inFlight=0;this.generation=0;
@@ -57,7 +58,7 @@ class LocalLlmClient{
     const signal=parentSignal?AbortSignal.any([parentSignal,AbortSignal.timeout(this.timeoutMs)]):AbortSignal.timeout(this.timeoutMs);
     try{
       await withinBudget(()=>this.start(),signal);signal.throwIfAborted();
-      this.onStatus(purpose.startsWith('catalog-')?'로컬 Qwen이 BI 지표 설명에서 관련 후보를 찾는 중이야 🐰':'로컬 Qwen이 조회 계획을 만드는 중이야 🐰');
+      this.onStatus(purpose==='conversation'?'우응, 네 이야기를 듣고 있어 🐰':purpose.startsWith('catalog-')?'로컬 Qwen이 BI 지표 설명에서 관련 후보를 찾는 중이야 🐰':'로컬 Qwen이 조회 계획을 만드는 중이야 🐰');
       trace.model=this.modelName;trace.modelPath=this.external?null:this.findModel();
       let response;
       try{response=await withinBudget(()=>this.fetch(this.base+'/v1/chat/completions',{method:'POST',headers:this.headers(),redirect:'error',signal,body:JSON.stringify({messages,stream:false,temperature:0,max_tokens:Math.min(2400,Math.max(100,maxTokens)),cache_prompt:true,chat_template_kwargs:{enable_thinking:false},response_format:{type:'json_schema',json_schema:{name:'bi_structured_response',strict:true,schema:customSchema||responseSchema()}}})}),signal);}

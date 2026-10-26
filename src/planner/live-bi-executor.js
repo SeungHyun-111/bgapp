@@ -15,6 +15,8 @@ function compilePlan(input,catalog,entities=[]){
   };
   function predicate(f){
     const col=column(f.field);
+    if(f.operator==='in')return `${col} IN {${f.value.map(literal).join(', ')}}`;
+    if(f.operator==='prefix_any')return '('+f.value.map(v=>`LEFT(${col}, ${v.length}) = ${literal(v)}`).join(' || ')+')';
     let value=literal(f.value);
     if(fields.get(f.field).type==='datetime'&&f.operator!=='hour'){
       const d=new Date(String(f.value).length===10?f.value+'T00:00:00Z':f.value+'Z');
@@ -82,7 +84,15 @@ function compilePlan(input,catalog,entities=[]){
 
 function createLiveExecutor({catalog,entities=[],query,onStatus=()=>{}}){
   if(typeof query!=='function')throw Error('A live BI query function is required');
-  return {mode:'live',async execute(plan){
+  return {mode:'live',async searchValues({field,query:term='',limit=5}){
+    if(!fieldMap(catalog).has(field)||!field.startsWith('BO[')||!field.endsWith(']')||typeof term!=='string'||term.length>300||!Number.isInteger(limit)||limit<1||limit>20)throw Error('Invalid BI value discovery request');
+    const col="'BO'["+field.slice(3,-1).replace(/\]/g,']]')+']';
+    const predicate=term?` && CONTAINSSTRING(${col}, ${literal(term.replace(/[~*?]/g,'~$&'))})`:'';
+    onStatus('하! BI에서 실제 항목 후보를 찾는 중이야 🐰');
+    try{const dax=`EVALUATE TOPN(${limit}, DISTINCT(SELECTCOLUMNS(FILTER(ALL('BO'), NOT ISBLANK(${col})${predicate}), "__value", ${col})), [__value], ASC)`;
+      return extractRows(await query(dax)).slice(0,limit).map(row=>({field,value:row['[__value]']??row.__value}));
+    }catch(cause){throw Object.assign(Error('BI 항목 후보를 가져오지 못했어.'),{code:'BI_QUERY_FAILED',cause});}
+  },async execute(plan){
     const compiled=compilePlan(plan,catalog,entities);
     onStatus('하! 실제 BI에서 값을 가져오는 중이야 🐰');
     let rows;

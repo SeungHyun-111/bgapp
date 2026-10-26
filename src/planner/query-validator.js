@@ -1,6 +1,7 @@
 const schema=require('./plan-schema.json');
 function schemaErrors(value,definition,path='$'){
   const errors=[];
+  if(definition.oneOf){const branches=definition.oneOf.map(d=>schemaErrors(value,d,path));if(branches.filter(e=>!e.length).length!==1)errors.push(`${path}: must match exactly one permitted response shape`);}
   const type=value===null?'null':Array.isArray(value)?'array':Number.isInteger(value)?'integer':typeof value;
   const allowed=Array.isArray(definition.type)?definition.type:[definition.type];
   if(definition.type&&!allowed.includes(type)&&!(type==='integer'&&allowed.includes('number')))return [`${path}: invalid type`];
@@ -13,8 +14,9 @@ function schemaErrors(value,definition,path='$'){
     }
   }
   if(type==='array'){
+    if(value.length<(definition.minItems||0))errors.push(`${path}: too few items`);
     if(value.length>(definition.maxItems??Infinity))errors.push(`${path}: too many items`);
-    value.forEach((item,i)=>errors.push(...schemaErrors(item,definition.items,`${path}[${i}]`)));
+    if(definition.items)value.forEach((item,i)=>errors.push(...schemaErrors(item,definition.items,`${path}[${i}]`)));
   }
   if(type==='string'&&(value.length<(definition.minLength||0)||value.length>(definition.maxLength??Infinity)))errors.push(`${path}: invalid length`);
   if(['integer','number'].includes(type)&&(!Number.isFinite(value)||value<(definition.minimum??-Infinity)||value>(definition.maximum??Infinity)))errors.push(`${path}: invalid number`);
@@ -28,6 +30,9 @@ function validatePlan(plan,catalog,entities=[]){
   for(const field of [...plan.fields,...plan.filters.map(f=>f.field),...plan.groupBy.map(g=>g.field)])if(!fields.has(field))errors.push(`Unknown field: ${field}`);
   for(const metric of plan.metrics){const m=catalog.metrics[metric];if(!m)errors.push(`Unknown metric: ${metric}`);else if(m.aggregation==='raw')errors.push(`Aggregation undefined: ${metric}`);}
   for(const filter of plan.filters){
+    if(['in','prefix_any'].includes(filter.operator)){
+      if(!Array.isArray(filter.value)||!filter.value.length||(filter.operator==='prefix_any'&&filter.value.some(v=>typeof v!=='string')))errors.push('Set filter requires a nonempty typed value array');
+    }else if(Array.isArray(filter.value))errors.push('Scalar filter cannot use an array value');
     if(filter.operator==='hour'&&(fields.get(filter.field)?.type!=='datetime'||!Number.isInteger(filter.value)||filter.value<0||filter.value>23))errors.push('Invalid hour filter');
     if(fields.get(filter.field)?.type==='datetime'&&filter.operator!=='hour'){
       const text=String(filter.value),match=text.match(/^(\d{4})-(\d{2})-(\d{2})(?:T\d{2}:\d{2}:\d{2})?$/);

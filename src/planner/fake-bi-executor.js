@@ -1,6 +1,8 @@
 const {validatePlan}=require('./query-validator');
 function matches(row,filter){
   const value=row[filter.field];
+  if(filter.operator==='in')return filter.value.includes(value);
+  if(filter.operator==='prefix_any')return value!=null&&filter.value.some(v=>String(value).startsWith(v));
   if(filter.operator==='hour')return Number(String(value).slice(11,13))===filter.value;
   if(filter.operator==='eq')return value===filter.value;
   if(filter.operator==='ne')return value!==filter.value;

@@ -120,15 +120,27 @@
                   "lt",
                   "contains",
                   "prefix",
-                  "hour"
+                  "hour",
+                  "in",
+                  "prefix_any"
                 ]
               },
               "value": {
                 "type": [
                   "string",
-                  "number"
+                  "number",
+                  "array"
                 ],
-                "maxLength": 300
+                "maxLength": 300,
+                "items": {
+                  "type": [
+                    "string",
+                    "number"
+                  ],
+                  "maxLength": 300
+                },
+                "minItems": 1,
+                "maxItems": 20
               }
             }
           }
@@ -235,15 +247,27 @@
                           "lt",
                           "contains",
                           "prefix",
-                          "hour"
+                          "hour",
+                          "in",
+                          "prefix_any"
                         ]
                       },
                       "value": {
                         "type": [
                           "string",
-                          "number"
+                          "number",
+                          "array"
                         ],
-                        "maxLength": 300
+                        "maxLength": 300,
+                        "items": {
+                          "type": [
+                            "string",
+                            "number"
+                          ],
+                          "maxLength": 300
+                        },
+                        "minItems": 1,
+                        "maxItems": 20
                       }
                     }
                   }
@@ -286,15 +310,27 @@
                           "lt",
                           "contains",
                           "prefix",
-                          "hour"
+                          "hour",
+                          "in",
+                          "prefix_any"
                         ]
                       },
                       "value": {
                         "type": [
                           "string",
-                          "number"
+                          "number",
+                          "array"
                         ],
-                        "maxLength": 300
+                        "maxLength": 300,
+                        "items": {
+                          "type": [
+                            "string",
+                            "number"
+                          ],
+                          "maxLength": 300
+                        },
+                        "minItems": 1,
+                        "maxItems": 20
                       }
                     }
                   }
