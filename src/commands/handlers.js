@@ -14,6 +14,8 @@ function createCommandSystem(store, { dialogue = null } = {}) {
       const command = parse(input, options);
       if (command.error) return { kind: 'reply', message: command.error };
       if (command.blocked) return { kind: 'reply', blocked: true, message: responses.blocked };
+      // The local planner owns talk-mode interpretation; search mode stays explicit.
+      if (dialogue?.planner && options.mode !== 'search') return dialogue.execute(input.trim());
       if (handlers.has(command.intent)) return handlers.get(command.intent)(command);
       if (dialogue && options.mode !== 'search') return dialogue.execute(input.trim());
       const result = await store.append(input, options.mode || 'talk');

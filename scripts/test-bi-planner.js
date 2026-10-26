@@ -48,7 +48,7 @@ test('planner records tools, raw plan, validation, execution and failures; clari
   let calls=0;const events=[];
   const responses=[{tool:{name:'listFields',arguments:{query:'방송'}}},{action:'clarify',question:'오전이야 오후야?'},{action:'new',patch:plan()},{action:'modify',patch:{metrics:['invented']}}];
   const contexts=[];
-  const planner=new QueryPlanner({catalog,entities,provider:{complete:async args=>{contexts.push(args.messages);return responses.shift();}},executor:{mode:'fake',execute:async()=>{calls++;return {synthetic:true,rows:[]};}},record:async e=>events.push(e)});
+  const planner=new QueryPlanner({catalog,entities,maxRepairs:0,provider:{complete:async args=>{contexts.push(args.messages);return responses.shift();}},executor:{mode:'fake',execute:async()=>{calls++;return {synthetic:true,rows:[]};}},record:async e=>events.push(e)});
   assert.equal((await planner.run('첫 질문')).kind,'clarify');assert.equal(calls,0);assert.equal(events[0].tools.length,1);
   assert.equal((await planner.run('추가 설명')).kind,'result');assert.equal(calls,1);assert.equal(events[1].queryExecuted,true);
   assert(contexts[2].some(m=>m.role==='user'&&m.content==='첫 질문'));

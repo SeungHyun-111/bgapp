@@ -1,5 +1,5 @@
 const copy=value=>structuredClone(value);
-const emptyPlan=()=>({operation:'list',target:null,fields:[],metrics:[],filters:[],groupBy:[],sort:[],limit:30});
+const emptyPlan=()=>({operation:'list',target:null,share:null,fields:[],metrics:[],filters:[],groupBy:[],sort:[],limit:30});
 // State transitions operate on a model-generated structured patch, never on text.
 function applyTurn(previous,turn){
   if(turn.action==='cancel')return {plan:null,pending:null,cancelled:true};
@@ -18,6 +18,8 @@ function applyTurn(previous,turn){
     if(!Object.hasOwn(emptyPlan(),key))throw Error('Unknown plan field');
     if(turn.action==='add'&&Array.isArray(plan[key])&&Array.isArray(value)){
       const items=[...plan[key],...value];plan[key]=[...new Map(items.map(x=>[JSON.stringify(x),x])).values()];
+    }else if(key==='filters'&&turn.action==='modify'){
+      const changed=new Set(value.map(f=>f.field));plan.filters=[...plan.filters.filter(f=>!changed.has(f.field)),...copy(value)];
     }else plan[key]=copy(value);
   }
   return {plan,pending:null};

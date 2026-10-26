@@ -40,9 +40,22 @@
     "bi:codes": "node scripts/update-program-codes.js",
     "queries:list": "node scripts/manage-queries.js",
     "queries:converted": "node scripts/manage-queries.js converted",
-    "commands:test": "node --test scripts/test-commands.js"
+    "commands:test": "node --test scripts/test-commands.js",
+    "qwen:learning:status": "node scripts/qwen-learning-status.js",
+    "qwen:learning:test": "node --test scripts/test-qwen-learning.js scripts/test-bi-planner.js scripts/test-planner-integration.js scripts/test-live-bi-executor.js",
+    "qwen:mask-test": "python -B scripts/test_qwen_masking.py"
   },
   "devDependencies": {
     "electron": "^37.10.3"
+  },
+  "packageManager": "pnpm@10.34.7",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "protobufjs",
+      "@firebase/util",
+      "re2",
+      "sharp"
+    ]
   }
 }

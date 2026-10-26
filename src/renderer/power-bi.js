@@ -181,10 +181,18 @@ function closeSuggestions(){
  clearTimeout(suggestionTimer);suggestionRevision++;suggested=[];activeSuggestion=-1;
  $('suggestions').hidden=true;$('suggestions').replaceChildren();$('keyword').setAttribute('aria-expanded','false');$('keyword').removeAttribute('aria-activedescendant');
 }
-function showReply(input,result){
+function showReply(input,result,timing){
  $('conversation').hidden=false;
- $('conversation').append(el('div',result.blocked?'인증 정보는 표시하지 않음':input,'user-message'),el('div',result.message,'usagi-message'));
- while($('conversation').childElementCount>40)$('conversation').firstChild.remove();
+ const turn=el('div',null,'conversation-turn');
+ turn.append(el('div',result.blocked?'인증 정보는 표시하지 않음':input,'user-message'),el('div',result.message,'usagi-message'));
+ if(timing){
+  const stamp=value=>new Date(value).toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul',hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const meta=el('div',`질문 ${stamp(timing.startedAt)} → 답변 ${stamp(timing.finishedAt)} · ${(timing.elapsedMs/1000).toFixed(1)}초`,'conversation-timing');
+  meta.title=`${new Date(timing.startedAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',hour12:false})} → ${new Date(timing.finishedAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',hour12:false})} (한국 시간)`;
+  turn.append(meta);
+ }
+ $('conversation').append(turn);
+ while($('conversation').childElementCount>20)$('conversation').firstChild.remove();
  $('conversation').scrollTop=$('conversation').scrollHeight;
  status(result.saved?'이 기기의 학습 노트에 기록했어요.':result.blocked?'저장하거나 전송하지 않았어요.':'');
 }
@@ -194,6 +202,8 @@ async function submitCommand(mode='search'){
  const button=mode==='search'?$('search'):$('talk-send');
  const input=inputElement.value.trim();if(!input){status('입력할 내용을 적어주세요.');return;}
  closeSuggestions();commandPending=true;button.disabled=true;const current=revision, token=++commandToken;
+ const startedAt=Date.now(),startedTick=performance.now();
+ const timing=()=>({startedAt,finishedAt:Date.now(),elapsedMs:performance.now()-startedTick});
  status(mode==='talk'?'하! 질문을 살펴보는 중이야. 로컬 엔진을 처음 켤 때는 잠깐 걸려 🐰':'검색 요청을 처리하는 중…');
  try{
   const result=await window.powerBi.command({text:input,mode});
@@ -203,8 +213,8 @@ async function submitCommand(mode='search'){
    button.disabled=false;
    if(mode==='talk'&&inputElement.value.trim()===input)inputElement.value='';
    $('keyword').value=result.keyword;await runSearch({},result.keyword);
-  }else{showReply(input,result);if(inputElement.value.trim()===input)inputElement.value='';}
- }catch(error){if(current===revision)status(error.message);}
+  }else{showReply(input,result,timing());if(inputElement.value.trim()===input)inputElement.value='';}
+ }catch(error){if(current===revision&&token===commandToken){if(mode==='talk')showReply(input,{message:error.message},timing());else status(error.message);}}
  finally{if(token===commandToken){commandPending=false;button.disabled=false;}}
 }
 function activateSuggestion(index){

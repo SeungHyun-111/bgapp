@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Menu, Tray, ipcMain, nativeImage, screen, shell } = require('electron');
 const fs = require('fs');
 const path = require('path');
+require('./planner/environment').loadEnvironment();
 const startPets = require('./pets');
 const { loadSchedule, refreshFutureOpsVersions, searchRemainingSchedules, refreshGlobalPerformance, searchPerformanceHistory, searchCompetitorInfo, warmPerformanceCache, getPerformanceCacheStatus, configureCacheDirectory, getRtdbProjects } = require('./schedule');
 
@@ -492,7 +493,7 @@ function createTray() {
 }
 
 app.whenReady().then(() => {
-  const stopLearningLoop=require('./commands/learning-loop').startLearningLoop();
+  const stopLearningLoop=process.env.USE_LLM_PLANNER==='true'?()=>{}:require('./commands/learning-loop').startLearningLoop();
   app.on('before-quit',stopLearningLoop);
   enableAutoLaunch();
   configureCacheDirectory(path.join(app.getPath('userData'), 'data-cache'));

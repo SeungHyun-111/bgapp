@@ -48,7 +48,16 @@ function validatePlan(plan,catalog,entities=[]){
   const dates=plan.filters.filter(f=>fields.get(f.field)?.type==='datetime');
   const start=dates.find(f=>f.operator==='gte'),end=dates.find(f=>f.operator==='lt');
   if(!start||!end||start.field!==end.field||start.value>=end.value)errors.push('A bounded datetime range is required');
-  if(plan.metrics.some(id=>catalog.metrics[id]?.aggregation==='share')&&plan.target?.kind!=='organization')errors.push('Verified share templates currently require an organization');
+  if(plan.share){
+    if(!plan.metrics.some(id=>catalog.metrics[id]?.aggregation==='share'))errors.push('Share specification requires a share output metric');
+    if(plan.share.numerator.metric!==plan.share.denominator.metric)errors.push('Share numerator and denominator require the same basis metric');
+    for(const side of [plan.share.numerator,plan.share.denominator]){
+      if(!['sum','count_distinct'].includes(catalog.metrics[side.metric]?.aggregation))errors.push('Ratio basis must be a registered aggregate metric');
+      const checked=validatePlan({...plan,share:null,target:null,metrics:[side.metric],filters:side.filters,groupBy:side.groupBy||plan.groupBy,sort:[]},catalog,entities);
+      if(!checked.ok)errors.push(...checked.errors.map(e=>'Ratio: '+e));
+    }
+    if(plan.share.denominator.groupBy.some(g=>!plan.groupBy.some(p=>p.field===g.field&&p.unit===g.unit)))errors.push('Denominator grouping must be an output grouping');
+  }
   const normalized=structuredClone(plan);
   if(plan.target?.kind==='organization'){
     const entity=entities.find(e=>e.kind==='organization'&&(e.value===plan.target.value||e.aliases?.includes(plan.target.value)));

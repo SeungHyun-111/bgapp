@@ -1,17 +1,19 @@
 param([ValidateSet('setup','train','start')][string]$Action = 'start')
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
+$env:UV_CACHE_DIR = 'D:\CODEX\.uv-cache'
+$env:UV_LINK_MODE = 'hardlink'
 $pythonPath = Join-Path $projectRoot '.venv-rasa/Scripts/python.exe'
 if ($Action -eq 'setup') {
   $driveName = [System.IO.Path]::GetPathRoot($projectRoot).TrimEnd('\').TrimEnd(':')
   if ((Get-PSDrive -Name $driveName).Free -lt 4GB) { throw 'Rasa setup needs at least 4 GB of free disk space.' }
-  & uv venv --python 3.10 (Join-Path $projectRoot '.venv-rasa')
+  & uv venv --relocatable --python 3.10 (Join-Path $projectRoot '.venv-rasa')
   if ($LASTEXITCODE -ne 0) { throw 'Python environment setup failed' }
-  & uv pip install --python $pythonPath rasa==3.6.21
+  & uv pip sync --python $pythonPath (Join-Path $projectRoot 'requirements-rasa.lock.txt')
   if ($LASTEXITCODE -ne 0) { throw 'Rasa installation failed' }
   exit
 }
-if (!(Test-Path -LiteralPath $pythonPath)) { throw 'Run npm run nlu:setup first' }
+if (!(Test-Path -LiteralPath $pythonPath)) { throw 'Run pnpm run nlu:setup first' }
 if ($Action -eq 'train') {
   & node (Join-Path $projectRoot 'scripts/train-reviewed-nlu.js')
   if ($LASTEXITCODE -ne 0) { throw 'Reviewed learning loop failed; active model preserved' }

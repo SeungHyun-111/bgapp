@@ -1,0 +1,9 @@
+# Qwen only. Do not install this into .venv-rasa.
+# Select the platform-specific PyTorch build (XPU on this PC) independently.
+# These are dependency constraints, NOT a tested/locked training environment.
+transformers>=4.51.3,<6
+peft>=0.15,<1
+bitsandbytes>=0.50.2,<0.51
+safetensors>=0.4.5
+# Install gguf-py from the SAME local llama.cpp revision as the converter.
+# No package installer is invoked by the application/worker.

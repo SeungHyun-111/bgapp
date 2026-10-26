@@ -1,0 +1,17 @@
+{
+  "metrics": {
+    "broadcast_count": {
+      "id": "broadcast_count",
+      "label": "방송횟수",
+      "aliases": ["방송건수", "방송 횟수"],
+      "unit": "회",
+      "column": "BO[방송일시]",
+      "aggregation": "count_distinct",
+      "definition": {"aggregation": "DISTINCTCOUNT", "column": "BO[방송일시]", "meaning": "같은 방송일시를 한 번으로 센다"},
+      "businessMeaning": "편성 빈도를 나타내는 방송일시 고유 개수. 상품 행 수나 가중분 합계와 다르다.",
+      "status": "user-confirmed-definition-and-capture-backed",
+      "sourceQueries": ["capture-4-3"],
+      "source": "Confirmed broadcast counting definition; planner catalog capability extension"
+    }
+  }
+}

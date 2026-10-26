@@ -18,7 +18,9 @@ module.exports = function createPowerBi(options = {}) {
   const codeIndex = new ProgramCodeIndex(path.join(dataDirectory, 'program-codes.json'));
   const nlu = new RasaClient();
   const entityCatalog = new EntityCatalog(path.join(dataDirectory,'bi-entity-catalog.json'));
-  const dialogue = new Dialogue({ nlu, store: queryStore, codes: () => codeIndex.codes,
+  require('./planner/environment').loadEnvironment();
+  const usePlanner=process.env.USE_LLM_PLANNER==='true';
+  const dialogue = usePlanner ? require('./planner/chat-dialogue').createPlannerDialogue({directory:dataDirectory,store:queryStore,onStatus:message=>status(message),query:async dax=>{try{return await bridge.query(dax);}finally{auth=false;}}}) : new Dialogue({ nlu, store: queryStore, codes: () => codeIndex.codes,
     getEntities: async () => {
       status('하! BI의 실제 팀·상품 목록을 확인할게 🐰');
       try { return await entityCatalog.ensure(bridge); } finally { auth=false; }
@@ -61,7 +63,7 @@ module.exports = function createPowerBi(options = {}) {
       if (input?.mode !== 'search') status('하! 로컬 엔진에서 질문을 해석하는 중이야 🐰');
       return await commands.execute(input?.text, { mode: input?.mode === 'search' ? 'search' : 'talk' });
     }
-    catch { return { error: '학습 노트를 저장하지 못했어요. 저장 공간과 권한을 확인해주세요.' }; }
+    catch { return { error: usePlanner ? '로컬 계획 처리 또는 대화 기록 저장에 문제가 생겼어. BI 연결 오류는 아니야 🐰' : '학습 노트를 저장하지 못했어요. 저장 공간과 권한을 확인해주세요.' }; }
   });
   ipcMain.handle('bi:suggestions', (event, value) => owner(event) ? { codes: codeIndex.suggest(value), count: codeIndex.codes.size } : { codes: [], count: 0 });
   ipcMain.handle('bi:refresh-codes', async event => {
@@ -143,7 +145,7 @@ module.exports = function createPowerBi(options = {}) {
     win.on('closed', () => { win = null; });
     win.loadFile(path.join(__dirname,'renderer/power-bi.html'));
   }
-  const stop = () => { pausePet(false); nlu.stop(); bridge.stop(); if (win && !win.isDestroyed()) win.destroy(); };
+  const stop = () => { pausePet(false); dialogue.stop?.(); nlu.stop(); bridge.stop(); if (win && !win.isDestroyed()) win.destroy(); };
   app.once('before-quit',stop);
   return { open, stop };
 };
