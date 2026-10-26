@@ -5,8 +5,11 @@ const filterKeys=['program','deal','night','video'];
 let schema,revision=0,visualRevision=0,searchId=null,data=null,selected=null,sortKey='BO[방송일시]',sortDirection=-1;
 let suggestionRevision=0, suggestionTimer=null, suggested=[], activeSuggestion=-1, composing=false, talkComposing=false, commandPending=false, commandToken=0;
 let activeCommand=null;
+const talkRequests=new Map();
 window.powerBi.engine().then(info=>{if(info)$('engine-status').textContent=`${info.engine} · ${info.execution}`;}).catch(()=>{$('engine-status').textContent='대화 엔진 상태를 확인하지 못했어';});
 window.powerBi.onReplyProgress(result=>{
+ const queued=talkRequests.get(result.requestId);
+ if(queued){if(queued.revision!==revision)return;queued.firstResultMs=performance.now()-queued.startedTick;queued.result=result;paintReply(queued.draft,result,queued.timing());return;}
  const active=activeCommand;if(!active||result.requestId!==active.id||active.revision!==revision||active.token!==commandToken)return;
  active.firstResultMs=performance.now()-active.startedTick;active.result=result;
  active.draft=showReply(active.input,result,active.timing());
@@ -23,6 +26,7 @@ function format(value,column={}){
  return String(value);
 }
 function clearView(clearInput=false){
+ for(const request of talkRequests.values())clearInterval(request.timer);talkRequests.clear();
  activeCommand=null;
  commandToken++;commandPending=false;$('talk-send').disabled=false;
  closeSuggestions();
@@ -34,7 +38,7 @@ function clearView(clearInput=false){
 }
 window.powerBi.onReset(()=>clearView(true));
 window.powerBi.onFocus(()=>$('keyword').focus());
-window.powerBi.onStatus(m=>{if(commandPending||!$('content').hidden||$('search').disabled)status(m);});
+window.powerBi.onStatus(m=>{if(talkRequests.size||commandPending||!$('content').hidden||$('search').disabled)status(m);});
 $('hide').onclick=()=>window.powerBi.hide();
 $('clear').onclick=()=>{clearView(true);window.powerBi.reset();$('keyword').focus();};
 $('keyword').addEventListener('input',()=>{
@@ -219,7 +223,24 @@ function showReply(input,result,timing){
  status(result.saved?'이 기기의 학습 노트에 기록했어요.':result.blocked?'저장하거나 전송하지 않았어요.':'');
  return turn;
 }
+async function submitTalk(){
+ if(talkComposing)return;
+ const inputElement=$('talk-input'),input=inputElement.value.trim();if(!input)return;
+ const startedAt=Date.now(),startedTick=performance.now(),request={id:crypto.randomUUID(),revision,startedTick};
+ request.timing=()=>({startedAt,finishedAt:Date.now(),elapsedMs:performance.now()-startedTick,firstResultMs:request.firstResultMs});
+ request.draft=showReply(input,{message:talkRequests.size?'앞선 답변 뒤에 이어서 답할게 🐰':'우응, 답을 생각하고 있어 🐰'},request.timing());
+ talkRequests.set(request.id,request);inputElement.value='';$('talk-send').disabled=false;
+ request.timer=setInterval(()=>{if(request.revision===revision){const meta=request.draft.querySelector('.conversation-timing');meta.textContent=`응답 대기 ${(performance.now()-startedTick)/1000|0}초 · 다음 메시지도 보낼 수 있어`; }},1000);
+ try{
+  const result=await window.powerBi.command({text:input,mode:'talk',requestId:request.id});
+  if(request.revision!==revision)return;
+  if(result.error)throw Error(result.error);
+  paintReply(request.draft,{...result,biResult:result.biResult||request.result?.biResult},request.timing());
+ }catch(error){if(request.revision===revision)paintReply(request.draft,{message:error.message,biResult:request.result?.biResult},request.timing());}
+ finally{clearInterval(request.timer);talkRequests.delete(request.id);$('talk-send').disabled=false;status(talkRequests.size?'남은 메시지도 순서대로 답하는 중이야 🐰':'');}
+}
 async function submitCommand(mode='search'){
+ if(mode==='talk')return submitTalk();
  if((mode==='search'?composing:talkComposing)||commandPending)return;
  const inputElement=mode==='search'?$('keyword'):$('talk-input');
  const button=mode==='search'?$('search'):$('talk-send');

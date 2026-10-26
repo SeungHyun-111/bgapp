@@ -121,12 +121,13 @@ module.exports = function createPowerBi(options = {}) {
     }
   });
   function open(pet, point = {}) {
+    if (petOwner === pet && win && !win.isDestroyed() && win.isVisible()) { win.hide(); return; }
     if (petOwner !== pet) { pausePet(false); petOwner = pet; }
     const bounds = pet.getBounds();
     anchor = { x: bounds.x + (Number.isFinite(point?.x) ? point.x : 100), y: bounds.y + (Number.isFinite(point?.y) ? point.y : 100) };
     area = screen.getDisplayNearestPoint(anchor).workArea;
     if (win && !win.isDestroyed()) {
-      reset(); place(230); win.setAlwaysOnTop(pet.isAlwaysOnTop()); win.show(); win.focus(); win.webContents.send('bi:focus'); return;
+      place(win.getBounds().height); win.setAlwaysOnTop(pet.isAlwaysOnTop()); win.show(); win.focus(); win.webContents.send('bi:focus'); return;
     }
     win = new BrowserWindow({
       width: 780, height: 230, frame: false, transparent: true, hasShadow: false,
@@ -136,10 +137,10 @@ module.exports = function createPowerBi(options = {}) {
     });
     win.setMenu(null); place(230);
     win.on('show', () => pausePet(true));
-    win.on('hide', () => { pausePet(false); reset(); });
+    win.on('hide', () => pausePet(false));
     win.once('ready-to-show', () => { win.show(); win.focus(); });
-    win.on('blur', () => { if (!auth) win.hide(); });
-    win.webContents.on('before-input-event', (event,input) => { if (input.key === 'Escape') { event.preventDefault(); win.hide(); } });
+    // Keep the conversation visible during screenshots and other focus changes.
+    // Close explicitly through the pet toggle, the close button or window close.
     win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     win.webContents.on('will-navigate', event => event.preventDefault());
     win.on('close', event => { event.preventDefault(); win.hide(); });

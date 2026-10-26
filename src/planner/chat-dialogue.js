@@ -19,6 +19,11 @@ function formatAnswer(out,catalog){
   if(out.kind==='invalid')return '아? 내가 조회 계획을 제대로 완성하지 못했어. 실제 조회는 실행하지 않았고, 네가 입력 형식을 바꿀 필요는 없어 🐰';
   if(out.kind==='error'){
     const code=out.error.code;
+    if(code==='MODEL_STARTUP_TIMEOUT'||code==='MODEL_HEALTH_TIMEOUT')return '아? 모델을 메모리에 준비하는 시간이 초과됐어. 답변 생성 시간 초과와는 다른 문제야 🐰';
+    if(code==='MODEL_PROCESS_EXIT'||code==='MODEL_BACKEND_ERROR')return '아? 로컬 모델 실행기가 준비 중 종료됐어. 실행기 로그를 남겼어 🐰';
+    if(code==='MODEL_FILE_NOT_FOUND'||code==='MODEL_FILE_INVALID')return '아? 로컬 모델 파일이나 경로를 확인해야 해 🐰';
+    if(code==='INFERENCE_TIMEOUT')return '아? 모델은 준비됐지만 답변 생성이 늦어졌어. 서버가 건강하면 메모리에 유지할게 🐰';
+    if(code==='INVALID_MODEL_RESPONSE')return '아? 로컬 모델이 답변 형식을 제대로 만들지 못했어. 직전 대화 조건은 유지했어 🐰';
     if(code==='BI_QUERY_FAILED')return '아? 실제 BI 조회에 실패했어. 로그인 상태나 BI 연결을 확인해줘 🐰';
     if(code==='BI_METRIC_UNSUPPORTED')return '아? 이 지표의 실행 가능한 계산식을 아직 확인하지 못했어. 실제 BI 조회는 실행하지 않았어 🐰';
     if(code==='LLM_MODEL_MISSING')return '아? 로컬 모델 파일을 찾지 못했어. 모델 경로 설정을 확인해줘 🐰';
@@ -43,6 +48,7 @@ function createPlannerDialogue({directory,store,onStatus=()=>{},onProgress=()=>{
   if(!selectedExecutor)throw Error('Actual chat requires a live BI query function; fake execution must be explicitly injected for tests');
   const planner=new QueryPlanner({provider:client,catalog,entities,semanticCatalog,executor:selectedExecutor,onStatus,now,maxRepairs:2});
   const orchestrator=new ConversationOrchestrator({planner,client});
+  if(!provider)setImmediate(()=>orchestrator.prepare().catch(error=>{onStatus('로컬 Qwen 준비에 문제가 생겼어 ('+error.code+') 🐰');}));
   let queue=Promise.resolve(),generation=0;
   const learner=learning&&!provider?new LearningSupervisor({dataDirectory:directory,client,onCandidate:(candidate,allowedModelRoot)=>{
     const task=queue.then(()=>promote({directory:path.join(directory,'learning'),client,candidate,allowedModelRoot}));queue=task.catch(()=>{});return task;

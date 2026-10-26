@@ -20,7 +20,7 @@ test('whole request deadline releases a hung provider and permits the next turn'
 test('client deadline includes a response body that never finishes',async()=>{
   const client=new LocalLlmClient({baseUrl:'http://127.0.0.1:8080',timeoutMs:25,fetchImpl:async url=>url.endsWith('/health')?{ok:true,json:async()=>({status:'ok'})}:{ok:true,text:()=>new Promise(()=>{})}});
   const keepAlive=setTimeout(()=>{},1000);
-  try{await assert.rejects(client.complete({messages:[]}),error=>error.code==='LLM_TIMEOUT');}
+  try{await assert.rejects(client.complete({messages:[]}),error=>error.code==='INFERENCE_TIMEOUT');}
   finally{clearTimeout(keepAlive);}
 });
 const dates=[{field:'BO[방송일시]',operator:'gte',value:'2026-09-01'},{field:'BO[방송일시]',operator:'lt',value:'2026-10-01'}];
@@ -48,12 +48,12 @@ test('year correction preserves unrelated type filter and grouping',()=>{
 });
 test('local client has no external URL fallback and reports bad JSON/timeout/offline separately',async()=>{
   assert.throws(()=>localUrl('https://example.com'));
-  for(const [body,code] of [['invalid','LLM_MALFORMED_JSON'],[JSON.stringify({choices:[{message:{content:'broken'}}]}),'LLM_MALFORMED_JSON']]){
+  for(const [body,code] of [['invalid','INVALID_MODEL_RESPONSE'],[JSON.stringify({choices:[{message:{content:'broken'}}]}),'INVALID_MODEL_RESPONSE']]){
     const c=new LocalLlmClient({baseUrl:'http://127.0.0.1:8080',fetchImpl:async url=>new Response(url.endsWith('/health')?'{"status":"ok"}':body)});
     await assert.rejects(c.complete({messages:[]}),{code});
   }
   const c=new LocalLlmClient({baseUrl:'http://127.0.0.1:8080',fetchImpl:async url=>{if(url.endsWith('/health'))return new Response('{"status":"ok"}');throw new DOMException('timeout','TimeoutError');}});
-  await assert.rejects(c.complete({messages:[]}),{code:'LLM_TIMEOUT'});
+  await assert.rejects(c.complete({messages:[]}),{code:'INFERENCE_TIMEOUT'});
   const offline=new LocalLlmClient({baseUrl:'http://127.0.0.1:8080',fetchImpl:async()=>{throw Error('offline');}});
-  await assert.rejects(offline.complete({messages:[]}),{code:'LLM_NOT_RUNNING'});
+  await assert.rejects(offline.complete({messages:[]}),{code:'MODEL_HEALTH_TIMEOUT'});
 });

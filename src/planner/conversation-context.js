@@ -21,3 +21,9 @@ function biContext(event,catalog,result){return {
   // Retain the executed plan even if a later pending query changes active state.
 };}
 module.exports={conversationMessages,biContext};
+function entryMessages(planner,text){
+  const state=planner.state;
+  const context={lastBiContext:state.biContext||null,pendingClarification:state.pendingClarification?{question:state.pendingClarification.question,options:state.pendingClarification.options.map(o=>({label:o.label}))}:null};
+  return [{role:'system',content:'너는 사용자의 PC 비서이자 대화 상대 우사기다. 짧고 자연스럽고 귀엽게 대답한다. 모든 말을 업무 명령으로 취급하지 않는다. 일반 대화나 이미 아는 조회 기준 설명은 {"action":"reply","message":"답변"}로 답한다. 실제 BI 데이터 탐색·조회나 조건 수정이 필요하면 {"action":"bi"}만 반환한다. 없는 숫자는 만들지 않는다.\n참조 상태: '+JSON.stringify(context)},...planner.history.slice(-2),{role:'user',content:text}];
+}
+module.exports.entryMessages=entryMessages;
