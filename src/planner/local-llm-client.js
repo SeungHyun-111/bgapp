@@ -58,7 +58,7 @@ class LocalLlmClient{
     const signal=parentSignal?AbortSignal.any([parentSignal,AbortSignal.timeout(this.timeoutMs)]):AbortSignal.timeout(this.timeoutMs);
     try{
       await withinBudget(()=>this.start(),signal);signal.throwIfAborted();
-      this.onStatus(purpose==='conversation'?'우응, 네 이야기를 듣고 있어 🐰':purpose.startsWith('catalog-')?'로컬 Qwen이 BI 지표 설명에서 관련 후보를 찾는 중이야 🐰':'로컬 Qwen이 조회 계획을 만드는 중이야 🐰');
+      this.onStatus(purpose==='result-explanation'?'실제 BI 결과에 설명을 덧붙이는 중이야 🐰':purpose==='conversation'?'우응, 네 이야기를 듣고 있어 🐰':purpose.startsWith('catalog-')?'로컬 Qwen이 BI 지표 설명에서 관련 후보를 찾는 중이야 🐰':'로컬 Qwen이 조회 계획을 만드는 중이야 🐰');
       trace.model=this.modelName;trace.modelPath=this.external?null:this.findModel();
       let response;
       try{response=await withinBudget(()=>this.fetch(this.base+'/v1/chat/completions',{method:'POST',headers:this.headers(),redirect:'error',signal,body:JSON.stringify({messages,stream:false,temperature:0,max_tokens:Math.min(2400,Math.max(100,maxTokens)),cache_prompt:true,chat_template_kwargs:{enable_thinking:false},response_format:{type:'json_schema',json_schema:{name:'bi_structured_response',strict:true,schema:customSchema||responseSchema()}}})}),signal);}

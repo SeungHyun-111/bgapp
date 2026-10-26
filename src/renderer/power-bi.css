@@ -44,3 +44,4 @@ footer{color:#aa9e86;font-size:9px;text-align:center;margin-top:9px}
 #conversation .usagi-message{white-space:pre-wrap}
 #conversation .conversation-turn .usagi-message{margin-bottom:3px}
 .conversation-timing{font-size:9px;line-height:1.5;color:#8a816e;margin:0 35px 12px 3px;font-variant-numeric:tabular-nums;white-space:normal}
+#engine-status{font-size:9px;color:#8a816e;margin:0 0 6px}.bi-chat-data{margin-top:8px;max-height:250px;overflow:auto;white-space:normal}.bi-chat-data table{table-layout:auto}.bi-chat-data th{background:#eae1cc;color:#54462c;position:static}.bi-chat-data td,.bi-chat-data th{padding:4px 6px}.bi-result-basis{font-size:10px;color:#776b52;white-space:normal;margin-top:6px}

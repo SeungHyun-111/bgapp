@@ -42,7 +42,7 @@
     "queries:converted": "node scripts/manage-queries.js converted",
     "commands:test": "node --test scripts/test-commands.js",
     "qwen:learning:status": "node scripts/qwen-learning-status.js",
-    "qwen:learning:test": "node --test scripts/test-qwen-learning.js scripts/test-bi-planner.js scripts/test-planner-integration.js scripts/test-live-bi-executor.js scripts/test-usagi-conversation.js",
+    "qwen:learning:test": "node --test scripts/test-qwen-learning.js scripts/test-bi-planner.js scripts/test-planner-integration.js scripts/test-live-bi-executor.js scripts/test-usagi-conversation.js scripts/test-live-conversation-continuity.js",
     "qwen:mask-test": "python -B scripts/test_qwen_masking.py"
   },
   "devDependencies": {

@@ -9,4 +9,5 @@ function loadEnvironment(file=path.resolve(__dirname,'../../.env')){
     process.env[match[1]]=match[2].trim().replace(/^(["'])(.*)\1$/,'$2');
   }
 }
-module.exports={loadEnvironment};
+function useQwen(){return process.env.USE_LLM_PLANNER!=='false';}
+module.exports={loadEnvironment,useQwen};

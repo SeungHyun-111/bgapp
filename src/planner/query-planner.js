@@ -79,21 +79,22 @@ class QueryPlanner{
         const refers=response.interpretation?.refersToTurnId;
         event.correctionOrigin=structuredClone(typeof refers==='string'?this.acceptedTurns.find(t=>t.turnId===refers)||null:null);
         const facts=confirmedChanges(event);
-        for(const [pointer,provenance] of Object.entries(this.fieldProvenance))if(!equal(get(validation.plan,pointer),provenance.value))delete this.fieldProvenance[pointer];
-        for(const fact of facts)this.fieldProvenance[fact.path]={source:fact.source,value:fact.after,quote:fact.quote,turnId:event.turnId,userConfirmed:true,confirmationBasis:fact.confirmationBasis};
-        event.fieldValidation={schemaValid:true,catalogValid:true,wholePlanUserConfirmed:false,confirmedFields:facts,provenance:structuredClone(this.fieldProvenance)};
-        this.state={...next,plan:validation.plan};event.resolvedState=structuredClone(this.state);
-        this.acceptedTurns.push({turnId:event.turnId,input:text,previousState:event.previousState,finalPlan:event.finalPlan,rawPrediction:event.rawPrediction,decisionMessages:event.decisionMessages,validation:{ok:true}});
-        this.acceptedTurns=this.acceptedTurns.slice(-12);
+        const provenance=structuredClone(this.fieldProvenance);
+        for(const [pointer,source] of Object.entries(provenance))if(!equal(get(validation.plan,pointer),source.value))delete provenance[pointer];
+        for(const fact of facts)provenance[fact.path]={source:fact.source,value:fact.after,quote:fact.quote,turnId:event.turnId,userConfirmed:true,confirmationBasis:fact.confirmationBasis};
+        event.fieldValidation={schemaValid:true,catalogValid:true,wholePlanUserConfirmed:false,confirmedFields:facts,provenance};
         clearTimeout(timeout);clearInterval(progress);
         event.executionAttempted=true;
         const executionStarted=Date.now();
         const result=await this.executor.execute(validation.plan);event.queryExecuted=true;event.result=result;
+        this.state={...next,plan:validation.plan,lastFailedQuery:null};this.fieldProvenance=provenance;
         event.executionDurationMs=Date.now()-executionStarted;this.state.biContext=biContext(event,this.catalog,result);
+        this.acceptedTurns.push({turnId:event.turnId,input:text,previousState:event.previousState,finalPlan:event.finalPlan,rawPrediction:event.rawPrediction,decisionMessages:event.decisionMessages,validation:{ok:true}});
+        this.acceptedTurns=this.acceptedTurns.slice(-12);
         return {kind:'result',plan:validation.plan,result};
       }
       throw Error('Planner exceeded tool-call limit');
-    }catch(error){event.error={code:error.code||'PLANNER_ERROR',message:error.message};return {kind:'error',error:event.error};}
+    }catch(error){event.error={code:error.code||'PLANNER_ERROR',message:error.message};if(event.executionAttempted&&!event.queryExecuted)this.state.lastFailedQuery={plan:event.finalPlan,question:text,error:event.error};return {kind:'error',error:event.error};}
     finally{
       clearTimeout(timeout);clearInterval(progress);
       event.totalDurationMs=Date.now()-startedAt;event.resolvedState=structuredClone(this.state);

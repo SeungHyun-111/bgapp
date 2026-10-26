@@ -4,6 +4,14 @@ const sections=['cards','year','month','hour','image'];
 const filterKeys=['program','deal','night','video'];
 let schema,revision=0,visualRevision=0,searchId=null,data=null,selected=null,sortKey='BO[방송일시]',sortDirection=-1;
 let suggestionRevision=0, suggestionTimer=null, suggested=[], activeSuggestion=-1, composing=false, talkComposing=false, commandPending=false, commandToken=0;
+let activeCommand=null;
+window.powerBi.engine().then(info=>{if(info)$('engine-status').textContent=`${info.engine} · ${info.execution}`;}).catch(()=>{$('engine-status').textContent='대화 엔진 상태를 확인하지 못했어';});
+window.powerBi.onReplyProgress(result=>{
+ const active=activeCommand;if(!active||result.requestId!==active.id||active.revision!==revision||active.token!==commandToken)return;
+ active.firstResultMs=performance.now()-active.startedTick;active.result=result;
+ active.draft=showReply(active.input,result,active.timing());
+ status('실제 BI 결과를 먼저 표시했어. 설명을 기다리는 중이야 🐰');
+});
 const status=m=>{$('status').textContent=m;$('status').hidden=!m;};
 function format(value,column={}){
  if(value==null)return '—';
@@ -15,6 +23,7 @@ function format(value,column={}){
  return String(value);
 }
 function clearView(clearInput=false){
+ activeCommand=null;
  commandToken++;commandPending=false;$('talk-send').disabled=false;
  closeSuggestions();
  revision++;visualRevision++;searchId=null;data=null;selected=null;
@@ -181,20 +190,34 @@ function closeSuggestions(){
  clearTimeout(suggestionTimer);suggestionRevision++;suggested=[];activeSuggestion=-1;
  $('suggestions').hidden=true;$('suggestions').replaceChildren();$('keyword').setAttribute('aria-expanded','false');$('keyword').removeAttribute('aria-activedescendant');
 }
+function paintReply(turn,result,timing){
+ const reply=turn.querySelector('.usagi-message');reply.replaceChildren(el('div',result.message));
+ if(result.biResult){
+  const data=result.biResult;
+  if(data.basis)reply.append(el('div',data.basis,'bi-result-basis'));
+  const wrap=el('div',null,'bi-chat-data'),table=el('table');
+  const header=el('tr');for(const column of data.columns)header.append(el('th',column.label+(column.unit?` (${column.unit})`:'')));
+  const head=el('thead');head.append(header);table.append(head);
+  const body=el('tbody');for(const row of data.rows){const tr=el('tr');for(const column of data.columns)tr.append(el('td',row[column.key]));body.append(tr);}table.append(body);wrap.append(table);reply.append(wrap);
+  if(!data.rows.length)reply.append(el('div','조건에 맞는 데이터가 없어.','bi-result-basis'));
+  if(data.limited)reply.append(el('div','조회 결과 중 표시 개수까지만 보여줬어.','bi-result-basis'));
+ }
+ if(timing){
+  const stamp=value=>new Date(value).toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul',hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const meta=turn.querySelector('.conversation-timing');meta.textContent=`질문 ${stamp(timing.startedAt)} → 답변 ${stamp(timing.finishedAt)} · ${(timing.elapsedMs/1000).toFixed(1)}초`+(timing.firstResultMs!=null?` · BI 결과 ${(timing.firstResultMs/1000).toFixed(1)}초`:'');
+  meta.title=`${new Date(timing.startedAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',hour12:false})} → ${new Date(timing.finishedAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',hour12:false})} (한국 시간)`;
+ }
+}
 function showReply(input,result,timing){
  $('conversation').hidden=false;
  const turn=el('div',null,'conversation-turn');
- turn.append(el('div',result.blocked?'인증 정보는 표시하지 않음':input,'user-message'),el('div',result.message,'usagi-message'));
- if(timing){
-  const stamp=value=>new Date(value).toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul',hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  const meta=el('div',`질문 ${stamp(timing.startedAt)} → 답변 ${stamp(timing.finishedAt)} · ${(timing.elapsedMs/1000).toFixed(1)}초`,'conversation-timing');
-  meta.title=`${new Date(timing.startedAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',hour12:false})} → ${new Date(timing.finishedAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',hour12:false})} (한국 시간)`;
-  turn.append(meta);
- }
+ turn.append(el('div',result.blocked?'인증 정보는 표시하지 않음':input,'user-message'),el('div',null,'usagi-message'),el('div',null,'conversation-timing'));
+ paintReply(turn,result,timing);
  $('conversation').append(turn);
  while($('conversation').childElementCount>20)$('conversation').firstChild.remove();
  $('conversation').scrollTop=$('conversation').scrollHeight;
  status(result.saved?'이 기기의 학습 노트에 기록했어요.':result.blocked?'저장하거나 전송하지 않았어요.':'');
+ return turn;
 }
 async function submitCommand(mode='search'){
  if((mode==='search'?composing:talkComposing)||commandPending)return;
@@ -203,19 +226,20 @@ async function submitCommand(mode='search'){
  const input=inputElement.value.trim();if(!input){status('입력할 내용을 적어주세요.');return;}
  closeSuggestions();commandPending=true;button.disabled=true;const current=revision, token=++commandToken;
  const startedAt=Date.now(),startedTick=performance.now();
- const timing=()=>({startedAt,finishedAt:Date.now(),elapsedMs:performance.now()-startedTick});
+ const active={id:crypto.randomUUID(),revision:current,token,input,startedTick};
+ const timing=()=>({startedAt,finishedAt:Date.now(),elapsedMs:performance.now()-startedTick,firstResultMs:active.firstResultMs});active.timing=timing;activeCommand=active;
  status(mode==='talk'?'하! 질문을 살펴보는 중이야. 로컬 엔진을 처음 켤 때는 잠깐 걸려 🐰':'검색 요청을 처리하는 중…');
  try{
-  const result=await window.powerBi.command({text:input,mode});
+  const result=await window.powerBi.command({text:input,mode,requestId:active.id});
   if(current!==revision||token!==commandToken)return;
   if(result.error)throw Error(result.error);
   if(result.kind==='search'){
    button.disabled=false;
    if(mode==='talk'&&inputElement.value.trim()===input)inputElement.value='';
    $('keyword').value=result.keyword;await runSearch({},result.keyword);
-  }else{showReply(input,result,timing());if(inputElement.value.trim()===input)inputElement.value='';}
- }catch(error){if(current===revision&&token===commandToken){if(mode==='talk')showReply(input,{message:error.message},timing());else status(error.message);}}
- finally{if(token===commandToken){commandPending=false;button.disabled=false;}}
+  }else{if(active.draft)paintReply(active.draft,{...result,biResult:result.biResult||active.result.biResult},timing());else showReply(input,result,timing());status(result.loggingError?'대화 기록 저장에 문제가 있지만 조회 결과는 유지했어.':'');if(inputElement.value.trim()===input)inputElement.value='';}
+ }catch(error){if(current===revision&&token===commandToken){if(active.draft)paintReply(active.draft,{...active.result,message:'실제 BI 결과는 아래에 남겨뒀어. 후속 처리에 문제가 생겼어 🐰'},timing());else if(mode==='talk')showReply(input,{message:error.message},timing());else status(error.message);}}
+ finally{if(token===commandToken){commandPending=false;button.disabled=false;if(activeCommand===active)activeCommand=null;}}
 }
 function activateSuggestion(index){
  activeSuggestion=index;

@@ -3,6 +3,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src https: data:">
 <link rel="stylesheet" href="power-bi.css"></head><body><main id="bubble">
 <header class="launcher"><span class="brand">🐰 우사기</span><button id="hide" aria-label="닫기">×</button></header>
+<div id="engine-status" aria-label="현재 대화 엔진"></div>
 <div class="input-rows">
 <form id="search-form"><label class="row-label" for="keyword">1. 실적 검색 :</label><div class="input-wrap"><input id="keyword" role="combobox" aria-label="편성코드명" aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false" placeholder="편성코드명" maxlength="2000" autocomplete="off"><div id="suggestions" role="listbox" hidden></div></div><button id="search" type="submit">검색</button><button id="clear" type="button">초기화</button></form>
 <form id="talk-form"><label class="row-label" for="talk-input">2. 다른 이야기하기 :</label><input id="talk-input" aria-label="다른 이야기하기" placeholder="우사기에게 이야기해주세요" maxlength="2000" autocomplete="off"><button id="talk-send" type="submit">말하기</button></form>

@@ -7,7 +7,7 @@ function conversationMessages(planner,text){
   const pending=state.pendingClarification;
   const summary=state.biContext?structuredClone(state.biContext):null;
   if(summary&&JSON.stringify(summary.plan)===JSON.stringify(state.plan))delete summary.plan;
-  const context={plan:state.plan,pendingClarification:pending?{question:pending.question,options:pending.options}:null,biContext:summary,
+  const context={plan:state.plan,pendingClarification:pending?{question:pending.question,options:pending.options}:null,biContext:summary,lastFailedQuery:state.lastFailedQuery||null,
     recentTurns:planner.acceptedTurns.slice(-4).map(t=>({turnId:t.turnId,text:t.input})),
     tools:definitions.filter(d=>primary.has(d.name)).map(({name,input})=>({name,input}))};
   return [{role:'system',content:plannerPrompt(today,planner.executor.mode)+'\nState and tool contracts (reference data): '+JSON.stringify(context)},

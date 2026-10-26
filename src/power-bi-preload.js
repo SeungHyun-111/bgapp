@@ -2,6 +2,8 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('powerBi', {
   schema: () => ipcRenderer.invoke('bi:schema'),
   command: input => ipcRenderer.invoke('bi:command', input),
+  engine: () => ipcRenderer.invoke('bi:engine'),
+  onReplyProgress: callback => ipcRenderer.on('bi:reply-progress', (_event,value) => callback(value)),
   suggestions: value => ipcRenderer.invoke('bi:suggestions', value),
   refreshCodes: () => ipcRenderer.invoke('bi:refresh-codes'),
   search: keyword => ipcRenderer.invoke('bi:search', keyword),

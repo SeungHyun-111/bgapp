@@ -2,15 +2,15 @@ const fs=require('fs');
 const path=require('path');
 const {LocalLlmClient}=require('./local-llm-client');
 const {QueryPlanner}=require('./query-planner');
-const {createFakeExecutor}=require('./fake-bi-executor');
 const {createLiveExecutor}=require('./live-bi-executor');
-const {syntheticRows}=require('./synthetic-fixtures');
 const {containsCredential}=require('../commands/privacy');
 const {SemanticCatalog}=require('./semantic-catalog');
 const {LearningSupervisor}=require('../learning/supervisor');
 const {promote}=require('../learning/promotion');
 const {loadPlannerCatalog}=require('./catalog-loader');
 const {ConversationOrchestrator}=require('./conversation-orchestrator');
+const {presentResult}=require('./result-presentation');
+const {narrateResult}=require('./result-narrator');
 
 function formatAnswer(out,catalog){
   if(out.kind==='reply')return out.message;
@@ -33,13 +33,13 @@ function formatAnswer(out,catalog){
   return [out.result.synthetic?'하! [가짜 데이터로 연결 테스트 중 — 실제 BI 실적 아님]':'하! 실제 BI에서 찾았어 🐰',p.target?`${p.target.kind}: ${p.target.value}`:'전체 대상',...p.filters.map(f=>`${label(f.field)} ${f.operator} ${f.value}`),...(lines.length?lines:['조건에 맞는 데이터가 없어.']),out.result.limited?'표시 개수 제한에 도달했어.':'','뿌륽! 🐰'].filter(Boolean).join('\n');
 }
 
-function createPlannerDialogue({directory,store,onStatus=()=>{},provider,now,learning=true,query,executor}={}){
+function createPlannerDialogue({directory,store,onStatus=()=>{},onProgress=()=>{},provider,now,learning=true,query,executor}={}){
   const catalog=loadPlannerCatalog(directory);
   const entities=JSON.parse(fs.readFileSync(path.join(directory,'bi-entity-catalog.json'),'utf8')).entities;
   let raw=[];
   const client=provider||new LocalLlmClient({directory:path.join(directory,'llm'),onStatus,recordRaw:async trace=>{raw.push(trace);}});
   const semanticCatalog=new SemanticCatalog({catalog,provider:client});
-  const selectedExecutor=executor||(query?createLiveExecutor({catalog,entities,query,onStatus}):provider?createFakeExecutor({catalog,entities,rows:syntheticRows()}):null);
+  const selectedExecutor=executor||(query?createLiveExecutor({catalog,entities,query,onStatus}):null);
   if(!selectedExecutor)throw Error('Actual chat requires a live BI query function; fake execution must be explicitly injected for tests');
   const planner=new QueryPlanner({provider:client,catalog,entities,semanticCatalog,executor:selectedExecutor,onStatus,now,maxRepairs:2});
   const orchestrator=new ConversationOrchestrator({planner,client});
@@ -52,7 +52,7 @@ function createPlannerDialogue({directory,store,onStatus=()=>{},provider,now,lea
     planner,client,learner,orchestrator,
     reset(){generation++;orchestrator.reset();},
     stop(){generation++;learner?.stop();orchestrator.stop();},
-    execute(text){
+    execute(text,{requestId=null}={}){
       const requested=generation;
       const task=queue.then(async()=>{
         if(requested!==generation)return {kind:'reply',message:'이번 대화는 닫혔어 🐰'};
@@ -61,9 +61,23 @@ function createPlannerDialogue({directory,store,onStatus=()=>{},provider,now,lea
         let correctionCapture=null;
         if(requested===generation&&learner)try{correctionCapture=await learner.capture(event);}catch(error){correctionCapture={queued:false,error:error.message};}
         if(requested!==generation)planner.reset();
-        const message=formatAnswer(out,catalog)+(correctionCapture?.queued?'\n수정한 항목은 교정 노트에도 기록했어 🐰':'');
-        await store.appendLine(store.file,{recordType:'conversation',id:event.turnId,timestamp:new Date().toISOString(),source:'qwen-conversation',input:text,question:text,reply:message,previousState:event.previousState,catalogContext:{bootstrap:event.catalogContext,toolCalls:event.tools},llmRawResponse:raw,llmPlan:event.rawPrediction,validation:event.validation||null,attempts:event.attempts||[],totalDurationMs:event.totalDurationMs,executionDurationMs:event.executionDurationMs,fieldValidation:event.fieldValidation||null,correctionCapture,executedPlan:event.executionAttempted?event.finalPlan:null,clarification:out.kind==='clarify'?{question:out.question,options:out.options}:null,finalAnswer:message,executionMode:selectedExecutor.mode,synthetic:selectedExecutor.mode==='fake',queryExecuted:event.queryExecuted,executionAttempted:!!event.executionAttempted,resolvedState:event.resolvedState,error:event.error||null,conversationId:event.conversationId,previousTurnId:event.previousTurnId});
-        return {kind:'reply',message,engine:'qwen-local',synthetic:selectedExecutor.mode==='fake',retryable:out.kind==='error'};
+        let message=formatAnswer(out,catalog),biResult=null,narration=null;
+        if(out.kind==='result'){
+          biResult=presentResult(out,catalog);
+          message=biResult.synthetic?'가짜 데이터 평가 결과야.':'하! 실제 BI 결과를 가져왔어 🐰';
+          if(requested===generation){
+            try{await onProgress({requestId,phase:'bi-result',kind:'reply',message,biResult});}catch{/* Rendering cannot discard a successful BI query. */}
+            onStatus('실제 BI 결과는 표시했어. 짧게 설명을 덧붙이는 중이야 🐰');
+            const narrationStarted=Date.now();
+            try{message=await narrateResult({client,question:text,presentation:biResult});narration={ok:true,durationMs:Date.now()-narrationStarted};}
+            catch(error){narration={ok:false,code:error.code||'NARRATION_FAILED',durationMs:Date.now()-narrationStarted};}
+          }
+        }
+        if(correctionCapture?.queued)message+='\n수정한 항목은 교정 노트에도 기록했어 🐰';
+        let loggingError=null;
+        try{await store.appendLine(store.file,{recordType:'conversation',id:event.turnId,timestamp:new Date().toISOString(),source:'qwen-conversation',input:text,question:text,reply:message,previousState:event.previousState,catalogContext:{bootstrap:event.catalogContext,toolCalls:event.tools},llmRawResponse:raw,llmPlan:event.rawPrediction,validation:event.validation||null,attempts:event.attempts||[],totalDurationMs:event.totalDurationMs,executionDurationMs:event.executionDurationMs,narration,biResult:out.result||null,fieldValidation:event.fieldValidation||null,correctionCapture,executedPlan:event.executionAttempted?event.finalPlan:null,clarification:out.kind==='clarify'?{question:out.question,options:out.options}:null,finalAnswer:message,executionMode:selectedExecutor.mode,synthetic:selectedExecutor.mode==='fake',queryExecuted:event.queryExecuted,executionAttempted:!!event.executionAttempted,resolvedState:event.resolvedState,error:event.error||null,conversationId:event.conversationId,previousTurnId:event.previousTurnId});}
+        catch(error){loggingError={code:error.code||'HISTORY_WRITE_FAILED'};}
+        return {kind:'reply',message,biResult,narration,loggingError,engine:'qwen-local',synthetic:selectedExecutor.mode==='fake',retryable:out.kind==='error'};
       });
       queue=task.catch(()=>{});return task;
     }

@@ -493,7 +493,7 @@ function createTray() {
 }
 
 app.whenReady().then(() => {
-  const stopLearningLoop=process.env.USE_LLM_PLANNER==='true'?()=>{}:require('./commands/learning-loop').startLearningLoop();
+  const stopLearningLoop=require('./planner/environment').useQwen()?()=>{}:require('./commands/learning-loop').startLearningLoop();
   app.on('before-quit',stopLearningLoop);
   enableAutoLaunch();
   configureCacheDirectory(path.join(app.getPath('userData'), 'data-cache'));

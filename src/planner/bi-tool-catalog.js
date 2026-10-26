@@ -1,7 +1,7 @@
 const definitions=[
   {name:'searchValues',description:'Read actual distinct BI values of a known column, only when needed to disambiguate a dimension.',input:{field:'catalog column ID',query:'string',limit:'integer <= 20'}},
   {name:'getBusinessDefinitions',description:'Read confirmed business definitions and default share basis.',input:{}},
-  {name:'searchCatalog',description:'Local Qwen semantic search over metric/column descriptions, definitions, examples and verification status. Returns evidence candidates only.',input:{query:'semantic request, not necessarily a column label',kind:'metric | column',limit:'integer <= 20'}},
+  {name:'searchCatalog',description:'Local metadata shortlist followed by Qwen meaning judgment. One bounded page per call; no automatic selection.',input:{query:'semantic request',kind:'metric | column',limit:'integer <= 20; default 5',offset:'optional nextOffset from previous result'}},
   {name:'listFields',description:'Find available columns and provenance; no live BI call.',input:{query:'string',limit:'integer <= 20'}},
   {name:'getMetricDefinition',description:'Inspect a registered metric, calculation evidence and unresolved business meaning.',input:{id:'metric ID'}},
   {name:'searchTarget',description:'Search supplied local entity metadata, including derived bracket brands. Does not fetch BI.',input:{query:'string',kind:'brand | organization | product'}},
