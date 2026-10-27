@@ -28,7 +28,9 @@ function interpretQuery(input,parsed,context={},now=new Date()){
   const share=selected.some(id=>id.startsWith('organization_'))||/편성\s*(비중|비율)|방송\s*점유율/.test(positive);
   if(action!=='remove_condition'&&(share||(context.metrics?.some(id=>id.startsWith('organization_'))&&(basis||/횟수\s*기준|가중분\s*기준/.test(positive))))){
     const count=basis==='broadcast_count'||selected.includes('organization_broadcast_share')||/횟수|건수/.test(positive);
-    selected=selected.filter(id=>!id.startsWith('organization_')&&id!=='weighted_minutes');selected.push(count?'organization_broadcast_share':'organization_weighted_share');
+    const independent=positive.replace(/가중분\s*(?:기준\s*)?(?:편성\s*)?(?:비중|비율)/g,'').replace(/가중분\s*기준/g,'');
+    const separateWeighted=detectMetrics(independent).includes('weighted_minutes');
+    selected=selected.filter(id=>!id.startsWith('organization_')&&(id!=='weighted_minutes'||separateWeighted));selected.push(count?'organization_broadcast_share':'organization_weighted_share');
   }
   let period=parsePeriod(positive,now,context);
   const year=Number(value('year')),month=Number(value('month'));

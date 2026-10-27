@@ -47,7 +47,7 @@ class RasaClient {
       const child = spawn(python, [path.join(root, 'nlu/run_rasa.py'), 'run', '--enable-api', '--interface', '127.0.0.1',
         '--port', String(port), '--auth-token', this.token, '--model', model], {
         cwd: path.join(root, 'nlu'), windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
-        env: { ...process.env, SQLALCHEMY_SILENCE_UBER_WARNING: '1', RASA_TELEMETRY_ENABLED: 'false', PYTHONIOENCODING: 'utf-8', TEMP: this.tempDirectory, TMP: this.tempDirectory },
+        env: { ...process.env, SQLALCHEMY_SILENCE_UBER_WARNING: '1', RASA_TELEMETRY_ENABLED: 'false', PYTHONIOENCODING: 'utf-8', TEMP: this.tempDirectory, TMP: this.tempDirectory, TF_NUM_INTRAOP_THREADS:process.env.TF_NUM_INTRAOP_THREADS||'1',TF_NUM_INTEROP_THREADS:process.env.TF_NUM_INTEROP_THREADS||'1' },
       });
       this.child = child;
       child.stdout.on('data', () => {});
@@ -71,7 +71,7 @@ class RasaClient {
   }
   armIdleTimer() {
     clearTimeout(this.idleTimer);
-    if(this.inFlight||!this.child)return;
+    if(this.inFlight||!this.child||this.idleMs<=0)return;
     this.idleTimer=setTimeout(()=>{if(!this.inFlight)this.stop();},this.idleMs);
     this.idleTimer.unref?.();
   }

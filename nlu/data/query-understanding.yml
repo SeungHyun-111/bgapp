@@ -6,7 +6,7 @@ nlu:
       - [문화서비스팀]{"entity":"organization","value":"문화서비스"} 올해 [매달]{"entity":"groupBy","value":"month"} [방송 점유율]{"entity":"metric","value":"organization_weighted_share"} 보여줘
       - 헬스푸드 [달마다]{"entity":"groupBy","value":"month"} [방송 비중]{"entity":"metric","value":"organization_weighted_share"} 어떻게 돼
       - 홀베리 이번달 [취급액]{"entity":"metric","value":"sales"} 알려줘
-      - 헬스푸드팀 9월 편성비중
+      - 헬스푸드팀 9월 [편성비중]{"entity":"metric","value":"organization_weighted_share"}
       - 문화서비스 [월 단위로]{"entity":"groupBy","value":"month"} [편성 점유율]{"entity":"metric","value":"organization_weighted_share"} 보고 싶어
       - 헬스 [월마다]{"entity":"groupBy","value":"month"} [편성 비율]{"entity":"metric","value":"organization_weighted_share"} 얼마야
       - 홀베리 [수수료]{"entity":"metric","value":"commission_rate"} 몇프로인데?
@@ -15,7 +15,7 @@ nlu:
       - 선일금고 지난달 [한계이익]{"entity":"metric","value":"profit"}
       - 레이델 올해 [가중분]{"entity":"metric","value":"weighted_minutes"}과 [한계이익]{"entity":"metric","value":"profit"} 알려줘
       - 당근주스 [취급액]{"entity":"metric","value":"sales"}이랑 [한계이익]{"entity":"metric","value":"profit"} 같이 보여줘
-      - 9월 [조직별]{"entity":"groupBy","value":"organization"} 편성비중
+      - 9월 [조직별]{"entity":"groupBy","value":"organization"} [편성비중]{"entity":"metric","value":"organization_weighted_share"}
       - 부서별 [가중분]{"entity":"metric","value":"weighted_minutes"} 알려줘
       - 6월 편성비중 [제일]{"entity":"limit","value":1} 많이 쓴 [팀]{"entity":"groupBy","value":"organization"}
       - 올해 [전체 조직]{"entity":"groupBy","value":"organization"} 편성비중 [1위]{"entity":"limit","value":1} 알려줘
@@ -94,7 +94,7 @@ nlu:
       - 26년 [월별]{"entity":"groupBy","value":"month"}
       - [조직별]{"entity":"groupBy","value":"organization"}로 보여달라고
       - [전체 조직]{"entity":"groupBy","value":"organization"}을 한 줄씩 보여줘
-      - 아니 한 팀 말고 [모든 팀]{"entity":"groupBy","value":"organization"}의 편성비중이야
+      - 아니 한 팀 말고 [모든 팀]{"entity":"groupBy","value":"organization"}의 [편성비중]{"entity":"metric","value":"organization_weighted_share"}이야
       - [조직별]{"entity":"groupBy","value":"organization"}로 나눠달라는 말이야
       - [각 조직]{"entity":"groupBy","value":"organization"}의 비중을 나눠서 보고 싶어
       - [합계 하나]{"entity":"groupBy","value":"none"}로 보여줘
@@ -123,16 +123,80 @@ nlu:
       - 다 지우고 다시 시작하자
       - 이번 요청 중단해
       - 그만 찾아도 돼
+  - intent: greet
+    examples: |
+      - 야
+      - 우사기야
+      - 안녕
+      - 안녕하세요
+      - 하이
+      - 듣고 있어?
+      - di
+  - intent: mood
+    examples: |
+      - 오늘 기[분]{"entity":"metric","value":"column:분"} 어때
+      - 잘 지내
+      - 오늘 어때
+      - 뭐하고 있어
+      - 심심한데 이야기하자
+  - intent: capabilities
+    examples: |
+      - 조회할 수 있는 건 뭐가 있어
+      - 무슨 지표를 볼 수 있어
+      - 어떤 실적을 조회해
+      - 지원하는 항목 알려줘
+      - 조회 가능한 항목 목록 보여줘
+  - intent: organization_list
+    examples: |
+      - [표준조직]{"entity":"metric","value":"column:표준조직"}명 종류 말해봐
+      - 어떤 팀들이 있어
+      - 조직 목록 보여줘
+      - 팀 이름 목록 알려줘
+      - [표준조직]{"entity":"metric","value":"column:표준조직"} 종류가 뭐야
+  - intent: conversation_feedback
+    examples: |
+      - 말투가 어색해
+      - 맥락이 이상하다는 뜻이야
+      - 그 인사말 좀 이상해
+      - 너무 똑같은 말만 해
+      - 자연스럽게 말해줘
+  - intent: complaint
+    examples: |
+      - 뭔 소리 하는 거야
+      - 아니 대답이 이상하잖아
+      - 질문하고 다른 말만 하네
+      - 제대로 듣고 있는 거야
+      - 앞에서 말한 걸 왜 또 물어봐
+  - intent: system_status
+    examples: |
+      - 너 이제 대화 잘해
+      - 로컬 엔진 준비됐어
+      - 어떤 방식으로 대답해
+      - 너 말할 수 있는 건 맞아
+      - 지금 준비된 상태야
+  - intent: requirements
+    examples: |
+      - 그 기능은 나중에 정리하자
+      - 지금 조회하지 말고 기능으로 기록해
+      - 다음에 만들 기능이야
+      - 요구사항으로 남겨줘
+      - 이건 당장 실행하라는 뜻이 아니야
+  - intent: unsupported_request
+    examples: |
+      - 잔여편성을 조회하고 싶어
+      - 광고비 [마진]{"entity":"metric","value":"commission_rate"}구조가 궁금해
+      - [분]{"entity":"metric","value":"column:분"}당 [취급액]{"entity":"metric","value":"sales"} 계산해줘
+      - [브랜드]{"entity":"metric","value":"column:브랜드"} [편성비중]{"entity":"metric","value":"organization_weighted_share"}과 [분]{"entity":"metric","value":"column:분"}당 이익액 보여줘
+      - 어제 여덟시 방송 목록 알려줘
   - intent: out_of_scope
     examples: |
       - 오늘 날씨 어때
       - 점심 뭐 먹지
       - 심심해
       - 홀베리 뭐가 좀 이상한데
-      - 광고비 [마진]{"entity":"metric","value":"commission_rate"}구조가 궁금해
       - [수수료]{"entity":"metric","value":"commission_rate"}가 떨어진 원인을 설명해줘
       - 왜 [마진]{"entity":"metric","value":"commission_rate"}이 달라졌어
-      - 이게 무슨 소리야
+      - 다른 이야기 해보자
   - synonym: all_products
     examples: |
       - 소속

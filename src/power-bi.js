@@ -3,38 +3,47 @@ const path = require('path');
 const { PowerBiBridge } = require('./power-bi-bridge');
 const { searchDax, extractRows, reportFilter, selectedFilter, visualDax, optionsDax, slicerFields } = require('./power-bi-search');
 const schema = require('./power-bi-display');
-const { QueryStore } = require('./commands/query-store');
+const { RtdbQueryStore } = require('./commands/rtdb-query-store');
 const { createCommandSystem } = require('./commands/handlers');
 const { containsCredential } = require('./commands/privacy');
 const { ProgramCodeIndex } = require('./program-code-index');
-const { RasaClient } = require('./commands/rasa-client');
-const { Dialogue } = require('./commands/dialogue');
-const { createMetricQuery } = require('./commands/bi-query');
+// Legacy disabled: const { RasaClient } = require('./commands/rasa-client');
+// Legacy disabled: const { Dialogue } = require('./commands/dialogue');
+// Legacy disabled: const { createMetricQuery } = require('./commands/bi-query');
 const { EntityCatalog } = require('./commands/entity-catalog');
 
 module.exports = function createPowerBi(options = {}) {
   const dataDirectory = options.dataDirectory || (app.isPackaged ? path.join(app.getPath('userData'), 'data') : path.join(__dirname, '../data'));
-  const queryStore = new QueryStore(dataDirectory);
+  const queryStore = new RtdbQueryStore(dataDirectory,{fetchImpl:(...args)=>require('electron').net.fetch(...args)});
   const codeIndex = new ProgramCodeIndex(path.join(dataDirectory, 'program-codes.json'));
-  const nlu = new RasaClient();
+// Legacy disabled:   const nlu = new RasaClient({idleMs:0});
+  const nlu = {stop(){}}; // Legacy lifecycle compatibility; no local process.
   const entityCatalog = new EntityCatalog(path.join(dataDirectory,'bi-entity-catalog.json'));
   require('./planner/environment').loadEnvironment();
-  const usePlanner=require('./planner/environment').useQwen();
-  const dialogue = usePlanner ? require('./planner/chat-dialogue').createPlannerDialogue({directory:dataDirectory,store:queryStore,onStatus:message=>status(message),onProgress:message=>{if(win&&!win.isDestroyed())win.webContents.send('bi:reply-progress',message);},query:async dax=>{try{return await bridge.query(dax);}finally{auth=false;}}}) : new Dialogue({ nlu, store: queryStore, codes: () => codeIndex.codes,
-    getEntities: async () => {
-      status('하! BI의 실제 팀·상품 목록을 확인할게 🐰');
-      try { return await entityCatalog.ensure(bridge); } finally { auth=false; }
-    },
-    queryMetric: async request => {
-      status('하! BI에서 실제 값을 가져올게 🐰');
-      try { return await createMetricQuery(bridge)(request); } finally { auth = false; }
-    }
+  const geminiUsage=require('./gemini/usage').createUsageTracker(dataDirectory);
+// Legacy disabled:   const usePlanner=require('./planner/environment').useQwen();
+// Legacy disabled:   const dialogue = usePlanner ? require('./planner/chat-dialogue').createPlannerDialogue({directory:dataDirectory,store:queryStore,onStatus:message=>status(message),onProgress:message=>{if(win&&!win.isDestroyed())win.webContents.send('bi:reply-progress',message);},query:async dax=>{try{return await bridge.query(dax);}finally{auth=false;}}}) : new Dialogue({ nlu, store: queryStore, codes: () => codeIndex.codes,
+// Legacy disabled:     replies:require('./commands/reviewed-replies').createReviewedReplies(dataDirectory),getLocalEntities:()=>entityCatalog.entities,
+// Legacy disabled:     getEntities: async () => {
+// Legacy disabled:       status('하! BI의 실제 팀·상품 목록을 확인할게 🐰');
+// Legacy disabled:       try { return await entityCatalog.ensure(bridge); } finally { auth=false; }
+// Legacy disabled:     },
+// Legacy disabled:     queryMetric: async request => {
+// Legacy disabled:       status('하! BI에서 실제 값을 가져올게 🐰');
+// Legacy disabled:       try { return await createMetricQuery(bridge)(request); } finally { auth = false; }
+// Legacy disabled:     }
+// Legacy disabled:   });
+  const dialogue = require('./gemini/dialogue').createGeminiDialogue({
+    directory:dataDirectory,store:queryStore,onStatus:message=>status(message),
+    client:new (require('./gemini/client').GeminiClient)({usageTracker:geminiUsage}),
+    executor:require('./gemini/analysis-engine').createExecutor({query:dax=>bridge.query(dax),onStatus:message=>status(message)})
   });
   const commands = createCommandSystem(queryStore, { dialogue });
   let refreshingCodes = null;
   let win = null, anchor = null, area = null, auth = false, rows = [], filter = null, generation = 0, petOwner = null, expanded = false;
   const pausePet = value => { if (petOwner && !petOwner.isDestroyed()) petOwner.webContents.send('pets:search-visible', value); };
   const status = message => { if (win && !win.isDestroyed()) win.webContents.send('bi:status', message); };
+// Legacy disabled:   if(!usePlanner)setImmediate(()=>nlu.start().then(()=>status('규칙 · 로컬 NLU 준비 완료')).catch(()=>status('로컬 NLU 준비에 실패했어. 인사와 기본 안내는 계속 답할 수 있어.')));
   const reset = (notify = true) => {
     dialogue.reset();
     generation++; rows = []; filter = null; expanded = false;
@@ -42,9 +51,26 @@ module.exports = function createPowerBi(options = {}) {
   };
   const bridge = new PowerBiBridge({ onStatus: event => {
     if (event === 'sign-in') { auth = true; status('Microsoft 계정으로 로그인해주세요.'); }
-    if (event === 'signed-in') { auth = false; status('로그인 완료 · 조회 중'); if (win?.isVisible()) win.focus(); }
+    if (event === 'signed-in') { auth = false; status('Power BI 로그인 완료'); if (win?.isVisible()) win.focus(); }
   } });
+  let authenticationPending=null;
+  function ensureLogin(){
+    if(authenticationPending)return authenticationPending;
+    status('Power BI 로그인 상태를 확인하는 중이야 🐰');
+    authenticationPending=bridge.ensureAuthenticated().then(result=>{
+      if(!result?.authenticated)throw Error('Power BI 로그인을 완료하지 못했어.');
+      status('Power BI 로그인 확인 완료 · 질문해줘 🐰');
+      return result;
+    }).catch(error=>{
+      status('Power BI 로그인을 완료하지 못했어. 우사기를 다시 열거나 질문을 보내면 재시도할게.');
+      throw error;
+    }).finally(()=>{auth=false;authenticationPending=null;});
+    return authenticationPending;
+  }
   const owner = event => win && !win.isDestroyed() && event.sender === win.webContents;
+  ipcMain.handle('bi:gemini-usage',event=>owner(event)?geminiUsage.snapshot(dialogue.model):null);
+  const stopUsageUpdates=geminiUsage.subscribe(()=>{if(win&&!win.isDestroyed())win.webContents.send('bi:gemini-usage-changed');});
+  app.once('before-quit',stopUsageUpdates);
   function place(height) {
     if (!win || !area) return;
     const width = Math.min(expanded ? 1320 : 460, area.width), h = Math.min(height, area.height);
@@ -57,14 +83,15 @@ module.exports = function createPowerBi(options = {}) {
     });
   }
   ipcMain.handle('bi:schema', event => owner(event) ? schema : null);
-  ipcMain.handle('bi:engine',event=>owner(event)?{engine:usePlanner?'Qwen':'Rasa 호환 모드',execution:'실제 Power BI'}:null);
+  ipcMain.handle('bi:engine',event=>owner(event)?{engine:dialogue.model,execution:'Power BI source data + app calculation'}:null);
   ipcMain.handle('bi:command', async (event, input) => {
     if (!owner(event)) return { error: '허용되지 않은 요청입니다.' };
     try {
-      if (input?.mode !== 'search') status('하! 로컬 엔진에서 질문을 해석하는 중이야 🐰');
+      await ensureLogin();
+      if (input?.mode !== 'search') status('Gemini API: interpreting question...');
       return await commands.execute(input?.text, { mode: input?.mode === 'search' ? 'search' : 'talk',requestId:typeof input?.requestId==='string'?input.requestId.slice(0,100):null });
     }
-    catch { return { error: usePlanner ? '로컬 계획 처리 또는 대화 기록 저장에 문제가 생겼어. BI 연결 오류는 아니야 🐰' : '학습 노트를 저장하지 못했어요. 저장 공간과 권한을 확인해주세요.' }; }
+    catch(error) { return { error: error.message || '로그인 또는 대화 처리 중 문제가 생겼어.' }; }
   });
   ipcMain.handle('bi:suggestions', (event, value) => owner(event) ? { codes: codeIndex.suggest(value), count: codeIndex.codes.size } : { codes: [], count: 0 });
   ipcMain.handle('bi:refresh-codes', async event => {
@@ -127,7 +154,8 @@ module.exports = function createPowerBi(options = {}) {
     anchor = { x: bounds.x + (Number.isFinite(point?.x) ? point.x : 100), y: bounds.y + (Number.isFinite(point?.y) ? point.y : 100) };
     area = screen.getDisplayNearestPoint(anchor).workArea;
     if (win && !win.isDestroyed()) {
-      place(win.getBounds().height); win.setAlwaysOnTop(pet.isAlwaysOnTop()); win.show(); win.focus(); win.webContents.send('bi:focus'); return;
+      place(win.getBounds().height); win.setAlwaysOnTop(pet.isAlwaysOnTop()); win.show(); win.focus(); win.webContents.send('bi:focus');
+      ensureLogin().catch(()=>{});return;
     }
     win = new BrowserWindow({
       width: 780, height: 230, frame: false, transparent: true, hasShadow: false,
@@ -138,7 +166,7 @@ module.exports = function createPowerBi(options = {}) {
     win.setMenu(null); place(230);
     win.on('show', () => pausePet(true));
     win.on('hide', () => pausePet(false));
-    win.once('ready-to-show', () => { win.show(); win.focus(); });
+    win.once('ready-to-show', () => { win.show(); win.focus(); ensureLogin().catch(()=>{}); });
     // Keep the conversation visible during screenshots and other focus changes.
     // Close explicitly through the pet toggle, the close button or window close.
     win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));

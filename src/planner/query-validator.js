@@ -1,4 +1,5 @@
 const schema=require('./plan-schema.json');
+const {buildSharePlans}=require('./share-plan-builder');
 function schemaErrors(value,definition,path='$'){
   const errors=[];
   if(definition.oneOf){const branches=definition.oneOf.map(d=>schemaErrors(value,d,path));if(branches.filter(e=>!e.length).length!==1)errors.push(`${path}: must match exactly one permitted response shape`);}
@@ -53,21 +54,23 @@ function validatePlan(plan,catalog,entities=[]){
   const dates=plan.filters.filter(f=>fields.get(f.field)?.type==='datetime');
   const start=dates.find(f=>f.operator==='gte'),end=dates.find(f=>f.operator==='lt');
   if(!start||!end||start.field!==end.field||start.value>=end.value)errors.push('A bounded datetime range is required');
-  if(plan.share){
-    if(!plan.metrics.some(id=>catalog.metrics[id]?.aggregation==='share'))errors.push('Share specification requires a share output metric');
-    if(plan.share.numerator.metric!==plan.share.denominator.metric)errors.push('Share numerator and denominator require the same basis metric');
-    for(const side of [plan.share.numerator,plan.share.denominator]){
-      if(!['sum','count_distinct'].includes(catalog.metrics[side.metric]?.aggregation))errors.push('Ratio basis must be a registered aggregate metric');
+  if(plan.share&&!plan.metrics.some(id=>catalog.metrics[id]?.aggregation==='share'))errors.push('Share specification requires a share output metric');
+  let sharePlans={};
+  try{sharePlans=buildSharePlans(plan,catalog);}catch(error){errors.push(error.message);}
+  for(const [id,share] of Object.entries(sharePlans)){
+    if(share.numerator.metric!==share.denominator.metric)errors.push('Share numerator and denominator require the same basis metric');
+    for(const side of [share.numerator,share.denominator]){
+      if(!['sum','count_distinct'].includes(catalog.metrics[side.metric]?.aggregation)){errors.push('Ratio basis must be a registered aggregate metric');continue;}
       const checked=validatePlan({...plan,share:null,target:null,metrics:[side.metric],filters:side.filters,groupBy:side.groupBy||plan.groupBy,sort:[]},catalog,entities);
-      if(!checked.ok)errors.push(...checked.errors.map(e=>'Ratio: '+e));
+      if(!checked.ok)errors.push(...checked.errors.map(e=>'Ratio '+id+': '+e));
     }
-    if(plan.share.denominator.groupBy.some(g=>!plan.groupBy.some(p=>p.field===g.field&&p.unit===g.unit)))errors.push('Denominator grouping must be an output grouping');
+    if(share.denominator.groupBy.some(g=>!plan.groupBy.some(p=>p.field===g.field&&p.unit===g.unit)))errors.push('Denominator grouping must be an output grouping');
   }
   const normalized=structuredClone(plan);
   if(plan.target?.kind==='organization'){
     const entity=entities.find(e=>e.kind==='organization'&&(e.value===plan.target.value||e.aliases?.includes(plan.target.value)));
     if(entity)normalized.target.value=entity.value;
   }
-  return {ok:!errors.length,errors,plan:errors.length?undefined:normalized};
+  return {ok:!errors.length,errors,plan:errors.length?undefined:normalized,sharePlans:errors.length?undefined:sharePlans};
 }
 module.exports={validatePlan,schemaErrors,fieldMap};

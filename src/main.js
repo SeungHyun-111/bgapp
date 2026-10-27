@@ -493,7 +493,9 @@ function createTray() {
 }
 
 app.whenReady().then(() => {
-  const stopLearningLoop=require('./planner/environment').useQwen()?()=>{}:require('./commands/learning-loop').startLearningLoop();
+  // Legacy background training disabled during Gemini migration; retained for reference.
+  // const stopLearningLoop=!require('./planner/environment').useQwen()&&process.env.USAGI_AUTO_TRAIN==='true'?require('./commands/learning-loop').startLearningLoop():()=>{};
+  const stopLearningLoop=()=>{};
   app.on('before-quit',stopLearningLoop);
   enableAutoLaunch();
   configureCacheDirectory(path.join(app.getPath('userData'), 'data-cache'));

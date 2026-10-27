@@ -23,8 +23,8 @@ const {applyQueryState}=require('./query-state');
 const {randomUUID}=require('crypto');
 const { resolveEntities, normalize, isEntityReply } = require('./entity-resolver');
 class Dialogue {
-  constructor({ nlu, store, codes = () => [], getEntities = null, queryMetric = null, now = () => new Date() }) {
-    this.nlu=nlu;this.store=store;this.codes=codes;this.getEntities=getEntities;this.queryMetric=queryMetric;this.now=now;this.reset();
+  constructor({ nlu, store, codes = () => [], getEntities = null, getLocalEntities=()=>[], replies=null, queryMetric = null, now = () => new Date() }) {
+    this.nlu=nlu;this.store=store;this.codes=codes;this.getEntities=getEntities;this.getLocalEntities=getLocalEntities;this.replies=replies;this.queryMetric=queryMetric;this.now=now;this.reset();
   }
   reset() { this.state={};this.lastActivity=0;this.revision=(this.revision||0)+1;this.conversationId=randomUUID();this.turnId=null; }
   async unknown(input,message='우응… 질문을 잘 모르겠어. 팀이나 상품 이름과 궁금한 항목을 조금 더 자세히 알려줄래?') {
@@ -47,6 +47,12 @@ class Dialogue {
   async executeTurn(input) {
     if(Date.now()-this.lastActivity>15*60000)this.reset();
     this.lastActivity=Date.now();const revision=this.revision;
+    const replyKey=this.replies?.keyFor(input);
+    if(replyKey){
+      if(replyKey==='reset')this.reset();
+      const message=this.replies.message(replyKey,{entities:this.getLocalEntities()});
+      if(message)return {kind:'reply',message};
+    }
     if(/^(취소|처음부터|초기화)[.! ]*$/.test(input)){this.reset();return {kind:'reply',message:'하! 앞 이야기는 비웠어. 새로 물어봐 🐰'};}
     if(this.state.periodSuggestions){
       const selected=input.trim().match(/^([1-3])(?:번)?[.!]?$/);
@@ -64,6 +70,11 @@ class Dialogue {
     let parsed;
     try{parsed=await this.nlu.parse(nluInput);}catch(error){return this.unknown(input,connectionMessage(error,'nlu'));}
     if(revision!==this.revision)return {kind:'reply',message:'하! 앞 대화는 비웠어. 다시 물어봐 🐰'};
+    const responseIntent=parsed.intent;
+    if((responseIntent?.confidence||0)>=.65){
+      const message=this.replies?.message(responseIntent.name,{entities:this.getLocalEntities()});
+      if(message)return {kind:'reply',message};
+    }
     const interpretation=interpretQuery(input,parsed,this.state,this.now());
     this.interpretation=interpretation;detected=interpretation.metrics;date=interpretation.period;
     if(interpretation.recognized&&interpretation.action==='cancel'){this.reset();return {kind:'reply',message:'하! 앞 이야기는 비웠어. 새로 물어봐 🐰'};}

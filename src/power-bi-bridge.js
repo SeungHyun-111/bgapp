@@ -61,7 +61,14 @@ class PowerBiBridge {
     return task;
   }
 
-  send(dax) {
+  ensureAuthenticated() {
+    // Authentication only; never issue an executeQueries request here.
+    const task = this.queue.then(() => this.send(null, 'authenticate'));
+    this.queue = task.catch(() => {});
+    return task;
+  }
+
+  send(dax, action = 'query') {
     this.start();
     return new Promise((resolve, reject) => {
       const id = ++this.nextId;
@@ -70,7 +77,7 @@ class PowerBiBridge {
         this.stop();
       }, this.timeoutMs);
       this.pending.set(id, { resolve, reject, timer });
-      this.child.stdin.write(JSON.stringify({ id, action: 'query', datasetId: model.datasetId, tenantId: model.tenantId, dax }) + '\n');
+      this.child.stdin.write(JSON.stringify({ id, action, datasetId: model.datasetId, tenantId: model.tenantId, ...(action === 'query' ? {dax} : {}) }) + '\n');
     });
   }
 

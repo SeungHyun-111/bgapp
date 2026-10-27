@@ -6,6 +6,29 @@ let schema,revision=0,visualRevision=0,searchId=null,data=null,selected=null,sor
 let suggestionRevision=0, suggestionTimer=null, suggested=[], activeSuggestion=-1, composing=false, talkComposing=false, commandPending=false, commandToken=0;
 let activeCommand=null;
 const talkRequests=new Map();
+async function refreshGeminiUsage(){
+ try{
+  const u=await window.powerBi.geminiUsage();if(!u)return;
+  const n=value=>Number(value||0).toLocaleString('ko-KR');
+  const quota=u.dailyLimit===null?'잔여 미확인':`잔여 추정 ${n(u.remainingEstimate)}회 / 설정 ${n(u.dailyLimit)}회`;
+  const summary=`Gemini · 앱 ${n(u.requests)}회 · 최근 1분 ${n(u.rpm)}회 · ${quota}`+(u.rateLimited?' · 한도 응답 있음':'')+(u.storageError?' · 기록 저장 오류':'');
+  const detail=[`${u.model} · 일일 기준 ${u.quotaDay} (미국 태평양 시간)`,
+   `API 응답 ${n(u.succeeded)} · 실패 ${n(u.failed)} · 진행 ${n(u.pending)} · 중단/미확인 ${n(u.interrupted)}`,
+   `입력 ${n(u.inputTokens)} · 출력 ${n(u.outputTokens)} · 캐시 ${n(u.cachedTokens)} 토큰`,
+   `최근 1분 입력 ${n(u.minuteInputTokens)} 토큰 · 한도 응답(429) ${n(u.rateLimited)}회`,
+   'BASE 생성·계획 재요청 포함. 이 앱 밖의 프로젝트 사용량은 포함하지 않음.',
+   u.dailyLimit===null?'공식 무료 한도는 AI Studio에서 확인. 한도 설정 시 잔여 추정 표시.':'한도는 수동 설정값이며 잔여량은 앱 호출 횟수 기준 추정.',
+   u.historicalPartial?'이전 기록은 확인 가능한 호출만 복원했으므로 일부 누락될 수 있음.':'',
+   u.missingTokenReports?`토큰 정보가 없는 요청 ${n(u.missingTokenReports)}건은 토큰 합계에서 제외.`:''].filter(Boolean).join('\n');
+  if($('gemini-usage-summary').textContent!==summary)$('gemini-usage-summary').textContent=summary;
+  if($('gemini-usage-breakdown').textContent!==detail)$('gemini-usage-breakdown').textContent=detail;
+ }catch{if($('gemini-usage-summary').textContent!=='Gemini 사용량 확인 불가')$('gemini-usage-summary').textContent='Gemini 사용량 확인 불가';}
+}
+refreshGeminiUsage();
+window.powerBi.onGeminiUsage(refreshGeminiUsage);
+const geminiUsageTimer=setInterval(()=>{if(!document.hidden)refreshGeminiUsage();},15000);
+window.addEventListener('focus',refreshGeminiUsage);
+window.addEventListener('beforeunload',()=>clearInterval(geminiUsageTimer));
 window.powerBi.engine().then(info=>{if(info)$('engine-status').textContent=`${info.engine} · ${info.execution}`;}).catch(()=>{$('engine-status').textContent='대화 엔진 상태를 확인하지 못했어';});
 window.powerBi.onReplyProgress(result=>{
  const queued=talkRequests.get(result.requestId);

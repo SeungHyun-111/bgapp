@@ -1,0 +1,5035 @@
+{
+  "version": 10,
+  "name": "우사기 통합 항목·업무 규칙·앱 계산 카탈로그",
+  "date": "2026-10-27",
+  "status": "draft_not_connected_to_runtime",
+  "catalogPolicy": {
+    "role": "Master Catalog",
+    "masterFile": "new-bi-catalog.json",
+    "geminiCatalog": {
+      "status": "planned_not_generated",
+      "derivation": "Master Catalog에서 고정 투영 규칙으로 Gemini용 전체 카탈로그를 별도 생성한다.",
+      "questionDependentSelection": false,
+      "preserve": [
+        "전체 BI 원천 항목과 ID",
+        "전체 지표와 별칭",
+        "엔티티와 확인된 별칭",
+        "업무 규칙",
+        "계산 규칙과 산식",
+        "지원 연산자와 지원 상태",
+        "단위와 자료형",
+        "실행 차단에 필요한 미확인 정의",
+        "분모 규칙과 미해결 충돌"
+      ],
+      "removeOnly": [
+        "provenance",
+        "referenceEvidence",
+        "workStatus",
+        "개발 파일 경로와 해시",
+        "typeEvidence 등 근거 설명",
+        "의미가 완전히 같은 반복 설명"
+      ],
+      "compression": "필드명 단축·공통 설명 참조·중복 문구 제거만 허용한다. 의미·선택지·별칭·단위·미지원 상태를 삭제하거나 바꾸지 않는다.",
+      "selectionOwner": "Gemini가 전체 카탈로그와 질문·대화 문맥을 보고 필요한 항목을 선택한다. 앱은 질문별 항목 선별이나 의미 검색을 선행하지 않는다.",
+      "versioning": "Master 버전과 고정 투영 규칙 버전을 함께 식별한다. 내용이 바뀌면 새 BASE를 만든다."
+    }
+  },
+  "modelPolicy": {
+    "primaryCandidate": "gemini-3.5-flash-lite",
+    "fallbackCandidate": "gemini-3.8-flash",
+    "fallbackStatus": "future_option_not_implemented",
+    "fallbackTriggers": [
+      "기본 모델이 의미 해석을 완료하지 못함",
+      "모델 출력의 수정 가능한 Validator 오류",
+      "복잡한 분석 계획 필요"
+    ],
+    "fallbackRules": [
+      "같은 분기의 문맥과 전체 카탈로그를 유지한다",
+      "미확인 업무 정의·없는 항목·조회 권한 문제를 모델 교체로 확정하지 않는다",
+      "검증 통과 전에는 BI 조회와 계산을 실행하지 않는다"
+    ],
+    "availability": "프로젝트별 무료 사용 가능 여부·할당량·설정은 구현 시 확인. 현재 API 연결 없음."
+  },
+  "conversationTree": {
+    "status": "implemented_pending_execution_verification",
+    "base": {
+      "contents": [
+        "Gemini용 전체 카탈로그",
+        "업무 기본 문맥"
+      ],
+      "identityFields": [
+        "baseId",
+        "baseInteractionId",
+        "masterCatalogVersion",
+        "geminiCatalogVersion",
+        "businessContextVersion"
+      ],
+      "rule": "업무 질문이 섞이지 않은 공통 출발점으로 유지한다. 독립 질문마다 이 BASE에서 새 분기를 만든다."
+    },
+    "branch": {
+      "identityFields": [
+        "conversationId",
+        "branchId",
+        "baseId",
+        "parentTurnId",
+        "turnId",
+        "previousInteractionId",
+        "interactionId"
+      ],
+      "firstQuestion": "BASE를 부모로 새 Interaction을 생성한다.",
+      "followUp": "해당 분기의 직전 Interaction ID를 연결하고 질문을 전달한다.",
+      "independentQuestion": "다른 업무 질문의 조건을 물려받지 않도록 BASE에서 새 분기를 생성한다.",
+      "meaningOwner": "Gemini interprets meaning. conversation.mode links or branches; action only chooses clarify/execute/reply.",
+      "routing": "현재 분기의 문맥에서 Gemini가 independent로 판단하면 그 응답의 실행 계획은 실행하지 않고 BASE에서 해당 질문을 다시 해석한다. 이미 사용자 선택으로 독립 질문임이 명확하면 BASE에서 바로 시작한다.",
+      "ambiguousReference": "Gemini interprets aliases, spelling and references using full catalog and branch context, and asks when materially ambiguous.",
+      "validatedState": "Gemini 제안 계획·Validator 통과 계획·실제 실행 계획·실행 결과를 구분한다. 실패한 계획을 성공한 이전 조회로 취급하지 않는다."
+    },
+    "example": {
+      "BASE": {
+        "branchA": [
+          {
+            "turn": "A1",
+            "parent": "BASE",
+            "question": "10월 헬쓰푸드 편성비중?"
+          },
+          {
+            "turn": "A2",
+            "parent": "A1",
+            "question": "그럼 9월은?",
+            "meaning": "기간만 9월로 변경하고 대상·지표는 유지"
+          },
+          {
+            "turn": "A3",
+            "parent": "A2",
+            "question": "가전이랑 비교하면?",
+            "meaning": "9월 기준으로 가전 비교 대상을 추가"
+          },
+          {
+            "turn": "A4",
+            "parent": "A3",
+            "question": "그거 가중분 말고 방송횟수로",
+            "meaning": "기존 기간·비교 대상을 유지하고 비중 기준을 방송횟수로 변경"
+          }
+        ],
+        "branchB": [
+          {
+            "turn": "B1",
+            "parent": "BASE",
+            "question": "새로운 독립 질문"
+          }
+        ]
+      }
+    },
+    "interactionTransport": {
+      "preferred": "Gemini Interactions API의 previous_interaction_id 연결",
+      "catalogPlacement": "전체 카탈로그와 공통 업무 문맥을 BASE의 대화 입력에 포함하는 방식을 우선 검토한다. 시스템 지시에만 넣고 자동 승계된다고 가정하지 않는다.",
+      "perRequest": [
+        "system_instruction",
+        "JSON 출력 계약",
+        "generation_config",
+        "필요한 tools 설정",
+        "한국 현재 날짜·시각"
+      ],
+      "note": "Interaction ID는 대화 입출력 연결에 사용한다. 시스템 지시·도구·생성 설정은 요청마다 명시한다. ID 사용이 입력 토큰 비용 0을 의미하지 않는다.",
+      "stateExpiration": "만료·삭제·ID 오류 시 새 BASE를 만들고 로컬 기록에서 해당 분기의 필요한 질문·정정·검증된 계획·실행 상태를 복원한다. 다른 분기의 기록을 섞지 않는다.",
+      "restoration": "만료된 서버 ID 대신 새 Interaction ID를 로컬 turnId에 매핑한다. 복원만을 이유로 이전 BI 조회를 재실행하지 않는다.",
+      "dailyBasePolicy": "Reuse one BASE per Asia/Seoul calendar day. Recreate on expiry, deletion, catalog change or explicit reset; preserve local branch context."
+    },
+    "executionFeedback": "앱 검증 결과·실제 계산 결과·최종 사용자 응답·오류를 현재 분기에 연결해 다음 질문의 문맥으로 제공한다. 최초 Gemini 응답만 서버에 남기고 실제 실행 결과가 자동 전달됐다고 가정하지 않는다.",
+    "localHistory": {
+      "file": "conversation-history.jsonl",
+      "independentOfServerState": true,
+      "fields": [
+        "conversationId",
+        "branchId",
+        "baseId",
+        "turnId",
+        "parentTurnId",
+        "previousInteractionId",
+        "interactionId",
+        "catalogVersion",
+        "model",
+        "userQuestion",
+        "contextTurnIds",
+        "geminiPlan",
+        "responseTemplate",
+        "validation",
+        "actualBiQueryConditions",
+        "actualCalculation",
+        "calculationResult",
+        "finalAnswer",
+        "outcome",
+        "errorCause",
+        "userCorrection",
+        "labelStatus"
+      ],
+      "training": "기록은 자동 정답이 아니다. 사용자 수정과 확인 여부를 따로 저장한다."
+    }
+  },
+  "geminiResponseContract": {
+    "version": 6,
+    "status": "implemented_pending_execution_verification",
+    "fields": [
+      "action",
+      "conversation",
+      "message",
+      "plan",
+      "responseTemplate"
+    ],
+    "actions": {
+      "clarify": {
+        "meaning": "Ask the user for missing or ambiguous information",
+        "execution": false,
+        "plan": "null or partial plan",
+        "message": "required question"
+      },
+      "execute": {
+        "meaning": "Validate and execute the complete plan, then fill responseTemplate",
+        "execution": true,
+        "plan": "required complete plan",
+        "responseTemplate": "required"
+      },
+      "reply": {
+        "meaning": "Ordinary conversation without execution",
+        "execution": false,
+        "plan": null,
+        "message": "required"
+      }
+    },
+    "conversation": {
+      "mode": "continue | new",
+      "reset": "optional boolean; true cancels the pending conversation and starts future questions from BASE. Only with action=reply."
+    },
+    "rules": [
+      "Use execute for a calculation request, regardless of whether the question is new, a follow-up or a correction.",
+      "Use clarify to ask; preserve the original question and partial plan until the user answers.",
+      "Use reply only for conversation without a plan. A non-null plan with reply is a contract error, never silently discard it.",
+      "Conversation linkage and cancellation are metadata, not execution action types."
+    ],
+    "plan": {
+      "datasets": [
+        {
+          "id": "조회 범위 ID",
+          "period": {
+            "start": "YYYY-MM-DD",
+            "endExclusive": "YYYY-MM-DD",
+            "timezone": "Asia/Seoul"
+          },
+          "target": "단일 대상 또는 생략",
+          "targets": "동일 차원 여러 대상의 합집합",
+          "filters": "교차 조건 배열",
+          "requiredFields": "원천 필드 ID 배열"
+        }
+      ],
+      "dataset": "기본 조회 범위 ID",
+      "groupBy": [
+        {
+          "field": "원천 필드 ID",
+          "unit": "value | year | month | day | hour"
+        }
+      ],
+      "calculations": [
+        {
+          "id": "계산 ID",
+          "label": "표시 이름",
+          "formula": "연산 트리",
+          "format": "number | percent | text",
+          "unit": "표시 단위, 생략 가능",
+          "decimals": "소수점 자릿수, 생략 가능"
+        }
+      ],
+      "sort": [
+        {
+          "field": "계산 ID 또는 그룹 필드 ID",
+          "direction": "asc | desc"
+        }
+      ],
+      "limit": "결과 행 수, 생략하면 전체",
+      "includeTies": "동률 포함 여부, 기본 true",
+      "having": [
+        {
+          "field": "계산 ID",
+          "operator": "gt | gte | lt | lte | eq | ne | not_null | is_null",
+          "value": "비교 상수. 집계 후, 정렬·limit 전에 적용"
+        }
+      ]
+    },
+    "backwardCompatibility": "datasets/calculations 대신 단일 period/target/requiredFields/formula/outputFormat도 가능",
+    "targets": {
+      "organization": "표준조직 값 또는 값 배열",
+      "brand": "편성코드 맨 앞 브랜드",
+      "product": "정확한 편성코드",
+      "program": "프로그램명",
+      "all": "전체"
+    },
+    "filters": {
+      "shape": "Leaf: {field,operator,value}. Group: {operator:or|and,conditions:[leaf or group,...]}.",
+      "operators": [
+        "eq",
+        "ne",
+        "in",
+        "not_in",
+        "gte",
+        "lt",
+        "gt",
+        "lte",
+        "contains",
+        "prefix",
+        "is_null",
+        "not_null",
+        "or",
+        "and"
+      ],
+      "combination": "Top-level filters and dataset target/period are AND. Each explicit or group matches any child; and matches all children. Parentheses preserve nesting.",
+      "searchSemantics": "Names can appear in different columns. Gemini may combine candidate name conditions across program code/product name with OR while keeping brand, period and business exclusions outside the OR group.",
+      "example": {
+        "operator": "or",
+        "conditions": [
+          {
+            "field": "field:편성코드",
+            "operator": "contains",
+            "value": "전기담요"
+          },
+          {
+            "field": "field:대표상품명",
+            "operator": "contains",
+            "value": "전기담요"
+          }
+        ]
+      }
+    },
+    "formula": {
+      "shape": "{operator,field?,dataset?,scope?,arguments?,id?,direction?,ties?}",
+      "operators": [
+        "field",
+        "metric",
+        "sum",
+        "count",
+        "distinct_count",
+        "average",
+        "min",
+        "max",
+        "median",
+        "add",
+        "subtract",
+        "multiply",
+        "divide",
+        "power",
+        "abs",
+        "negate",
+        "round",
+        "floor",
+        "ceil",
+        "sqrt",
+        "rank"
+      ],
+      "aggregates": "sum/count/distinct_count/average/min/max/median: field 또는 arguments의 행 계산식 하나",
+      "field": "행 안에서는 원천값, 그룹에서는 하나로 확정되는 원본값",
+      "metric": "id로 다른 계산 참조",
+      "dataset": "사용할 원천 범위 ID. 생략하면 기본 범위",
+      "scope": "group 또는 all. all은 해당 dataset 안에서 그룹만 제거",
+      "rank": "arguments:[기준 산식], direction:asc/desc, ties:dense/competition",
+      "arithmetic": "add/multiply는 여러 인수, subtract/divide/power는 두 인수, abs/negate/floor/ceil/sqrt는 한 인수, round는 값과 선택적 소수점 자릿수"
+    },
+    "placeholders": [
+      "value",
+      "results",
+      "rows",
+      "table",
+      "topLabel",
+      "topValue",
+      "count",
+      "periodLabel",
+      "targetLabel",
+      "metric:계산ID",
+      "그룹필드ID"
+    ],
+    "formatting": "percent는 비율값에 앱이 100을 곱하고 % 표시. results/rows/table은 여러 행·지표를 모두 표시. Datetime display uses a space, not T. A numeric placeholder and its surrounding template must not repeat the same unit. Percentage-point source values use format=number with unit=%, without multiplying by 100.",
+    "source": "BI 쿼리 코드가 아닌 원천 항목·조건·연산 트리만 전달",
+    "fieldDescriptions": {
+      "action": "clarify | execute | reply",
+      "conversation": {
+        "mode": "continue | new",
+        "reset": false
+      },
+      "message": "conversation text or clarification question",
+      "plan": "complete execution plan, partial clarification plan, or null according to action",
+      "responseTemplate": "calculated-answer template for execute, otherwise null"
+    },
+    "wireFormat": {
+      "container": "top-level JSON object",
+      "actionLocation": "$.action",
+      "planLocation": "$.plan",
+      "responseTemplateLocation": "$.responseTemplate",
+      "envelope": "none; do not wrap the output in a response object"
+    },
+    "responseExampleJson": "{\"action\": \"reply\", \"conversation\": {\"mode\": \"continue\", \"reset\": false}, \"message\": \"Hello\", \"plan\": null, \"responseTemplate\": null}",
+    "scopeSemantics": {
+      "dataset": "Period, targets and filters define a fixed source-row domain.",
+      "scope:all": "Removes grouping only. It NEVER removes the dataset target, period or filters.",
+      "different_denominator_domain": "Reference another explicit dataset when the denominator needs a different target/filter domain."
+    }
+  },
+  "architecture": {
+    "flow": [
+      "사용자 질문·대화 문맥·카탈로그 → Gemini",
+      "Gemini → 필요한 원천 항목·조회 조건·산식·답변 틀 JSON",
+      "앱 Validator → 항목·업무 정의·산식·조회 범위 검증",
+      "Power BI → 필요한 원천 행과 값 제공",
+      "앱 → 산식 계산·답변 틀 값 삽입·전체 로그 저장"
+    ],
+    "gemini": "카탈로그 항목과 연산자를 조합해 산식을 제안한다. 고정 산식 ID 선택만으로 제한하지 않는다. 실제 결과 숫자는 만들지 않는다.",
+    "app": "검증된 산식을 해석하여 직접 계산한다. 모델의 임의 코드나 문자열을 실행하지 않는다.",
+    "powerBI": "원천 데이터 제공. 지표 계산 주체가 아니다.",
+    "runtimeStatus": "Gemini and source-row app analysis engine connected in code; expanded analysis execution not tested."
+  },
+  "businessRules": {
+    "margin": {
+      "metricId": "commission_rate",
+      "aliases": [
+        "마진",
+        "상품수수료율",
+        "수수료율"
+      ],
+      "transformation": "none",
+      "multipleValues": "clarify",
+      "unit": "%",
+      "valueScale": "percentage_points",
+      "display": "원본 15 → 15%. format=number, unit=%. 100배 변환 없음."
+    },
+    "defaultShareBasis": "weighted_minutes",
+    "broadcastCountRequiresExplicitRequest": true,
+    "timezone": "Asia/Seoul",
+    "periodBounds": "start_inclusive_end_exclusive",
+    "organization": "Gemini가 전체 엔티티·별칭·대화 문맥으로 조직 표현과 오타를 해석하고 실제 표준조직으로 연결한다. 의미가 모호한 경우에만 확인한다.",
+    "brand": "BO[편성코드] 맨 앞 [브랜드] 정확히 일치하는 전체 상품",
+    "training": "실패 출력·조회 성공·생성 답변을 자동 정답 처리하지 않는다. 사용자 수정과 확인 여부를 별도로 보존한다.",
+    "bestPgm": {
+      "status": "user-confirmed",
+      "defaultMetric": "weighted_profit_per_minute",
+      "formula": {
+        "operator": "divide",
+        "arguments": [
+          {
+            "operator": "sum",
+            "field": "field:(전체)한계이익"
+          },
+          {
+            "operator": "sum",
+            "field": "field:가중분"
+          }
+        ]
+      },
+      "direction": "desc",
+      "displayFields": [
+        "field:방송일시",
+        "field:편성코드"
+      ],
+      "preferProgramName": false,
+      "override": "Use another criterion when the user explicitly specifies it.",
+      "displayDatetime": "YYYY-MM-DD HH:mm; preserve nonzero seconds if present."
+    },
+    "mixPerMinute": {
+      "status": "user-confirmed-2026-10-27",
+      "metricId": "mix_per_minute",
+      "formula": {
+        "operator": "divide",
+        "arguments": [
+          {
+            "operator": "sum",
+            "field": "field:정액수수료(원)"
+          },
+          {
+            "operator": "sum",
+            "field": "field:가중분"
+          }
+        ]
+      },
+      "unit": "원/분",
+      "sourceFeeField": "field:정액수수료(원)",
+      "notEquivalentTo": [
+        "혼합조정분",
+        "분당취급액"
+      ],
+      "positiveData": "있는 방송/값이 있는 방송은 계산 결과 > 0. 집계 후 조건을 적용하고, 그 뒤 최근순 정렬과 개수 제한을 적용한다.",
+      "evidence": "사용자가 정액수수료(원) / 가중분 산식을 제시한 결과를 정확하다고 확인함. 실제 BI 숫자를 정답 데이터로 추가하지 않음."
+    }
+  },
+  "denominatorConflict": {
+    "status": "requires_user_confirmation",
+    "blocks": [
+      "organization_weighted_share",
+      "organization_broadcast_share"
+    ],
+    "alternatives": [
+      {
+        "id": "preserve_period_and_product_type",
+        "keep": [
+          "period",
+          "BO[유/무형]"
+        ],
+        "evidence": [
+          "src/commands/bi-report-templates.js",
+          "docs/power-bi/REFERENCE_USAGE.md",
+          "docs/bi-guide.md"
+        ]
+      },
+      {
+        "id": "preserve_period_only",
+        "keep": [
+          "period"
+        ],
+        "evidence": [
+          "src/planner/catalog-additions.json"
+        ]
+      }
+    ],
+    "commonRule": "분자는 선택 대상·조건. 분모는 선택 조직·브랜드·상품을 제거. 기간별 그룹이면 같은 기간 버킷으로 계산."
+  },
+  "fields": [
+    {
+      "id": "field:방송일시",
+      "table": "BO",
+      "name": "방송일시",
+      "dataType": "datetime",
+      "typeEvidence": "기존 날짜 필터·파싱 코드. 서버 DDL 아님."
+    },
+    {
+      "id": "field:다원구분",
+      "table": "BO",
+      "name": "다원구분",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:프라임구분",
+      "table": "BO",
+      "name": "프라임구분",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:혼합조정분",
+      "table": "BO",
+      "name": "혼합조정분",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:채널1기준분",
+      "table": "BO",
+      "name": "채널1기준분",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:프로그램명",
+      "table": "BO",
+      "name": "프로그램명",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:편성코드",
+      "table": "BO",
+      "name": "편성코드",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:거래형태",
+      "table": "BO",
+      "name": "거래형태",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:판매가(대표상품)",
+      "table": "BO",
+      "name": "판매가(대표상품)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:아이템명",
+      "table": "BO",
+      "name": "아이템명",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:MD명",
+      "table": "BO",
+      "name": "MD명",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:MD분류",
+      "table": "BO",
+      "name": "MD분류",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:조직명",
+      "table": "BO",
+      "name": "조직명",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:대표상품ID",
+      "table": "BO",
+      "name": "대표상품ID",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:대표상품명",
+      "table": "BO",
+      "name": "대표상품명",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:대표업체명",
+      "table": "BO",
+      "name": "대표업체명",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:기업구분",
+      "table": "BO",
+      "name": "기업구분",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:영상구분",
+      "table": "BO",
+      "name": "영상구분",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:영상ID",
+      "table": "BO",
+      "name": "영상ID",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:영상명",
+      "table": "BO",
+      "name": "영상명",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:소재ID",
+      "table": "BO",
+      "name": "소재ID",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:PD명",
+      "table": "BO",
+      "name": "PD명",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:쇼호스트1",
+      "table": "BO",
+      "name": "쇼호스트1",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:쇼호스트2",
+      "table": "BO",
+      "name": "쇼호스트2",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:가중분",
+      "table": "BO",
+      "name": "가중분",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:노출분",
+      "table": "BO",
+      "name": "노출분",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)목표취급액",
+      "table": "BO",
+      "name": "(전체)목표취급액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)목표매출액(V-)",
+      "table": "BO",
+      "name": "(전체)목표매출액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)목표매출총이익액",
+      "table": "BO",
+      "name": "(전체)목표매출총이익액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)한계이익목표",
+      "table": "BO",
+      "name": "(전체)한계이익목표",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)목표취급액",
+      "table": "BO",
+      "name": "(전체/방송중)목표취급액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)목표매출액(V-)",
+      "table": "BO",
+      "name": "(전체/방송중)목표매출액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)목표매출총이익액",
+      "table": "BO",
+      "name": "(전체/방송중)목표매출총이익액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)한계이익율(%)",
+      "table": "BO",
+      "name": "(전체/방송중)한계이익율(%)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)총주문량",
+      "table": "BO",
+      "name": "(전체)총주문량",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(총주문)총주문액",
+      "table": "BO",
+      "name": "(총주문)총주문액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)예상매출액(V-)",
+      "table": "BO",
+      "name": "(전체)예상매출액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)예상취급액",
+      "table": "BO",
+      "name": "(전체)예상취급액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)예상취급액(V-)",
+      "table": "BO",
+      "name": "(전체)예상취급액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)예상매출총이익액(V-)",
+      "table": "BO",
+      "name": "(전체)예상매출총이익액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)예상매출총이익액(V-)배송료 제외",
+      "table": "BO",
+      "name": "(전체)예상매출총이익액(V-)배송료 제외",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)한계이익",
+      "table": "BO",
+      "name": "(전체)한계이익",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)총주문량",
+      "table": "BO",
+      "name": "(전체/방송중)총주문량",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(총주문)방송주문액",
+      "table": "BO",
+      "name": "(총주문)방송주문액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)예상매출액(V-)",
+      "table": "BO",
+      "name": "(전체/방송중)예상매출액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)예상취급액",
+      "table": "BO",
+      "name": "(전체/방송중)예상취급액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)예상취급액(V-)",
+      "table": "BO",
+      "name": "(전체/방송중)예상취급액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)매출총이익액(V-)",
+      "table": "BO",
+      "name": "(전체/방송중)매출총이익액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)한계이익",
+      "table": "BO",
+      "name": "(전체/방송중)한계이익",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/미리주문)총주문량",
+      "table": "BO",
+      "name": "(전체/미리주문)총주문량",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(총주문)미리주문액",
+      "table": "BO",
+      "name": "(총주문)미리주문액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/미리주문)예상매출액(V-)",
+      "table": "BO",
+      "name": "(전체/미리주문)예상매출액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/미리주문)예상취급액",
+      "table": "BO",
+      "name": "(전체/미리주문)예상취급액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/미리주문)예상취급액(V-)",
+      "table": "BO",
+      "name": "(전체/미리주문)예상취급액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/미리주문)매출총이익액(V-)",
+      "table": "BO",
+      "name": "(전체/미리주문)매출총이익액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동/방송중)총주문량",
+      "table": "BO",
+      "name": "(연동/방송중)총주문량",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동/방송중)총주문량_1",
+      "table": "BO",
+      "name": "(연동/방송중)총주문량_1",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동/방송중)예상취급액",
+      "table": "BO",
+      "name": "(연동/방송중)예상취급액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동/방송중)예상취급액(V-)",
+      "table": "BO",
+      "name": "(연동/방송중)예상취급액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동/방송중)매출총이익액(V-)",
+      "table": "BO",
+      "name": "(연동/방송중)매출총이익액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동/방송중)예상매출총이익액(V-)배송료 제외",
+      "table": "BO",
+      "name": "(연동/방송중)예상매출총이익액(V-)배송료 제외",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동/미리주문)총주문량",
+      "table": "BO",
+      "name": "(연동/미리주문)총주문량",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동/미리주문)예상매출액(V-)",
+      "table": "BO",
+      "name": "(연동/미리주문)예상매출액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동/미리주문)예상취급액",
+      "table": "BO",
+      "name": "(연동/미리주문)예상취급액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동/미리주문)예상취급액(V-)",
+      "table": "BO",
+      "name": "(연동/미리주문)예상취급액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동/미리주문)매출총이익액(V-)",
+      "table": "BO",
+      "name": "(연동/미리주문)매출총이익액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동)총주문량",
+      "table": "BO",
+      "name": "(연동)총주문량",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동)예상매출액(V-)",
+      "table": "BO",
+      "name": "(연동)예상매출액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동)예상취급액",
+      "table": "BO",
+      "name": "(연동)예상취급액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동)예상취급액(V-)",
+      "table": "BO",
+      "name": "(연동)예상취급액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동)매출총이익액(V-)",
+      "table": "BO",
+      "name": "(연동)매출총이익액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동)예상매출총이익액(V-)배송료 제외",
+      "table": "BO",
+      "name": "(연동)예상매출총이익액(V-)배송료 제외",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(비연동)총주문량",
+      "table": "BO",
+      "name": "(비연동)총주문량",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(비연동)예상매출액(V-)",
+      "table": "BO",
+      "name": "(비연동)예상매출액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(비연동)예상취급액",
+      "table": "BO",
+      "name": "(비연동)예상취급액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(비연동)예상취급액(V-)",
+      "table": "BO",
+      "name": "(비연동)예상취급액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(비연동/방송중)매출총이익액(V-)",
+      "table": "BO",
+      "name": "(비연동/방송중)매출총이익액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(비연동/미리주문)총주문량",
+      "table": "BO",
+      "name": "(비연동/미리주문)총주문량",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(비연동/미리주문)예상매출액(V-)",
+      "table": "BO",
+      "name": "(비연동/미리주문)예상매출액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(비연동/미리주문)예상취급액",
+      "table": "BO",
+      "name": "(비연동/미리주문)예상취급액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(비연동/미리주문)예상취급액(V-)",
+      "table": "BO",
+      "name": "(비연동/미리주문)예상취급액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(비연동/미리주문)매출총이익액(V-)",
+      "table": "BO",
+      "name": "(비연동/미리주문)매출총이익액(V-)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(비연동/미리주문)매출총이익액(V-)_2",
+      "table": "BO",
+      "name": "(비연동/미리주문)매출총이익액(V-)_2",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)PG수수료",
+      "table": "BO",
+      "name": "(전체)PG수수료",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)무이자수수료",
+      "table": "BO",
+      "name": "(전체)무이자수수료",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)청구할인",
+      "table": "BO",
+      "name": "(전체)청구할인",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)제휴수수료",
+      "table": "BO",
+      "name": "(전체)제휴수수료",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)배송보관비",
+      "table": "BO",
+      "name": "(전체)배송보관비",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)양품화비",
+      "table": "BO",
+      "name": "(전체)양품화비",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)주문상담비",
+      "table": "BO",
+      "name": "(전체)주문상담비",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)적립금",
+      "table": "BO",
+      "name": "(전체)적립금",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)사은품",
+      "table": "BO",
+      "name": "(전체)사은품",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체)제휴포인트",
+      "table": "BO",
+      "name": "(전체)제휴포인트",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)PG수수료",
+      "table": "BO",
+      "name": "(전체/방송중)PG수수료",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)무이자수수료",
+      "table": "BO",
+      "name": "(전체/방송중)무이자수수료",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)청구할인",
+      "table": "BO",
+      "name": "(전체/방송중)청구할인",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)제휴수수료",
+      "table": "BO",
+      "name": "(전체/방송중)제휴수수료",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)배송보관비",
+      "table": "BO",
+      "name": "(전체/방송중)배송보관비",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)양품화비",
+      "table": "BO",
+      "name": "(전체/방송중)양품화비",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)주문상담비",
+      "table": "BO",
+      "name": "(전체/방송중)주문상담비",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)적립금",
+      "table": "BO",
+      "name": "(전체/방송중)적립금",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)사은품",
+      "table": "BO",
+      "name": "(전체/방송중)사은품",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(전체/방송중)제휴포인트",
+      "table": "BO",
+      "name": "(전체/방송중)제휴포인트",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집",
+      "unit": "%",
+      "valueScale": "percentage_points"
+    },
+    {
+      "id": "field:심야구분",
+      "table": "BO",
+      "name": "심야구분",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:방송일체크",
+      "table": "BO",
+      "name": "방송일체크",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:분",
+      "table": "BO",
+      "name": "분",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:WEEKDAY(DAX)",
+      "table": "BO",
+      "name": "WEEKDAY(DAX)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:요일(DAX)",
+      "table": "BO",
+      "name": "요일(DAX)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:상한가",
+      "table": "BO",
+      "name": "상한가",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:정액수수료(원)",
+      "table": "BO",
+      "name": "정액수수료(원)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집",
+      "aliases": [
+        "혼합수수료",
+        "혼합수수료액"
+      ],
+      "unit": "원"
+    },
+    {
+      "id": "field:메모코드",
+      "table": "BO",
+      "name": "메모코드",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:(연동/방송중)정액外 취급액",
+      "table": "BO",
+      "name": "(연동/방송중)정액外 취급액",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:YEAR(DAX)",
+      "table": "BO",
+      "name": "YEAR(DAX)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:MONTH(DAX)",
+      "table": "BO",
+      "name": "MONTH(DAX)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:HOUR(DAX)",
+      "table": "BO",
+      "name": "HOUR(DAX)",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:방송일",
+      "table": "BO",
+      "name": "방송일",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:브랜드",
+      "table": "BO",
+      "name": "브랜드",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:시즌",
+      "table": "BO",
+      "name": "시즌",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:아이템",
+      "table": "BO",
+      "name": "아이템",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:주차명",
+      "table": "BO",
+      "name": "주차명",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:이미지",
+      "table": "BO",
+      "name": "이미지",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:성공구분",
+      "table": "BO",
+      "name": "성공구분",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:유/무형",
+      "table": "BO",
+      "name": "유/무형",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:월일",
+      "table": "BO",
+      "name": "월일",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:신상품구분",
+      "table": "BO",
+      "name": "신상품구분",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:표준조직",
+      "table": "BO",
+      "name": "표준조직",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    },
+    {
+      "id": "field:편성 Comment",
+      "table": "BO",
+      "name": "편성 Comment",
+      "dataType": "unknown",
+      "typeEvidence": "자료형 정보 미수집"
+    }
+  ],
+  "dimensions": {
+    "organization": {
+      "field": "field:표준조직",
+      "historicalAliasField": "field:조직명"
+    },
+    "brand": {
+      "field": "field:편성코드",
+      "rule": "맨 앞 [브랜드]가 정확히 일치하는 모든 상품"
+    },
+    "product": {
+      "field": "field:편성코드",
+      "rule": "정확한 개별 편성코드"
+    }
+  },
+  "entities": {
+    "source": "data/bi-entity-catalog.json",
+    "updatedAt": "2026-10-22T09:57:51.014Z",
+    "freshness": "not_refreshed",
+    "organizations": [
+      {
+        "kind": "organization",
+        "field": "표준조직",
+        "value": "문화서비스",
+        "name": "문화서비스",
+        "aliases": [
+          "문화서비스"
+        ]
+      },
+      {
+        "kind": "organization",
+        "field": "표준조직",
+        "value": "편성팀",
+        "name": "편성팀",
+        "aliases": [
+          "정보방송",
+          "편성팀"
+        ]
+      },
+      {
+        "kind": "organization",
+        "field": "표준조직",
+        "value": "헬쓰푸드",
+        "name": "헬쓰푸드",
+        "aliases": [
+          "건강식품",
+          "헬쓰푸드"
+        ]
+      },
+      {
+        "kind": "organization",
+        "field": "표준조직",
+        "value": "가전",
+        "name": "가전",
+        "aliases": [
+          "가전"
+        ]
+      },
+      {
+        "kind": "organization",
+        "field": "표준조직",
+        "value": "리빙",
+        "name": "리빙",
+        "aliases": [
+          "리빙"
+        ]
+      },
+      {
+        "kind": "organization",
+        "field": "표준조직",
+        "value": "뷰티",
+        "name": "뷰티",
+        "aliases": [
+          "뷰티"
+        ]
+      },
+      {
+        "kind": "organization",
+        "field": "표준조직",
+        "value": "패션트렌드",
+        "name": "패션트렌드",
+        "aliases": [
+          "트렌드",
+          "패션트렌드",
+          "패션잡화"
+        ]
+      },
+      {
+        "kind": "organization",
+        "field": "표준조직",
+        "value": "식품",
+        "name": "식품",
+        "aliases": [
+          "식품"
+        ]
+      }
+    ],
+    "confirmedAliases": [
+      {
+        "id": "culture_alias",
+        "aliases": [
+          "문화팀",
+          "문화서비스팀"
+        ],
+        "canonical": "문화서비스",
+        "status": "user-confirmed"
+      }
+    ],
+    "note": "사용자 표현·오타·팀 접미사는 Gemini가 문맥과 엔티티 의미로 해석한다. 실행 계획에는 연결한 실제 엔티티 값을 사용한다."
+  },
+  "metrics": [
+    {
+      "id": "sales",
+      "name": "예상취급액",
+      "aliases": [
+        "(전체)예상취급액",
+        "취급액",
+        "예상취급액"
+      ],
+      "unit": "원",
+      "sourceField": "field:(전체)예상취급액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "sum",
+        "field": "field:(전체)예상취급액",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "existing-code-sum",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "orders",
+      "name": "총주문량",
+      "aliases": [
+        "(전체)총주문량",
+        "주문량",
+        "총주문량",
+        "주문수량"
+      ],
+      "unit": "개",
+      "sourceField": "field:(전체)총주문량",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "sum",
+        "field": "field:(전체)총주문량",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "existing-code-sum",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "revenue",
+      "name": "예상매출액(V-)",
+      "aliases": [
+        "(전체)예상매출액(V-)",
+        "매출액",
+        "예상매출액"
+      ],
+      "unit": "원",
+      "sourceField": "field:(전체)예상매출액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "sum",
+        "field": "field:(전체)예상매출액(V-)",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "existing-code-sum",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "gross_profit",
+      "name": "예상매출총이익액(V-)",
+      "aliases": [
+        "(전체)예상매출총이익액(V-)",
+        "매출총이익",
+        "매총"
+      ],
+      "unit": "원",
+      "sourceField": "field:(전체)예상매출총이익액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "sum",
+        "field": "field:(전체)예상매출총이익액(V-)",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "existing-code-sum",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "profit",
+      "name": "한계이익",
+      "aliases": [
+        "(전체)한계이익",
+        "한계이익",
+        "한익"
+      ],
+      "unit": "원",
+      "sourceField": "field:(전체)한계이익",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "sum",
+        "field": "field:(전체)한계이익",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "existing-code-sum",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "weighted_minutes",
+      "name": "가중분",
+      "aliases": [
+        "가중분",
+        "가중시간"
+      ],
+      "unit": "분",
+      "sourceField": "field:가중분",
+      "definition": "가중분의 업무 산정 방식은 미확인",
+      "formula": {
+        "operation": "sum",
+        "field": "field:가중분",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "existing-code-sum",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "exposure_minutes",
+      "name": "노출분",
+      "aliases": [
+        "노출분",
+        "노출시간"
+      ],
+      "unit": "분",
+      "sourceField": "field:노출분",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "sum",
+        "field": "field:노출분",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "existing-code-sum",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "target_sales",
+      "name": "목표취급액",
+      "aliases": [
+        "(전체)목표취급액",
+        "목표취급액",
+        "취급목표"
+      ],
+      "unit": "원",
+      "sourceField": "field:(전체)목표취급액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "sum",
+        "field": "field:(전체)목표취급액",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "existing-code-sum",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "target_profit",
+      "name": "한계이익목표",
+      "aliases": [
+        "(전체)한계이익목표",
+        "한계이익목표",
+        "한익목표"
+      ],
+      "unit": "원",
+      "sourceField": "field:(전체)한계이익목표",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "sum",
+        "field": "field:(전체)한계이익목표",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "existing-code-sum",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "fixed_fee",
+      "name": "정액수수료",
+      "aliases": [
+        "정액수수료(원)",
+        "정액수수료",
+        "혼합수수료",
+        "혼합수수료액"
+      ],
+      "unit": "원",
+      "sourceField": "field:정액수수료(원)",
+      "definition": "사용자 확인: 정액수수료(원)는 분당혼합비 산정에 쓰는 혼합수수료 원천 금액이다.",
+      "formula": {
+        "operation": "sum",
+        "field": "field:정액수수료(원)",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "user-confirmed-2026-10-27",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "pg_fee",
+      "name": "PG수수료",
+      "aliases": [
+        "(전체)PG수수료",
+        "PG수수료",
+        "피지수수료"
+      ],
+      "unit": "원",
+      "sourceField": "field:(전체)PG수수료",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "sum",
+        "field": "field:(전체)PG수수료",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "existing-code-sum",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "affiliate_fee",
+      "name": "제휴수수료",
+      "aliases": [
+        "(전체)제휴수수료",
+        "제휴수수료"
+      ],
+      "unit": "원",
+      "sourceField": "field:(전체)제휴수수료",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "sum",
+        "field": "field:(전체)제휴수수료",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "existing-code-sum",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "mix_per_minute",
+      "name": "분당혼합비",
+      "aliases": [
+        "분당혼합비",
+        "혼합비"
+      ],
+      "unit": "원/분",
+      "sourceField": null,
+      "definition": "사용자 확인: 혼합수수료 원천은 BO의 정액수수료(원). 앱 대체 산식은 정액수수료 합계 / 가중분 합계. 예상취급액이나 혼합조정분으로 대체하지 않는다.",
+      "formula": {
+        "operator": "divide",
+        "arguments": [
+          {
+            "operator": "sum",
+            "field": "field:정액수수료(원)"
+          },
+          {
+            "operator": "sum",
+            "field": "field:가중분"
+          }
+        ]
+      },
+      "definitionStatus": "user-confirmed-2026-10-27",
+      "appExecutionStatus": "formula_interpreter_available_not_execution_verified",
+      "availability": "app_source_formula_available",
+      "note": "BI 기존 분당혼합비 측정값과 앱 대체 산식은 출처를 구분한다. BI 측정값을 원천 필드로 지어내지 않는다.",
+      "biMeasure": {
+        "table": "BO",
+        "name": "분당혼합비",
+        "status": "reference_known_direct_measure_execution_not_added"
+      },
+      "positiveValueMeaning": "분당혼합비가 있는 방송은 계산 결과가 0 초과인 방송. null이 아니라는 조건만으로 판정하지 않는다."
+    },
+    {
+      "id": "profit_per_minute",
+      "name": "한계(분)(BI 원본값)",
+      "aliases": [
+        "분당한계이익",
+        "분당한익",
+        "한계(분)"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "sales_achievement",
+      "name": "취급달성률",
+      "aliases": [
+        "취급달성률"
+      ],
+      "unit": "%",
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "profit_achievement",
+      "name": "한계달성률",
+      "aliases": [
+        "한계달성률",
+        "한익달성률"
+      ],
+      "unit": "%",
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "column:방송일시",
+      "name": "방송일시",
+      "aliases": [
+        "방송일시"
+      ],
+      "unit": null,
+      "sourceField": "field:방송일시",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:방송일시",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:다원구분",
+      "name": "다원구분",
+      "aliases": [
+        "다원구분"
+      ],
+      "unit": null,
+      "sourceField": "field:다원구분",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:다원구분",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:프라임구분",
+      "name": "프라임구분",
+      "aliases": [
+        "프라임구분"
+      ],
+      "unit": null,
+      "sourceField": "field:프라임구분",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:프라임구분",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:혼합조정분",
+      "name": "혼합조정분",
+      "aliases": [
+        "혼합조정분"
+      ],
+      "unit": null,
+      "sourceField": "field:혼합조정분",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:혼합조정분",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:채널1기준분",
+      "name": "채널1기준분",
+      "aliases": [
+        "채널1기준분"
+      ],
+      "unit": null,
+      "sourceField": "field:채널1기준분",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:채널1기준분",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:프로그램명",
+      "name": "프로그램명",
+      "aliases": [
+        "프로그램명"
+      ],
+      "unit": null,
+      "sourceField": "field:프로그램명",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:프로그램명",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:편성코드",
+      "name": "편성코드",
+      "aliases": [
+        "편성코드"
+      ],
+      "unit": null,
+      "sourceField": "field:편성코드",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:편성코드",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:거래형태",
+      "name": "거래형태",
+      "aliases": [
+        "거래형태"
+      ],
+      "unit": null,
+      "sourceField": "field:거래형태",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:거래형태",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:판매가(대표상품)",
+      "name": "판매가(대표상품)",
+      "aliases": [
+        "판매가(대표상품)"
+      ],
+      "unit": null,
+      "sourceField": "field:판매가(대표상품)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:판매가(대표상품)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:아이템명",
+      "name": "아이템명",
+      "aliases": [
+        "아이템명"
+      ],
+      "unit": null,
+      "sourceField": "field:아이템명",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:아이템명",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:MD명",
+      "name": "MD명",
+      "aliases": [
+        "MD명"
+      ],
+      "unit": null,
+      "sourceField": "field:MD명",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:MD명",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:MD분류",
+      "name": "MD분류",
+      "aliases": [
+        "MD분류"
+      ],
+      "unit": null,
+      "sourceField": "field:MD분류",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:MD분류",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:조직명",
+      "name": "조직명",
+      "aliases": [
+        "조직명"
+      ],
+      "unit": null,
+      "sourceField": "field:조직명",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:조직명",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:대표상품ID",
+      "name": "대표상품ID",
+      "aliases": [
+        "대표상품ID"
+      ],
+      "unit": null,
+      "sourceField": "field:대표상품ID",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:대표상품ID",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:대표상품명",
+      "name": "대표상품명",
+      "aliases": [
+        "대표상품명"
+      ],
+      "unit": null,
+      "sourceField": "field:대표상품명",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:대표상품명",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:대표업체명",
+      "name": "대표업체명",
+      "aliases": [
+        "대표업체명"
+      ],
+      "unit": null,
+      "sourceField": "field:대표업체명",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:대표업체명",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:기업구분",
+      "name": "기업구분",
+      "aliases": [
+        "기업구분"
+      ],
+      "unit": null,
+      "sourceField": "field:기업구분",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:기업구분",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:영상구분",
+      "name": "영상구분",
+      "aliases": [
+        "영상구분"
+      ],
+      "unit": null,
+      "sourceField": "field:영상구분",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:영상구분",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:영상ID",
+      "name": "영상ID",
+      "aliases": [
+        "영상ID"
+      ],
+      "unit": null,
+      "sourceField": "field:영상ID",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:영상ID",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:영상명",
+      "name": "영상명",
+      "aliases": [
+        "영상명"
+      ],
+      "unit": null,
+      "sourceField": "field:영상명",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:영상명",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:소재ID",
+      "name": "소재ID",
+      "aliases": [
+        "소재ID"
+      ],
+      "unit": null,
+      "sourceField": "field:소재ID",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:소재ID",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:PD명",
+      "name": "PD명",
+      "aliases": [
+        "PD명"
+      ],
+      "unit": null,
+      "sourceField": "field:PD명",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:PD명",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:쇼호스트1",
+      "name": "쇼호스트1",
+      "aliases": [
+        "쇼호스트1"
+      ],
+      "unit": null,
+      "sourceField": "field:쇼호스트1",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:쇼호스트1",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:쇼호스트2",
+      "name": "쇼호스트2",
+      "aliases": [
+        "쇼호스트2"
+      ],
+      "unit": null,
+      "sourceField": "field:쇼호스트2",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:쇼호스트2",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체)목표매출액(V-)",
+      "name": "(전체)목표매출액(V-)",
+      "aliases": [
+        "(전체)목표매출액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체)목표매출액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체)목표매출액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체)목표매출총이익액",
+      "name": "(전체)목표매출총이익액",
+      "aliases": [
+        "(전체)목표매출총이익액"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체)목표매출총이익액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체)목표매출총이익액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)목표취급액",
+      "name": "(전체/방송중)목표취급액",
+      "aliases": [
+        "(전체/방송중)목표취급액"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)목표취급액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)목표취급액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)목표매출액(V-)",
+      "name": "(전체/방송중)목표매출액(V-)",
+      "aliases": [
+        "(전체/방송중)목표매출액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)목표매출액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)목표매출액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)목표매출총이익액",
+      "name": "(전체/방송중)목표매출총이익액",
+      "aliases": [
+        "(전체/방송중)목표매출총이익액"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)목표매출총이익액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)목표매출총이익액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)한계이익율(%)",
+      "name": "(전체/방송중)한계이익율(%)",
+      "aliases": [
+        "(전체/방송중)한계이익율(%)"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)한계이익율(%)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)한계이익율(%)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(총주문)총주문액",
+      "name": "(총주문)총주문액",
+      "aliases": [
+        "(총주문)총주문액"
+      ],
+      "unit": null,
+      "sourceField": "field:(총주문)총주문액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(총주문)총주문액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체)예상취급액(V-)",
+      "name": "(전체)예상취급액(V-)",
+      "aliases": [
+        "(전체)예상취급액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체)예상취급액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체)예상취급액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체)예상매출총이익액(V-)배송료 제외",
+      "name": "(전체)예상매출총이익액(V-)배송료 제외",
+      "aliases": [
+        "(전체)예상매출총이익액(V-)배송료 제외"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체)예상매출총이익액(V-)배송료 제외",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체)예상매출총이익액(V-)배송료 제외",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)총주문량",
+      "name": "(전체/방송중)총주문량",
+      "aliases": [
+        "(전체/방송중)총주문량"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)총주문량",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)총주문량",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(총주문)방송주문액",
+      "name": "(총주문)방송주문액",
+      "aliases": [
+        "(총주문)방송주문액"
+      ],
+      "unit": null,
+      "sourceField": "field:(총주문)방송주문액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(총주문)방송주문액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)예상매출액(V-)",
+      "name": "(전체/방송중)예상매출액(V-)",
+      "aliases": [
+        "(전체/방송중)예상매출액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)예상매출액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)예상매출액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)예상취급액",
+      "name": "(전체/방송중)예상취급액",
+      "aliases": [
+        "(전체/방송중)예상취급액"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)예상취급액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)예상취급액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)예상취급액(V-)",
+      "name": "(전체/방송중)예상취급액(V-)",
+      "aliases": [
+        "(전체/방송중)예상취급액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)예상취급액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)예상취급액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)매출총이익액(V-)",
+      "name": "(전체/방송중)매출총이익액(V-)",
+      "aliases": [
+        "(전체/방송중)매출총이익액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)매출총이익액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)매출총이익액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)한계이익",
+      "name": "(전체/방송중)한계이익",
+      "aliases": [
+        "(전체/방송중)한계이익"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)한계이익",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)한계이익",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/미리주문)총주문량",
+      "name": "(전체/미리주문)총주문량",
+      "aliases": [
+        "(전체/미리주문)총주문량"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/미리주문)총주문량",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/미리주문)총주문량",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(총주문)미리주문액",
+      "name": "(총주문)미리주문액",
+      "aliases": [
+        "(총주문)미리주문액"
+      ],
+      "unit": null,
+      "sourceField": "field:(총주문)미리주문액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(총주문)미리주문액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/미리주문)예상매출액(V-)",
+      "name": "(전체/미리주문)예상매출액(V-)",
+      "aliases": [
+        "(전체/미리주문)예상매출액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/미리주문)예상매출액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/미리주문)예상매출액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/미리주문)예상취급액",
+      "name": "(전체/미리주문)예상취급액",
+      "aliases": [
+        "(전체/미리주문)예상취급액"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/미리주문)예상취급액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/미리주문)예상취급액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/미리주문)예상취급액(V-)",
+      "name": "(전체/미리주문)예상취급액(V-)",
+      "aliases": [
+        "(전체/미리주문)예상취급액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/미리주문)예상취급액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/미리주문)예상취급액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/미리주문)매출총이익액(V-)",
+      "name": "(전체/미리주문)매출총이익액(V-)",
+      "aliases": [
+        "(전체/미리주문)매출총이익액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/미리주문)매출총이익액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/미리주문)매출총이익액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동/방송중)총주문량",
+      "name": "(연동/방송중)총주문량",
+      "aliases": [
+        "(연동/방송중)총주문량"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동/방송중)총주문량",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동/방송중)총주문량",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동/방송중)총주문량_1",
+      "name": "(연동/방송중)총주문량_1",
+      "aliases": [
+        "(연동/방송중)총주문량_1"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동/방송중)총주문량_1",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동/방송중)총주문량_1",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동/방송중)예상취급액",
+      "name": "(연동/방송중)예상취급액",
+      "aliases": [
+        "(연동/방송중)예상취급액"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동/방송중)예상취급액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동/방송중)예상취급액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동/방송중)예상취급액(V-)",
+      "name": "(연동/방송중)예상취급액(V-)",
+      "aliases": [
+        "(연동/방송중)예상취급액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동/방송중)예상취급액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동/방송중)예상취급액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동/방송중)매출총이익액(V-)",
+      "name": "(연동/방송중)매출총이익액(V-)",
+      "aliases": [
+        "(연동/방송중)매출총이익액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동/방송중)매출총이익액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동/방송중)매출총이익액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동/방송중)예상매출총이익액(V-)배송료 제외",
+      "name": "(연동/방송중)예상매출총이익액(V-)배송료 제외",
+      "aliases": [
+        "(연동/방송중)예상매출총이익액(V-)배송료 제외"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동/방송중)예상매출총이익액(V-)배송료 제외",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동/방송중)예상매출총이익액(V-)배송료 제외",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동/미리주문)총주문량",
+      "name": "(연동/미리주문)총주문량",
+      "aliases": [
+        "(연동/미리주문)총주문량"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동/미리주문)총주문량",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동/미리주문)총주문량",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동/미리주문)예상매출액(V-)",
+      "name": "(연동/미리주문)예상매출액(V-)",
+      "aliases": [
+        "(연동/미리주문)예상매출액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동/미리주문)예상매출액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동/미리주문)예상매출액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동/미리주문)예상취급액",
+      "name": "(연동/미리주문)예상취급액",
+      "aliases": [
+        "(연동/미리주문)예상취급액"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동/미리주문)예상취급액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동/미리주문)예상취급액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동/미리주문)예상취급액(V-)",
+      "name": "(연동/미리주문)예상취급액(V-)",
+      "aliases": [
+        "(연동/미리주문)예상취급액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동/미리주문)예상취급액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동/미리주문)예상취급액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동/미리주문)매출총이익액(V-)",
+      "name": "(연동/미리주문)매출총이익액(V-)",
+      "aliases": [
+        "(연동/미리주문)매출총이익액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동/미리주문)매출총이익액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동/미리주문)매출총이익액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동)총주문량",
+      "name": "(연동)총주문량",
+      "aliases": [
+        "(연동)총주문량"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동)총주문량",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동)총주문량",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동)예상매출액(V-)",
+      "name": "(연동)예상매출액(V-)",
+      "aliases": [
+        "(연동)예상매출액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동)예상매출액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동)예상매출액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동)예상취급액",
+      "name": "(연동)예상취급액",
+      "aliases": [
+        "(연동)예상취급액"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동)예상취급액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동)예상취급액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동)예상취급액(V-)",
+      "name": "(연동)예상취급액(V-)",
+      "aliases": [
+        "(연동)예상취급액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동)예상취급액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동)예상취급액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동)매출총이익액(V-)",
+      "name": "(연동)매출총이익액(V-)",
+      "aliases": [
+        "(연동)매출총이익액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동)매출총이익액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동)매출총이익액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동)예상매출총이익액(V-)배송료 제외",
+      "name": "(연동)예상매출총이익액(V-)배송료 제외",
+      "aliases": [
+        "(연동)예상매출총이익액(V-)배송료 제외"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동)예상매출총이익액(V-)배송료 제외",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동)예상매출총이익액(V-)배송료 제외",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(비연동)총주문량",
+      "name": "(비연동)총주문량",
+      "aliases": [
+        "(비연동)총주문량"
+      ],
+      "unit": null,
+      "sourceField": "field:(비연동)총주문량",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(비연동)총주문량",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(비연동)예상매출액(V-)",
+      "name": "(비연동)예상매출액(V-)",
+      "aliases": [
+        "(비연동)예상매출액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(비연동)예상매출액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(비연동)예상매출액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(비연동)예상취급액",
+      "name": "(비연동)예상취급액",
+      "aliases": [
+        "(비연동)예상취급액"
+      ],
+      "unit": null,
+      "sourceField": "field:(비연동)예상취급액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(비연동)예상취급액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(비연동)예상취급액(V-)",
+      "name": "(비연동)예상취급액(V-)",
+      "aliases": [
+        "(비연동)예상취급액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(비연동)예상취급액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(비연동)예상취급액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(비연동/방송중)매출총이익액(V-)",
+      "name": "(비연동/방송중)매출총이익액(V-)",
+      "aliases": [
+        "(비연동/방송중)매출총이익액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(비연동/방송중)매출총이익액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(비연동/방송중)매출총이익액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(비연동/미리주문)총주문량",
+      "name": "(비연동/미리주문)총주문량",
+      "aliases": [
+        "(비연동/미리주문)총주문량"
+      ],
+      "unit": null,
+      "sourceField": "field:(비연동/미리주문)총주문량",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(비연동/미리주문)총주문량",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(비연동/미리주문)예상매출액(V-)",
+      "name": "(비연동/미리주문)예상매출액(V-)",
+      "aliases": [
+        "(비연동/미리주문)예상매출액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(비연동/미리주문)예상매출액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(비연동/미리주문)예상매출액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(비연동/미리주문)예상취급액",
+      "name": "(비연동/미리주문)예상취급액",
+      "aliases": [
+        "(비연동/미리주문)예상취급액"
+      ],
+      "unit": null,
+      "sourceField": "field:(비연동/미리주문)예상취급액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(비연동/미리주문)예상취급액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(비연동/미리주문)예상취급액(V-)",
+      "name": "(비연동/미리주문)예상취급액(V-)",
+      "aliases": [
+        "(비연동/미리주문)예상취급액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(비연동/미리주문)예상취급액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(비연동/미리주문)예상취급액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(비연동/미리주문)매출총이익액(V-)",
+      "name": "(비연동/미리주문)매출총이익액(V-)",
+      "aliases": [
+        "(비연동/미리주문)매출총이익액(V-)"
+      ],
+      "unit": null,
+      "sourceField": "field:(비연동/미리주문)매출총이익액(V-)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(비연동/미리주문)매출총이익액(V-)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(비연동/미리주문)매출총이익액(V-)_2",
+      "name": "(비연동/미리주문)매출총이익액(V-)_2",
+      "aliases": [
+        "(비연동/미리주문)매출총이익액(V-)_2"
+      ],
+      "unit": null,
+      "sourceField": "field:(비연동/미리주문)매출총이익액(V-)_2",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(비연동/미리주문)매출총이익액(V-)_2",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체)무이자수수료",
+      "name": "(전체)무이자수수료",
+      "aliases": [
+        "(전체)무이자수수료"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체)무이자수수료",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체)무이자수수료",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체)청구할인",
+      "name": "(전체)청구할인",
+      "aliases": [
+        "(전체)청구할인"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체)청구할인",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체)청구할인",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체)배송보관비",
+      "name": "(전체)배송보관비",
+      "aliases": [
+        "(전체)배송보관비"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체)배송보관비",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체)배송보관비",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체)양품화비",
+      "name": "(전체)양품화비",
+      "aliases": [
+        "(전체)양품화비"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체)양품화비",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체)양품화비",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체)주문상담비",
+      "name": "(전체)주문상담비",
+      "aliases": [
+        "(전체)주문상담비"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체)주문상담비",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체)주문상담비",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체)적립금",
+      "name": "(전체)적립금",
+      "aliases": [
+        "(전체)적립금"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체)적립금",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체)적립금",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체)사은품",
+      "name": "(전체)사은품",
+      "aliases": [
+        "(전체)사은품"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체)사은품",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체)사은품",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체)제휴포인트",
+      "name": "(전체)제휴포인트",
+      "aliases": [
+        "(전체)제휴포인트"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체)제휴포인트",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체)제휴포인트",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)PG수수료",
+      "name": "(전체/방송중)PG수수료",
+      "aliases": [
+        "(전체/방송중)PG수수료"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)PG수수료",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)PG수수료",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)무이자수수료",
+      "name": "(전체/방송중)무이자수수료",
+      "aliases": [
+        "(전체/방송중)무이자수수료"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)무이자수수료",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)무이자수수료",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)청구할인",
+      "name": "(전체/방송중)청구할인",
+      "aliases": [
+        "(전체/방송중)청구할인"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)청구할인",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)청구할인",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)제휴수수료",
+      "name": "(전체/방송중)제휴수수료",
+      "aliases": [
+        "(전체/방송중)제휴수수료"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)제휴수수료",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)제휴수수료",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)배송보관비",
+      "name": "(전체/방송중)배송보관비",
+      "aliases": [
+        "(전체/방송중)배송보관비"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)배송보관비",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)배송보관비",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)양품화비",
+      "name": "(전체/방송중)양품화비",
+      "aliases": [
+        "(전체/방송중)양품화비"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)양품화비",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)양품화비",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)주문상담비",
+      "name": "(전체/방송중)주문상담비",
+      "aliases": [
+        "(전체/방송중)주문상담비"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)주문상담비",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)주문상담비",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)적립금",
+      "name": "(전체/방송중)적립금",
+      "aliases": [
+        "(전체/방송중)적립금"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)적립금",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)적립금",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(전체/방송중)사은품",
+      "name": "(전체/방송중)사은품",
+      "aliases": [
+        "(전체/방송중)사은품"
+      ],
+      "unit": null,
+      "sourceField": "field:(전체/방송중)사은품",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)사은품",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "commission_rate",
+      "name": "마진 / 상품 수수료율(BI 원본값)",
+      "aliases": [
+        "(전체/방송중)제휴포인트",
+        "상품수수료율",
+        "수수료율",
+        "수수료",
+        "마진"
+      ],
+      "unit": "%",
+      "sourceField": "field:(전체/방송중)제휴포인트",
+      "definition": "사용자 확인: 제휴포인트 원본 수치는 퍼센트 포인트다. 원본 15는 15%로 표시하며 100을 곱하거나 100으로 나누지 않는다. 금액(원)이 아니다. 임의 합계·평균 금지.",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(전체/방송중)제휴포인트",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "user-confirmed-2026-10-27",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "단일 방송에서 원본값이 여러 개면 임의 평균하지 않고 확인한다.",
+      "displayFormat": {
+        "format": "number",
+        "unit": "%",
+        "scale": 1
+      }
+    },
+    {
+      "id": "column:심야구분",
+      "name": "심야구분",
+      "aliases": [
+        "심야구분"
+      ],
+      "unit": null,
+      "sourceField": "field:심야구분",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:심야구분",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:방송일체크",
+      "name": "방송일체크",
+      "aliases": [
+        "방송일체크"
+      ],
+      "unit": null,
+      "sourceField": "field:방송일체크",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:방송일체크",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:분",
+      "name": "분",
+      "aliases": [
+        "분"
+      ],
+      "unit": null,
+      "sourceField": "field:분",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:분",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:WEEKDAY(DAX)",
+      "name": "WEEKDAY(DAX)",
+      "aliases": [
+        "WEEKDAY(DAX)"
+      ],
+      "unit": null,
+      "sourceField": "field:WEEKDAY(DAX)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:WEEKDAY(DAX)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:요일(DAX)",
+      "name": "요일(DAX)",
+      "aliases": [
+        "요일(DAX)"
+      ],
+      "unit": null,
+      "sourceField": "field:요일(DAX)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:요일(DAX)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:상한가",
+      "name": "상한가",
+      "aliases": [
+        "상한가"
+      ],
+      "unit": null,
+      "sourceField": "field:상한가",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:상한가",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:메모코드",
+      "name": "메모코드",
+      "aliases": [
+        "메모코드"
+      ],
+      "unit": null,
+      "sourceField": "field:메모코드",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:메모코드",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:(연동/방송중)정액外 취급액",
+      "name": "(연동/방송중)정액外 취급액",
+      "aliases": [
+        "(연동/방송중)정액外 취급액"
+      ],
+      "unit": null,
+      "sourceField": "field:(연동/방송중)정액外 취급액",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:(연동/방송중)정액外 취급액",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:YEAR(DAX)",
+      "name": "YEAR(DAX)",
+      "aliases": [
+        "YEAR(DAX)"
+      ],
+      "unit": null,
+      "sourceField": "field:YEAR(DAX)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:YEAR(DAX)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:MONTH(DAX)",
+      "name": "MONTH(DAX)",
+      "aliases": [
+        "MONTH(DAX)"
+      ],
+      "unit": null,
+      "sourceField": "field:MONTH(DAX)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:MONTH(DAX)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:HOUR(DAX)",
+      "name": "HOUR(DAX)",
+      "aliases": [
+        "HOUR(DAX)"
+      ],
+      "unit": null,
+      "sourceField": "field:HOUR(DAX)",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:HOUR(DAX)",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:방송일",
+      "name": "방송일",
+      "aliases": [
+        "방송일"
+      ],
+      "unit": null,
+      "sourceField": "field:방송일",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:방송일",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:브랜드",
+      "name": "브랜드",
+      "aliases": [
+        "브랜드"
+      ],
+      "unit": null,
+      "sourceField": "field:브랜드",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:브랜드",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:시즌",
+      "name": "시즌",
+      "aliases": [
+        "시즌"
+      ],
+      "unit": null,
+      "sourceField": "field:시즌",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:시즌",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:아이템",
+      "name": "아이템",
+      "aliases": [
+        "아이템"
+      ],
+      "unit": null,
+      "sourceField": "field:아이템",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:아이템",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:주차명",
+      "name": "주차명",
+      "aliases": [
+        "주차명"
+      ],
+      "unit": null,
+      "sourceField": "field:주차명",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:주차명",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:이미지",
+      "name": "이미지",
+      "aliases": [
+        "이미지"
+      ],
+      "unit": null,
+      "sourceField": "field:이미지",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:이미지",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:성공구분",
+      "name": "성공구분",
+      "aliases": [
+        "성공구분"
+      ],
+      "unit": null,
+      "sourceField": "field:성공구분",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:성공구분",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:유/무형",
+      "name": "유/무형",
+      "aliases": [
+        "유/무형"
+      ],
+      "unit": null,
+      "sourceField": "field:유/무형",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:유/무형",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:월일",
+      "name": "월일",
+      "aliases": [
+        "월일"
+      ],
+      "unit": null,
+      "sourceField": "field:월일",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:월일",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:신상품구분",
+      "name": "신상품구분",
+      "aliases": [
+        "신상품구분"
+      ],
+      "unit": null,
+      "sourceField": "field:신상품구분",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:신상품구분",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:표준조직",
+      "name": "표준조직",
+      "aliases": [
+        "표준조직"
+      ],
+      "unit": null,
+      "sourceField": "field:표준조직",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:표준조직",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "column:편성 Comment",
+      "name": "편성 Comment",
+      "aliases": [
+        "편성 Comment"
+      ],
+      "unit": null,
+      "sourceField": "field:편성 Comment",
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "identity",
+        "field": "field:편성 Comment",
+        "multipleValues": "clarify",
+        "transform": "none"
+      },
+      "definitionStatus": "aggregation-not-defined",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "measure:(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값",
+      "name": "(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값",
+      "aliases": [
+        "(전체)한계이익에서 (전체/방송중)한계이익을(를) 뺀 값"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체/미리주문)한익률(%)",
+      "name": "(전체/미리주문)한익률(%)",
+      "aliases": [
+        "(전체/미리주문)한익률(%)",
+        "미리주문한익률",
+        "미리주문한계이익률"
+      ],
+      "unit": "%",
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값",
+      "name": "(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값",
+      "aliases": [
+        "(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값",
+      "name": "(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값",
+      "aliases": [
+        "(전체/방송중)변동비(V-)을(를) (전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값(으)로 나눈 값"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(연동/방송중)예상취급(%)",
+      "name": "(연동/방송중)예상취급(%)",
+      "aliases": [
+        "(연동/방송중)예상취급(%)",
+        "연동방송중취급비율"
+      ],
+      "unit": "%",
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체/방송중)한계달성률(%)",
+      "name": "(전체/방송중)한계달성률(%)",
+      "aliases": [
+        "(전체/방송중)한계달성률(%)",
+        "방송중한계달성률"
+      ],
+      "unit": "%",
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체)매출달성률(%)",
+      "name": "(전체)매출달성률(%)",
+      "aliases": [
+        "(전체)매출달성률(%)",
+        "매출달성률"
+      ],
+      "unit": "%",
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체)매총달성률(%)",
+      "name": "(전체)매총달성률(%)",
+      "aliases": [
+        "(전체)매총달성률(%)",
+        "매총달성률",
+        "매출총이익달성률"
+      ],
+      "unit": "%",
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체/미리주문)취급/목표(%)",
+      "name": "(전체/미리주문)취급/목표(%)",
+      "aliases": [
+        "(전체/미리주문)취급/목표(%)",
+        "미리주문취급달성률"
+      ],
+      "unit": "%",
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체)취급(분)",
+      "name": "(전체)취급(분)",
+      "aliases": [
+        "(전체)취급(분)",
+        "분당취급액",
+        "분당취급"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체)예상매출액(V-)(분)",
+      "name": "(전체)예상매출액(V-)(분)",
+      "aliases": [
+        "(전체)예상매출액(V-)(분)",
+        "분당매출액",
+        "분당예상매출액"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(연동/방송중)정액外취급(분)",
+      "name": "(연동/방송중)정액外취급(분)",
+      "aliases": [
+        "(연동/방송중)정액外취급(분)",
+        "연동방송중정액외분당취급액"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체)예상매출총이익액(V-)(분)",
+      "name": "(전체)예상매출총이익액(V-)(분)",
+      "aliases": [
+        "(전체)예상매출총이익액(V-)(분)",
+        "분당매출총이익",
+        "분당매총"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(연동/방송중)매출총이익액(V-)(분)",
+      "name": "(연동/방송중)매출총이익액(V-)(분)",
+      "aliases": [
+        "(연동/방송중)매출총이익액(V-)(분)",
+        "연동방송중분당매출총이익"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체/방송중)한계(분)",
+      "name": "(전체/방송중)한계(분)",
+      "aliases": [
+        "(전체/방송중)한계(분)",
+        "방송중분당한계이익",
+        "방송중분당한익"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(연동/방송중)취급액(분)",
+      "name": "(연동/방송중)취급액(분)",
+      "aliases": [
+        "(연동/방송중)취급액(분)",
+        "연동방송중분당취급액"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값",
+      "name": "(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값",
+      "aliases": [
+        "(연동/방송중)정액外 취급액을(를) 노출분(으)로 나눈 값",
+        "노출분당정액외취급액"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값",
+      "name": "(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값",
+      "aliases": [
+        "(전체/방송중)예상취급액(V-)에서 정액수수료(원)을(를) 뺀 값",
+        "방송중정액제외취급액"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체/방송중)변동비(V-)",
+      "name": "(전체/방송중)변동비(V-)",
+      "aliases": [
+        "(전체/방송중)변동비(V-)",
+        "방송중변동비"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "measure:(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값",
+      "name": "(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값",
+      "aliases": [
+        "(전체/방송중)한계이익에서 정액수수료(원)을(를) 뺀 값",
+        "방송중정액제외한계이익"
+      ],
+      "unit": null,
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": null,
+      "definitionStatus": "opaque-model-measure",
+      "appExecutionStatus": "not_implemented",
+      "availability": "blocked_missing_source_formula",
+      "note": "기존 측정값 이름만 확인됨. 내부 산식·필요한 원천 항목 미확인. 앱 계산 대상으로 사용하지 않는다."
+    },
+    {
+      "id": "organization_weighted_share",
+      "name": "가중분 기준 편성비중",
+      "aliases": [
+        "가중분편성비중",
+        "가중분비중",
+        "가중편성비중",
+        "편성비중",
+        "편성 비중"
+      ],
+      "unit": "%",
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "ratio",
+        "numerator": "weighted_minutes:selected_scope",
+        "denominator": "weighted_minutes:confirmed_denominator_scope",
+        "zeroDenominator": "clarify_without_numeric_answer",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "capture-backed-template",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "denominator_scope_requires_confirmation"
+    },
+    {
+      "id": "organization_broadcast_share",
+      "name": "방송횟수 기준 편성비중",
+      "aliases": [
+        "방송횟수편성비중",
+        "방송횟수비중",
+        "방송건수비중",
+        "횟수기준편성비중"
+      ],
+      "unit": "%",
+      "sourceField": null,
+      "definition": "별칭은 탐색용이며 업무 정의를 확정하는 근거가 아님",
+      "formula": {
+        "operation": "ratio",
+        "numerator": "broadcast_count:selected_scope",
+        "denominator": "broadcast_count:confirmed_denominator_scope",
+        "zeroDenominator": "clarify_without_numeric_answer",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "capture-backed-template",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "denominator_scope_requires_confirmation"
+    },
+    {
+      "id": "broadcast_count",
+      "name": "방송횟수",
+      "aliases": [
+        "방송건수",
+        "방송 횟수"
+      ],
+      "unit": "회",
+      "sourceField": "field:방송일시",
+      "definition": "편성 빈도를 나타내는 방송일시 고유 개수. 상품 행 수나 가중분 합계와 다르다.",
+      "formula": {
+        "operation": "distinct_count",
+        "field": "field:방송일시",
+        "blankPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "user-confirmed-definition-and-capture-backed",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "row_grain_and_null_policy_require_review"
+    },
+    {
+      "id": "weighted_sales_per_minute",
+      "name": "가중분 기준 분당취급액",
+      "aliases": [
+        "가중분 기준 분당취급액"
+      ],
+      "unit": "원/분",
+      "sourceField": null,
+      "definition": null,
+      "formula": {
+        "operation": "ratio",
+        "numerator": "sales",
+        "denominator": "weighted_minutes",
+        "zeroDenominator": "clarify_without_numeric_answer",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "user-confirmed-definition",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "분당혼합비·한계(분) 등 BI 측정값과 동치로 취급하지 않는다. 0분 처리 미확정."
+    },
+    {
+      "id": "weighted_profit_per_minute",
+      "name": "가중분 기준 분당한계이익",
+      "aliases": [
+        "가중분 기준 분당한계이익"
+      ],
+      "unit": "원/분",
+      "sourceField": null,
+      "definition": null,
+      "formula": {
+        "operation": "ratio",
+        "numerator": "profit",
+        "denominator": "weighted_minutes",
+        "zeroDenominator": "clarify_without_numeric_answer",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "user-confirmed-definition",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "분당혼합비·한계(분) 등 BI 측정값과 동치로 취급하지 않는다. 0분 처리 미확정."
+    },
+    {
+      "id": "brand_weighted_share",
+      "name": "브랜드 가중분 편성비중",
+      "aliases": [],
+      "unit": "%",
+      "sourceField": null,
+      "definition": null,
+      "formula": {
+        "operation": "ratio",
+        "numerator": "weighted_minutes:all_products_of_exact_brand",
+        "denominator": "weighted_minutes:all_organizations_and_brands_same_period",
+        "zeroDenominator": "clarify_without_numeric_answer",
+        "nullPolicy": "must_define_before_execution"
+      },
+      "definitionStatus": "user-confirmed-definition",
+      "appExecutionStatus": "formula_interpreter_available_definition_dependent_not_execution_verified",
+      "availability": "formula_candidate_requires_validation",
+      "note": "기타 필터의 분모 유지 여부 확인 필요"
+    }
+  ],
+  "formulaContract": {
+    "status": "implemented_pending_execution_verification",
+    "representation": "연산자·인수·필드 ID·각 집계의 조회 범위를 명시하는 JSON 연산 트리",
+    "operatorCandidates": [
+      "field",
+      "metric",
+      "sum",
+      "count",
+      "distinct_count",
+      "average",
+      "min",
+      "max",
+      "median",
+      "add",
+      "subtract",
+      "multiply",
+      "divide",
+      "power",
+      "abs",
+      "negate",
+      "round",
+      "floor",
+      "ceil",
+      "sqrt",
+      "rank"
+    ],
+    "validation": [
+      "등록된 원천 항목만 사용",
+      "지표 참조 순환 금지",
+      "단위·자료형 호환 검사",
+      "연산 깊이·노드 수·조회량 제한",
+      "분자·분모 각각 필터와 그룹 범위 명시",
+      "원천 행 누락·중복·페이지 처리 확인",
+      "업무 정의가 미확인이면 재질문",
+      "0분모·결측·동률·반올림 정책 확정"
+    ],
+    "note": "Gemini chooses interpretation, grouping, metrics and formulas using the full catalog and conversation. Runtime validates serialization and executes registered operators; business definitions remain reference information.",
+    "shareDisplay": "비중 내부값은 비율이다. 백분율 표시는 100을 한 번만 곱한다.",
+    "example": {
+      "plan": {
+        "period": {
+          "start": "2026-10-01",
+          "endExclusive": "2026-11-01",
+          "timezone": "Asia/Seoul"
+        },
+        "target": {
+          "type": "organization",
+          "requestedName": "헬스푸드팀",
+          "value": null,
+          "status": "requires_alias_confirmation"
+        },
+        "requiredFields": [
+          "field:방송일시",
+          "field:표준조직",
+          "field:유/무형",
+          "field:가중분"
+        ],
+        "formula": {
+          "operator": "divide",
+          "arguments": [
+            {
+              "operator": "sum",
+              "field": "field:가중분",
+              "scope": "selected_target_and_filters"
+            },
+            {
+              "operator": "sum",
+              "field": "field:가중분",
+              "scope": "same_period_confirmed_denominator_filters"
+            }
+          ]
+        },
+        "outputFormat": "percent",
+        "denominatorScope": "requires_confirmation",
+        "executionStatus": "blocked_until_confirmed"
+      },
+      "responseTemplate": "우웅, {{periodLabel}} {{targetLabel}} 편성비중은 {{value}}야 🐰",
+      "note": "value에는 앱이 % 기호까지 포함해 형식화한 결과를 넣는다. 예시 숫자는 제공하지 않는다."
+    }
+  },
+  "referenceEvidence": {
+    "note": "원문 조회문과 기존 실행용 표현식은 제외했다. 아래는 출처 식별용이다.",
+    "sourceFiles": [
+      "PowerBIPerformanceData (1).json",
+      "PowerBIPerformanceData (2).json",
+      "PowerBIPerformanceData (3).json",
+      "PowerBIPerformanceData (4).json",
+      "PowerBIPerformanceData (5).json",
+      "PowerBIPerformanceData.json"
+    ],
+    "capturedQueryCount": 42,
+    "queries": [
+      {
+        "id": "capture-1-1",
+        "title": "가중분, 조직명"
+      },
+      {
+        "id": "capture-1-2",
+        "title": "(전체)취급달성률(%), (전체)매출달성률(%) 및 (전체)한계달성률(%), 조직명"
+      },
+      {
+        "id": "capture-1-3",
+        "title": "가중분, 거래형태"
+      },
+      {
+        "id": "capture-1-4",
+        "title": "테이블"
+      },
+      {
+        "id": "capture-1-5",
+        "title": "테이블"
+      },
+      {
+        "id": "capture-2-1",
+        "title": "카드"
+      },
+      {
+        "id": "capture-2-2",
+        "title": "카드"
+      },
+      {
+        "id": "capture-2-3",
+        "title": "카드"
+      },
+      {
+        "id": "capture-2-4",
+        "title": "카드"
+      },
+      {
+        "id": "capture-2-5",
+        "title": "카드"
+      },
+      {
+        "id": "capture-2-6",
+        "title": "카드"
+      },
+      {
+        "id": "capture-2-7",
+        "title": "Simple Image"
+      },
+      {
+        "id": "capture-2-8",
+        "title": "테이블"
+      },
+      {
+        "id": "capture-2-9",
+        "title": "행렬"
+      },
+      {
+        "id": "capture-2-10",
+        "title": "테이블"
+      },
+      {
+        "id": "capture-2-11",
+        "title": "테이블"
+      },
+      {
+        "id": "capture-3-1",
+        "title": "(전체)무이자수수료, (전체)배송보관비, (전체)사은품, (전체)양품화비, (전체)적립금, (전체)제휴수수료, (전체)주문상담비, (전체)청구할인, (전체)PG수수료 및 (전체)제휴포인트"
+      },
+      {
+        "id": "capture-3-2",
+        "title": "테이블"
+      },
+      {
+        "id": "capture-3-3",
+        "title": "테이블"
+      },
+      {
+        "id": "capture-3-4",
+        "title": "테이블"
+      },
+      {
+        "id": "capture-4-1",
+        "title": "슬라이서"
+      },
+      {
+        "id": "capture-4-2",
+        "title": "행렬"
+      },
+      {
+        "id": "capture-4-3",
+        "title": "테이블"
+      },
+      {
+        "id": "capture-4-4",
+        "title": "테이블"
+      },
+      {
+        "id": "capture-4-5",
+        "title": "행렬"
+      },
+      {
+        "id": "capture-4-6",
+        "title": "행렬"
+      },
+      {
+        "id": "capture-5-1",
+        "title": "슬라이서"
+      },
+      {
+        "id": "capture-5-2",
+        "title": "테이블"
+      },
+      {
+        "id": "capture-5-3",
+        "title": "행렬"
+      },
+      {
+        "id": "capture-5-4",
+        "title": "행렬"
+      },
+      {
+        "id": "capture-5-5",
+        "title": "행렬"
+      },
+      {
+        "id": "capture-6-1",
+        "title": "슬라이서"
+      },
+      {
+        "id": "capture-6-2",
+        "title": "여러 행 카드"
+      },
+      {
+        "id": "capture-6-3",
+        "title": "카드"
+      },
+      {
+        "id": "capture-6-4",
+        "title": "카드"
+      },
+      {
+        "id": "capture-6-5",
+        "title": "카드"
+      },
+      {
+        "id": "capture-6-6",
+        "title": "카드"
+      },
+      {
+        "id": "capture-6-7",
+        "title": "카드"
+      },
+      {
+        "id": "capture-6-8",
+        "title": "카드"
+      },
+      {
+        "id": "capture-6-9",
+        "title": "카드"
+      },
+      {
+        "id": "capture-6-10",
+        "title": "Simple Image"
+      },
+      {
+        "id": "capture-6-11",
+        "title": "테이블"
+      }
+    ]
+  },
+  "logging": {
+    "fields": [
+      "turnId",
+      "conversationId",
+      "userText",
+      "contextTurnIds",
+      "catalogVersion",
+      "providerModel",
+      "rawModelResponse",
+      "plan",
+      "validatorResult",
+      "actualQueryConditions",
+      "calculationId",
+      "calculationInputs",
+      "calculationResult",
+      "finalAnswer",
+      "outcome",
+      "errorCause",
+      "userCorrection",
+      "labelStatus"
+    ],
+    "labelStatusDefault": "unreviewed",
+    "exclude": [
+      "API key",
+      "authorization headers"
+    ],
+    "note": "conversation-history.jsonl 확장 설계이며 아직 구현하지 않음"
+  },
+  "unresolved": [
+    "BO 행의 grain/고유 키 및 중복 처리",
+    "가중분 산정 방식",
+    "취급고·주문금액·취급액의 동치 여부",
+    "취소/반품 반영 여부",
+    "모델 측정값 내부 수식·일부 표시 단위",
+    "BI 테이블 생성 DDL/Power Query/TMDL 및 관계 정보: 현재 자료에서 찾지 못함",
+    "잔여편성의 기간·확정/계획 기준",
+    "광고비 마진구조의 정확한 계산 정의",
+    "가중분이 0일 때 두 분당 지표의 표시 방식",
+    "편성비중 분모의 유/무형 유지 여부",
+    "원천 행 조회의 페이지 처리·누락 방지·데이터 크기 제한",
+    "null·BLANK·0분·0분모 처리 및 반올림·백분율 표시 계약",
+    "Gemini 공급자·요금제·모델·데이터 전송 설정 미연결"
+  ],
+  "workStatus": {
+    "performed": [
+      "기존 코드·항목 목록·성능 기록·사용자 확인 산식 읽기",
+      "통합 JSON 파일 생성"
+    ],
+    "notPerformed": [
+      "테스트",
+      "모델 추론",
+      "실제 BI 조회",
+      "Gemini 연결",
+      "앱 계산 엔진 구현",
+      "로컬 LLM 시작 경로 변경"
+    ]
+  },
+  "provenance": [
+    {
+      "file": "src/power-bi-model.json",
+      "sha256": "f3637f5c53334d5b2916af5379fcaf97a09b42cbb94a73fa963f97b3c2e05fc2"
+    },
+    {
+      "file": "src/power-bi-visuals.json",
+      "sha256": "c984e11feabfcfd2978db50f4e27311ddd9323d4c497389b7f7ff3e788b8693b"
+    },
+    {
+      "file": "src/bi-reference/catalog.json",
+      "sha256": "b57ea67901a04c4c75b0d2973b9cbf30139090be8337cbc0bc26944026cde57c"
+    },
+    {
+      "file": "src/commands/bi-metrics.js",
+      "sha256": "6ac7b7b8399e37d2979c9f02b10abe44abf5b8c135a6c8538e658828a91d692b"
+    },
+    {
+      "file": "src/commands/bi-report-templates.js",
+      "sha256": "d3a0c7d237961ba681a4c2fc271db030b5743ec05c63579dd13e966d998d6f48"
+    },
+    {
+      "file": "src/planner/catalog-additions.json",
+      "sha256": "81c37fd1a175b2c65845d02e50e6d0d0ab0b9aeda5f276ed9264f0ab9eb44428"
+    },
+    {
+      "file": "src/commands/entity-resolver.js",
+      "sha256": "fc121922985ec3f57c73de2be7ffd070e449b02e94a45d40de9b5d25ff051666"
+    },
+    {
+      "file": "src/commands/bi-query.js",
+      "sha256": "cdc874164972bb99eeff88312d881356881bab8ca1a6121e7e67cb6a1b6d9653"
+    },
+    {
+      "file": "PERFORMANCE.md",
+      "sha256": "b20247e7c4ecc7697ee2ef41a15c2f9ccbbb6fd62d966854fedcf7211cce9b5e"
+    },
+    {
+      "file": "DATA_CACHE.md",
+      "sha256": "5723a0f35067264669adcc51f0d67b8586119ef58dc4b60c45af817f0da13d02"
+    },
+    {
+      "file": "docs/power-bi/REFERENCE_USAGE.md",
+      "sha256": "d76569e14f96265da02d551eaa8c143443547b8d8b553cdf1fece9eae20925f7"
+    },
+    {
+      "file": "data/training/decisions.json",
+      "sha256": "f98ef2e83d29e010944c6c0613a4051ab382170c65b92d3bbf98e9a5373e64da"
+    },
+    {
+      "file": "data/bi-entity-catalog.json",
+      "sha256": "0204a81a0612609312046862005f73a9d57e8faf20924cae2b4a12ffef43dbce"
+    },
+    {
+      "file": "src/planner/live-bi-executor.js",
+      "sha256": "a2b2aadc278d1a86193868f813c57f047740717ee44be3762b8f7bfd27873742"
+    },
+    {
+      "file": "docs/bi-guide.md",
+      "sha256": "876b727a65cac9c828c62ff2ddd6edb982efc4cbbbad8ba2e21ce8c0a56259ce"
+    },
+    {
+      "file": "docs/power-bi/captures/ANALYSIS.md",
+      "sha256": "e72c16bbb90e8d6ff69e1e16bf3eb7321b92e429c949b70c0c19fb3787772667"
+    },
+    {
+      "file": "scripts/build-new-bi-catalog.js",
+      "sha256": "2a739a1c6c18c8584e4226bcda95dc6ec7dc4409b0be4acf5a1213fd8cdf4cc9"
+    }
+  ],
+  "evidenceRetention": {
+    "status": "historical_references",
+    "note": "Source paths and hashes record historical evidence. Referenced Markdown documents and duplicate capture files were removed during cleanup; runtime must not require those paths."
+  },
+  "runtimeCapabilities": {
+    "version": 2,
+    "implementation": "src/gemini/analysis-engine.js",
+    "verifiedByExecution": false,
+    "operators": [
+      "field",
+      "metric",
+      "sum",
+      "count",
+      "distinct_count",
+      "average",
+      "min",
+      "max",
+      "median",
+      "add",
+      "subtract",
+      "multiply",
+      "divide",
+      "power",
+      "abs",
+      "negate",
+      "round",
+      "floor",
+      "ceil",
+      "sqrt",
+      "rank"
+    ],
+    "multiTarget": true,
+    "multipleMetrics": true,
+    "groupBy": [
+      "value",
+      "year",
+      "month",
+      "day",
+      "hour"
+    ],
+    "ranking": true,
+    "independentDatasets": true,
+    "adaptiveDatePartitioning": true,
+    "clarificationContinuation": true,
+    "semanticFieldRepair": "Gemini remaps names using full catalog after compiler feedback. User words are not prefiltered by the app.",
+    "basePolicy": "Reuse one BASE per Asia/Seoul calendar day. Recreate on expiry, deletion, catalog change or explicit reset; preserve local branch context.",
+    "responseContractVersion": 6,
+    "nestedBooleanFilters": [
+      "and",
+      "or"
+    ],
+    "postAggregationFilters": true
+  }
+}

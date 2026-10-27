@@ -68,19 +68,54 @@ function Save-CachedToken($file, $token) {
         [IO.File]::WriteAllText($file, $encrypted)
     } catch { } # Cache failure must not block the requested query.
 }
+function Invoke-PowerBiUtf8Query($datasetId, $token, $body) {
+    # Read the wire bytes explicitly. Windows PowerShell 5's automatic HTTP
+    # text decoding can turn Korean UTF-8 into Latin-1 mojibake when a response
+    # omits charset. Use the same decoding for cached and interactive sessions.
+    $httpRequest = [System.Net.HttpWebRequest]::Create("https://api.powerbi.com/v1.0/myorg/datasets/$datasetId/executeQueries")
+    $httpRequest.Method = 'POST'
+    $httpRequest.ContentType = 'application/json; charset=utf-8'
+    $httpRequest.Accept = 'application/json'
+    $httpRequest.Headers['Authorization'] = "Bearer $token"
+    $httpRequest.Timeout = 60000
+    $httpRequest.ReadWriteTimeout = 60000
+    $httpRequest.AutomaticDecompression = [System.Net.DecompressionMethods]::GZip -bor [System.Net.DecompressionMethods]::Deflate
+    $bytes = [Text.Encoding]::UTF8.GetBytes($body)
+    $httpRequest.ContentLength = $bytes.Length
+    $requestStream = $httpRequest.GetRequestStream()
+    try { $requestStream.Write($bytes, 0, $bytes.Length) } finally { $requestStream.Dispose() }
+    $httpResponse = $httpRequest.GetResponse()
+    try {
+        $reader = [IO.StreamReader]::new($httpResponse.GetResponseStream(), [Text.Encoding]::UTF8, $true)
+        try { return $reader.ReadToEnd() } finally { $reader.Dispose() }
+    } finally { $httpResponse.Dispose() }
+}
 while ($null -ne ($line = [Console]::ReadLine())) {
     $requestId = $null
     try {
         $request = $line | ConvertFrom-Json
         $requestId = $request.id
         if ($request.action -eq 'stop') { break }
-        if ($request.action -ne 'query') { throw 'Unsupported action.' }
+        if ($request.action -notin @('query', 'authenticate')) { throw 'Unsupported action.' }
         $datasetId = [string]$request.datasetId
         $tenantId = [string]$request.tenantId
         if ($datasetId -notmatch '^[0-9a-fA-F-]{36}$' -or $tenantId -notmatch '^[0-9a-fA-F-]{36}$') { throw 'Invalid model identifier.' }
         $dax = [string]$request.dax
-        if ([string]::IsNullOrWhiteSpace($dax) -or $dax.Length -gt 100000) { throw 'Invalid DAX query.' }
+        if ($request.action -eq 'query' -and ([string]::IsNullOrWhiteSpace($dax) -or $dax.Length -gt 100000)) { throw 'Invalid DAX query.' }
         $tokenCacheFile = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) "bgapp\auth\powerbi-$tenantId.dpapi"
+        if ($connected) {
+            # Refresh through the Microsoft module before reporting authenticated.
+            try {
+                $headers = Get-PowerBIAccessToken -ErrorAction Stop
+                $cachedToken = ([string]$headers.Authorization) -replace '^Bearer\s+', ''
+                if ([string]::IsNullOrWhiteSpace($cachedToken)) { throw 'Empty access token.' }
+                Save-CachedToken $tokenCacheFile $cachedToken
+                if (-not (Read-CachedToken $tokenCacheFile)) { throw 'Expired access token.' }
+            } catch {
+                $connected = $false
+                $cachedToken = $null
+            }
+        }
         if (-not $connected) { $cachedToken = Read-CachedToken $tokenCacheFile }
         if (-not $connected -and -not $cachedToken) {
             Send-Message @{ event = 'sign-in'; id = $requestId }
@@ -100,19 +135,21 @@ while ($null -ne ($line = [Console]::ReadLine())) {
             Save-CachedToken $tokenCacheFile $cachedToken
             Send-Message @{ event = 'signed-in'; id = $requestId }
         }
+        if ($request.action -eq 'authenticate') {
+            Send-Message @{ id = $requestId; ok = $true; result = @{ authenticated = $true }; pid = $PID }
+            continue
+        }
         $body = @{
             queries = @(@{ query = $dax })
             serializerSettings = @{ includeNulls = $true }
         } | ConvertTo-Json -Depth 10 -Compress
         if ($connected) {
-            $raw = Invoke-PowerBIRestMethod -Url "datasets/$datasetId/executeQueries" -Method Post -Body $body -ContentType 'application/json' -TimeoutSec 60 -ErrorAction Stop
-            $result = $raw | ConvertFrom-Json
             $headers = Get-PowerBIAccessToken -ErrorAction Stop
             $cachedToken = ([string]$headers.Authorization) -replace '^Bearer\s+', ''
             Save-CachedToken $tokenCacheFile $cachedToken
-        } else {
-            $result = Invoke-RestMethod -Uri "https://api.powerbi.com/v1.0/myorg/datasets/$datasetId/executeQueries" -Method Post -Headers @{ Authorization = "Bearer $cachedToken" } -Body ([Text.Encoding]::UTF8.GetBytes($body)) -ContentType 'application/json' -TimeoutSec 60 -ErrorAction Stop
         }
+        $raw = Invoke-PowerBiUtf8Query $datasetId $cachedToken $body
+        $result = $raw | ConvertFrom-Json
         if ($result.error -or @($result.results | Where-Object { $_.error }).Count -gt 0) {
             Send-Message @{ id = $requestId; ok = $false; code = 'QUERY_RESPONSE_ERROR'; message = 'Power BI returned a query error or truncated result.' }
         } else {

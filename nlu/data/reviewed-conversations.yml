@@ -1,23 +1,90 @@
 version: "3.1"
 nlu:
+  - intent: requirements
+    examples: |
+      - 상품 [마진]{"entity":"metric","value":"commission_rate"}만 궁금할때가 잇을것같은데 [혼합비]{"entity":"metric","value":"mix_per_minute"}하고 그것 좀 나중에 정리해보자
+  - intent: unsupported_request
+    examples: |
+      - 어떤 상품 잔여편성이 궁금할 때
+      - 음 그리고 또 광고비 [마진]{"entity":"metric","value":"commission_rate"}구조가 궁금할떄
+      - 레이델 [브랜드]{"entity":"metric","value":"column:브랜드"} 26년 [편성비중]{"entity":"metric","value":"organization_weighted_share"}/가중[분당취급]{"entity":"metric","value":"measure:(전체)취급(분)"}고/이익액 말해봐
+      - 레이델 [브랜드]{"entity":"metric","value":"column:브랜드"}의 [편성코드]{"entity":"metric","value":"column:편성코드"}수와 [편성코드]{"entity":"metric","value":"column:편성코드"}명들 그리고 26년 [가중분]{"entity":"metric","value":"weighted_minutes"}, [가중분]{"entity":"metric","value":"weighted_minutes"}당 [취급고]{"entity":"metric","value":"sales"}/이익액
+      - 레이델 [브랜드]{"entity":"metric","value":"column:브랜드"}의 26년 전체 [가중분]{"entity":"metric","value":"weighted_minutes"}, 가중[분당취급]{"entity":"metric","value":"measure:(전체)취급(분)"}고/이익액
+      - 10월 8일 여덟시 방송
+      - 엇그제 8시 방송 뭐였어?
+      - 10월 21일에 8시 방송 뭐였냐고
+      - 9월 무형 [편성비중]{"entity":"metric","value":"organization_weighted_share"} 및 [분]{"entity":"metric","value":"column:분"}당 [취급액]{"entity":"metric","value":"sales"}/이익액
+      - 가중[분당취급액]{"entity":"metric","value":"measure:(전체)취급(분)"}은?
+      - 9월 무형 가중[분당취급액]{"entity":"metric","value":"measure:(전체)취급(분)"}
   - intent: query
     examples: |
-      - 헬스푸드팀 [월별]{"entity":"groupBy","value":"month"} 편성비중
-      - 헬스푸드팀 9월 편성비중
-      - 2026년 9월에 헬스푸드팀 편성비중 못만들어?
-      - 9월 헬스푸드팀 [가중분]{"entity":"metric","value":"weighted_minutes"}
-      - 헬스푸드팀 [월별]{"entity":"groupBy","value":"month"} [가중분]{"entity":"metric","value":"weighted_minutes"}
+      - [헬스푸드팀]{"entity":"organization","value":"헬쓰푸드"} [월별]{"entity":"groupBy","value":"month"} [편성비중]{"entity":"metric","value":"organization_weighted_share"}
+      - [헬스푸드팀]{"entity":"organization","value":"헬쓰푸드"} 9월 [편성비중]{"entity":"metric","value":"organization_weighted_share"}
+      - 2026년 9월에 [헬스푸드팀]{"entity":"organization","value":"헬쓰푸드"} [편성비중]{"entity":"metric","value":"organization_weighted_share"} 못만들어?
+      - 9월 [헬스푸드팀]{"entity":"organization","value":"헬쓰푸드"} [가중분]{"entity":"metric","value":"weighted_minutes"}
+      - [헬스푸드팀]{"entity":"organization","value":"헬쓰푸드"} [월별]{"entity":"groupBy","value":"month"} [가중분]{"entity":"metric","value":"weighted_minutes"}
       - [문화팀]{"entity":"organization","value":"문화서비스"} [가중분]{"entity":"metric","value":"weighted_minutes"}
-      - [문화팀]{"entity":"organization","value":"문화서비스"} 편성비중
-      - 6월에 편성비중 [제일]{"entity":"limit","value":1} 많이 쓴 [팀]{"entity":"groupBy","value":"organization"}
-      - 뭐야 6월 [조직별]{"entity":"groupBy","value":"organization"} 편성비중도 못만들어?
-      - 9월 [조직별]{"entity":"groupBy","value":"organization"} 편성비중
+      - [문화팀]{"entity":"organization","value":"문화서비스"} [편성비중]{"entity":"metric","value":"organization_weighted_share"}
+      - 6월에 [편성비중]{"entity":"metric","value":"organization_weighted_share"} [제일]{"entity":"limit","value":1} 많이 쓴 [팀]{"entity":"groupBy","value":"organization"}
+      - 뭐야 6월 [조직별]{"entity":"groupBy","value":"organization"} [편성비중]{"entity":"metric","value":"organization_weighted_share"}도 못만들어?
+      - 9얼 [조직별]{"entity":"groupBy","value":"organization"} [편성비중]{"entity":"metric","value":"organization_weighted_share"}
+      - 9월 [조직별]{"entity":"groupBy","value":"organization"} [편성비중]{"entity":"metric","value":"organization_weighted_share"}
+      - 9월 무형 [편성비중]{"entity":"metric","value":"organization_weighted_share"}
+      - 10월 [가전팀]{"entity":"organization","value":"가전"} [편성비중]{"entity":"metric","value":"organization_weighted_share"}
+      - 맥락이 이상하다는거야 됐고7월달 [헬스푸드팀]{"entity":"organization","value":"헬쓰푸드"} [가중분]{"entity":"metric","value":"weighted_minutes"} 하고 [편성비중]{"entity":"metric","value":"organization_weighted_share"} 말해봐.
+      - 2026년 7월 [헬스푸드팀]{"entity":"organization","value":"헬쓰푸드"} [가중분]{"entity":"metric","value":"weighted_minutes"}하고 [편성비중]{"entity":"metric","value":"organization_weighted_share"} 말해보라고
+      - 7월 [헬스푸드팀]{"entity":"organization","value":"헬쓰푸드"} [가중분]{"entity":"metric","value":"weighted_minutes"}
+      - 7월 [헬스푸드팀]{"entity":"organization","value":"헬쓰푸드"} [가중분]{"entity":"metric","value":"weighted_minutes"} 알려줘
+      - 7월 [헬스푸드팀]{"entity":"organization","value":"헬쓰푸드"} [가중분]{"entity":"metric","value":"weighted_minutes"} 알려줘.
+      - 7월 [헬스푸드]{"entity":"organization","value":"헬쓰푸드"} [가중분]{"entity":"metric","value":"weighted_minutes"}
+  - intent: conversation_feedback
+    examples: |
+      - 근데 한 번 말하면 너 말하기가 비활성화된다?
+      - 편안하시면 말해주세요는 어느나라인삿말이냐?
+  - intent: greet
+    examples: |
+      - 야 뭐든 대답해봐
+      - 야
+      - 우사기야
+      - di
+  - intent: modify_condition
+    examples: |
+      - [브랜드]{"entity":"targetType","value":"brand"}는 [] 안에가 [브랜드]{"entity":"targetType","value":"brand"}야 [레이델]{"entity":"brand","value":"레이델"}이면 [[레이델]{"entity":"brand","value":"레이델"}]이 들어가 [모든 상품]{"entity":"scope","value":"all_products"}을 말해
+      - [문화팀]{"entity":"organization","value":"문화서비스"} 찾으라니깐 왜 편성팀찾앗어
+      - 9월 말이야 그리고 이런건 좀 아래에 선택하는 식으로 제안하라고햇잖아.
+      - 하 왜또 [조직별]{"entity":"groupBy","value":"organization"} [편성비중]{"entity":"metric","value":"organization_weighted_share"}이라는데 편성팀을 가져오지? 학습안했나? 포함된 팀들 있잖아 9월에 방송한 [팀들의]{"entity":"groupBy","value":"organization"} 각 [편성비중]{"entity":"metric","value":"organization_weighted_share"}을 가져오라는거잖아.
+      - 뭔소리하는거야대체 야 9월 [조직별]{"entity":"groupBy","value":"organization"} [편성비중]{"entity":"metric","value":"organization_weighted_share"} 말해봐.
+      - BI에서 조회해서 값가져오라고 카탈로그에 [가중부]{"entity":"metric","value":"weighted_minutes"}하고 [편성비중]{"entity":"metric","value":"organization_weighted_share"}계산없어?
+      - 말했잖아 7월 [헬스푸드팀]{"entity":"organization","value":"헬쓰푸드"} [가중분]{"entity":"metric","value":"weighted_minutes"}달라고
+  - intent: system_status
+    examples: |
+      - 로컬엔진 준비됐어?
+      - 너 말할수잇는건맞아?
+      - 너 이제 대화잘해?
+  - intent: complaint
+    examples: |
+      - 아니 싯팔 데이터에서 찾아보면되잖아 뭘 연결이안되있어
+      - 찾아보려는 노력은했어?
+      - ?? 너 나랑 대화를 하는거냐 ? 똑같은말만 반복하네
+      - 아니 너 대답을 못하는것같아서
+      - 뭔소리르하는거야 대체,
   - intent: change_grouping
     examples: |
       - 26년 [월별]{"entity":"groupBy","value":"month"}
-      - [조직별]{"entity":"groupBy","value":"organization"} 편성비중말이야.  못만드나보네 뭐이렇게 집계를 못하냐 병신아
-  - intent: modify_condition
+      - [조직별]{"entity":"groupBy","value":"organization"} [편성비중]{"entity":"metric","value":"organization_weighted_share"}말이야.  못만드나보네 뭐이렇게 집계를 못하냐 병신아
+      - [문화서비스팀]{"entity":"organization","value":"문화서비스"}만 말고 [조직들 다]{"entity":"groupBy","value":"organization"}
+  - intent: confirm
     examples: |
-      - [문화팀]{"entity":"organization","value":"문화서비스"} 찾으라니깐 왜 편성팀찾앗어
-      - 9월 말이야 그리고 이런건 좀 아래에 선택하는 식으로 제안하라고햇잖아.
-      - 하 왜또 [조직별]{"entity":"groupBy","value":"organization"} 편성비중이라는데 편성팀을 가져오지? 학습안했나? 포함된 팀들 있잖아 9월에 방송한 [팀들의]{"entity":"groupBy","value":"organization"} 각 편성비중을 가져오라는거잖아.
+      - ㅇ
+  - intent: organization_list
+    examples: |
+      - [표준조직]{"entity":"metric","value":"column:표준조직"}명 종류 말해봐
+  - intent: mood
+    examples: |
+      - 오늘 기[분]{"entity":"metric","value":"column:분"}어때>
+  - intent: cancel
+    examples: |
+      - 다시 시작해보자.
+  - intent: capabilities
+    examples: |
+      - 니가 조회할 수 있는건 뭐가있어/

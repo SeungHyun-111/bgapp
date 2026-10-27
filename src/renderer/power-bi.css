@@ -1,7 +1,9 @@
 *{box-sizing:border-box}
+#gemini-usage-footer{display:flex;justify-content:flex-end;position:fixed;bottom:22px;left:22px;right:22px;background:#fff;border-top:1px solid #eee7d8;padding:6px 0 2px;color:#8a816e;font-size:9px;z-index:4;max-height:70vh;overflow:auto}
+#gemini-usage-details{text-align:right;max-width:100%}#gemini-usage-summary{cursor:pointer;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}#gemini-usage-breakdown{white-space:pre-line;line-height:1.6;padding-top:5px;overflow-wrap:anywhere}
 html,body{margin:0;background:transparent;color:#292929;font:11px/1.4 'Malgun Gothic',sans-serif;overflow:hidden}
 body{padding:8px 8px 18px}
-#bubble{background:#fff;border:1px solid #dfd9c9;border-radius:14px;padding:12px;box-shadow:0 4px 15px #30251024;max-height:calc(100vh - 26px);overflow:auto;scrollbar-width:thin}
+#bubble{background:#fff;border:1px solid #dfd9c9;border-radius:14px;padding:12px 12px 38px;box-shadow:0 4px 15px #30251024;max-height:calc(100vh - 26px);overflow:auto;scrollbar-width:thin}
 .launcher{display:flex;align-items:center;gap:12px;margin-bottom:5px}.brand{font-weight:bold;white-space:nowrap;color:#665431}
 form{display:flex;flex:1;gap:6px}input{min-width:0;width:100%;flex:1;border:1px solid #ded8c7;border-radius:5px;padding:8px;font:inherit}
 button{border:1px solid #ddd7c8;border-radius:5px;background:#f7f3e9;color:#55482d;padding:6px 9px;font:inherit;cursor:pointer;white-space:nowrap}

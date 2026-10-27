@@ -49,6 +49,8 @@ async function evaluate(file,samples){
   return {modelVersion:client.modelVersion,results,passed:results.filter(r=>r.pass).length,regression};}finally{client.stop();}
 }
 async function main(){
+  const trainOnly=process.argv.includes('--train-only');
+  if(trainOnly&&process.argv.includes('--evaluate-only'))throw Error('Choose training-only or evaluation-only, not both');
   fs.mkdirSync(path.join(root,'nlu/results'),{recursive:true});
   const lock=path.join(root,'nlu/results/learning.lock');
   if(fs.existsSync(lock)){
@@ -65,7 +67,8 @@ async function main(){
     const stateFile=path.join(root,'data/training/active-nlu.json');
     const previous=fs.existsSync(stateFile)?JSON.parse(fs.readFileSync(stateFile)):null;
     if(previous?.datasetVersion===dataset.datasetVersion&&previous.modelVersion===hash(active)){console.log('Reviewed data already active');return;}
-    const baseline=await evaluate(active,dataset.samples);
+    const previousVersion=hash(active);
+    const baseline=trainOnly?null:await evaluate(active,dataset.samples);
     const evaluateOnly=process.argv.includes('--evaluate-only');
     if(!evaluateOnly){
     await run(process.execPath,['scripts/generate-bi-training.js']);
@@ -73,7 +76,7 @@ async function main(){
     const temp=path.join(process.env.PUBLIC||'C:/Users/Public','usagi-nlu-temp');fs.mkdirSync(temp,{recursive:true});
     // Verify file discovery, rather than assuming a generated .yml was consumed.
     const check="import sys,json; from rasa.shared.nlu.training_data.loading import load_data; data=load_data(sys.argv[1]); expected=json.load(open(sys.argv[2],encoding='utf-8')); actual={(e.get('text'),e.get('intent')) for e in data.training_examples}; assert all((s['input'].replace('\\n',' '),s['intent']) in actual for s in expected['samples']), 'Reviewed examples missing from Rasa input'; print('Verified reviewed Rasa examples:',len(expected['samples']))";
-    await run(path.join(root,'.venv-rasa/Scripts/python.exe'),['-c',check,path.join(root,'nlu/data'),path.join(root,'data/training/nlu-dataset.json')],{env:{...process.env,RASA_TELEMETRY_ENABLED:'false',PYTHONIOENCODING:'utf-8'}});
+    if(!trainOnly)await run(path.join(root,'.venv-rasa/Scripts/python.exe'),['-c',check,path.join(root,'nlu/data'),path.join(root,'data/training/nlu-dataset.json')],{env:{...process.env,RASA_TELEMETRY_ENABLED:'false',PYTHONIOENCODING:'utf-8'}});
     await run(path.join(root,'.venv-rasa/Scripts/python.exe'),['run_rasa.py','train','nlu','--config','config.yml','--nlu','data','--out','models/candidates','--fixed-model-name','reviewed'],{cwd:path.join(root,'nlu'),env:{...process.env,TEMP:temp,TMP:temp,TF_NUM_INTRAOP_THREADS:'1',TF_NUM_INTEROP_THREADS:'1',OMP_NUM_THREADS:'1',RASA_TELEMETRY_ENABLED:'false',SQLALCHEMY_SILENCE_UBER_WARNING:'1',PYTHONIOENCODING:'utf-8'}});
     }
     const candidate=path.join(root,'nlu/models/candidates/reviewed.tar.gz');
@@ -82,18 +85,26 @@ async function main(){
       const records=await store.conversations();
       if(dataset.samples.some(s=>!records.find(r=>r.id===s.id)?.trainingRuns.some(r=>r.modelVersion===version&&r.datasetVersion===dataset.datasetVersion)))throw Error('Evaluation-only requires a candidate trained with this exact reviewed dataset');
     }else await store.markModelUsage({ids:dataset.samples.map(s=>s.id),role:'training',modelVersion:version,datasetVersion:dataset.datasetVersion});
-    const report=await evaluate(candidate,dataset.samples);
-    const regression=report.regression,oldRegression=baseline.regression;
-    const accepted=report.results.every(r=>r.pass)&&baseline.results.every(r=>!r.pass||report.results.find(n=>n.id===r.id)?.pass)&&regression.results.every(r=>r.pass)&&regression.transitions.every(r=>r.pass)&&oldRegression.results.every(r=>!r.pass||regression.results.find(n=>n.text===r.text)?.pass);
-    const result={timestamp:new Date().toISOString(),datasetVersion:dataset.datasetVersion,modelVersion:version,previousModelVersion:baseline.modelVersion,accepted,baseline,report,regressionPassed:regression.passed,baselineRegressionPassed:oldRegression.passed,note:'Reviewed training examples are training-fit checks, not held-out accuracy. Additional phrasing/context checks are development regression tests. No BI access.'};
-    fs.writeFileSync(path.join(root,'nlu/results/reviewed-learning.json'),JSON.stringify(result,null,2));
-    if(!accepted)throw Error('Candidate not activated: local regression checks failed; see nlu/results/reviewed-learning.json');
-    if(hash(active)!==baseline.modelVersion||hash(candidate)!==report.modelVersion)throw Error('Model changed during evaluation');
-    const archive=path.join(root,'nlu/models/archive',`usagi-${baseline.modelVersion}.tar.gz`);fs.mkdirSync(path.dirname(archive),{recursive:true});if(!fs.existsSync(archive))fs.copyFileSync(active,archive);
+    let result;
+    if(trainOnly){
+      result={timestamp:new Date().toISOString(),datasetVersion:dataset.datasetVersion,modelVersion:version,previousModelVersion:previousVersion,
+        trainingCompleted:true,evaluationExecuted:false,activationBasis:'User requested training and activation without tests',samples:dataset.samples.length,
+        note:'No model parse checks, regression tests, held-out evaluation or BI requests were run. This is a trained, unevaluated model.'};
+      fs.writeFileSync(path.join(root,'nlu/results/training-only.json'),JSON.stringify(result,null,2));
+    }else{
+      const report=await evaluate(candidate,dataset.samples);
+      const regression=report.regression,oldRegression=baseline.regression;
+      const accepted=report.results.every(r=>r.pass)&&baseline.results.every(r=>!r.pass||report.results.find(n=>n.id===r.id)?.pass)&&regression.results.every(r=>r.pass)&&regression.transitions.every(r=>r.pass)&&oldRegression.results.every(r=>!r.pass||regression.results.find(n=>n.text===r.text)?.pass);
+      result={timestamp:new Date().toISOString(),datasetVersion:dataset.datasetVersion,modelVersion:version,previousModelVersion:baseline.modelVersion,accepted,baseline,report,regressionPassed:regression.passed,baselineRegressionPassed:oldRegression.passed,evaluationExecuted:true,note:'Reviewed training examples are training-fit checks, not held-out accuracy. Additional phrasing/context checks are development regression tests. No BI access.'};
+      fs.writeFileSync(path.join(root,'nlu/results/reviewed-learning.json'),JSON.stringify(result,null,2));
+      if(!accepted)throw Error('Candidate not activated: local regression checks failed; see nlu/results/reviewed-learning.json');
+    }
+    if(hash(active)!==previousVersion||hash(candidate)!==version)throw Error('Model changed during training/activation');
+    const archive=path.join(root,'nlu/models/archive',`usagi-${previousVersion}.tar.gz`);fs.mkdirSync(path.dirname(archive),{recursive:true});if(!fs.existsSync(archive))fs.copyFileSync(active,archive);
     fs.copyFileSync(candidate,active+'.next');fs.renameSync(active+'.next',active);
-    fs.writeFileSync(stateFile,JSON.stringify({schemaVersion:3,contract:'action-slots',timestamp:result.timestamp,datasetVersion:dataset.datasetVersion,modelVersion:version},null,2));
-    fs.appendFileSync(path.join(root,'data/nlu-model-versions.jsonl'),JSON.stringify({timestamp:result.timestamp,datasetVersion:dataset.datasetVersion,modelVersion:version,previousModelVersion:baseline.modelVersion,archive,source:'reviewed-learning-loop'})+'\n');
-    console.log(JSON.stringify({activated:true,samples:dataset.samples.length,modelVersion:version}));
+    fs.writeFileSync(stateFile,JSON.stringify({schemaVersion:3,contract:'action-slots',timestamp:result.timestamp,datasetVersion:dataset.datasetVersion,modelVersion:version,evaluationExecuted:!trainOnly,activationMode:trainOnly?'training-only':'evaluated'},null,2));
+    fs.appendFileSync(path.join(root,'data/nlu-model-versions.jsonl'),JSON.stringify({timestamp:result.timestamp,datasetVersion:dataset.datasetVersion,modelVersion:version,previousModelVersion:previousVersion,archive,source:trainOnly?'reviewed-training-only':'reviewed-learning-loop',evaluationExecuted:!trainOnly})+'\n');
+    console.log(JSON.stringify({activated:true,samples:dataset.samples.length,modelVersion:version,evaluationExecuted:!trainOnly}));
   }finally{fs.closeSync(fd);fs.unlinkSync(lock);}
 }
 if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});

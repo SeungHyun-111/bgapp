@@ -5,7 +5,7 @@ function rankDocuments(documents,query){
   const q=normalize(query),tokens=q.split(/[^\p{L}\p{N}_]+/u).filter(Boolean),qg=grams(q);
   return documents.map((document,index)=>{
     const title=normalize([document.label,...(document.aliases||[])].join(' '));
-    const text=normalize([title,document.description,JSON.stringify(document.definition||'')].join(' '));
+    const text=normalize([title,document.description,JSON.stringify(document.definition||''),JSON.stringify(document.calculation||'')].join(' '));
     const dg=grams(text);let overlap=0;for(const g of qg)if(dg.has(g))overlap++;
     const score=(title.includes(q)?4:0)+tokens.filter(t=>text.includes(t)).length*2+overlap/Math.max(1,qg.size);
     return {document,index,score};

@@ -19,5 +19,6 @@ function turnContract(){
     {type:'object',additionalProperties:false,required:['action','message'],properties:{action:{type:'string',enum:['reply']},message:{type:'string',minLength:1,maxLength:1500}}}
   ]};
 }
-function responseContract(definitions){return {oneOf:[...turnContract().oneOf,{type:'object',additionalProperties:false,required:['tool'],properties:{tool:{type:'object',additionalProperties:false,required:['name','arguments'],properties:{name:{type:'string',enum:definitions.map(t=>t.name)},arguments:{type:'object'}}}}}]};}
-module.exports={turnContract,responseContract};
+function toolContract(definition){return {type:'object',additionalProperties:false,required:['name','arguments'],properties:{name:{type:'string',enum:[definition.name]},arguments:structuredClone(definition.inputSchema||definition.input)}};}
+function responseContract(definitions){return {oneOf:[...turnContract().oneOf,...definitions.map(definition=>({type:'object',additionalProperties:false,required:['tool'],properties:{tool:toolContract(definition)}}))]};}
+module.exports={turnContract,responseContract,toolContract};

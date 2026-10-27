@@ -2,6 +2,7 @@ const fs = require('fs/promises');
 const path = require('path');
 const { randomUUID } = require('crypto');
 const { containsCredential } = require('./privacy');
+const {labelsFromPlan}=require('../learning/training-record');
 const timestamp = () => new Date(Date.now() + 9 * 3600000).toISOString().replace('Z', '+09:00');
 
 class QueryStore {
@@ -58,13 +59,29 @@ class QueryStore {
     await this.queue;
     const all=await this.readLines(this.file);
     const reviews=new Map(all.filter(r=>r.recordType==='review_event').map(r=>[r.id,r]));
+    const confirmations=new Map(all.filter(r=>r.recordType==='training_review_event').map(r=>[r.id,r]));
     const retracted=new Set(all.filter(r=>r.recordType==='model_usage_retraction').map(r=>r.eventId));
     const usage=all.filter(r=>r.recordType==='model_usage_event'&&!retracted.has(r.eventId));
     return all.filter(r=>typeof r.input==='string').map(record=>{
       const checked=reviews.get(record.id),runs=usage.filter(r=>r.id===record.id);
+      const confirmation=confirmations.get(record.id);
+      const training=confirmation?{confirmed:['confirmed','corrected_confirmed'].includes(confirmation.status),finalPlan:confirmation.finalPlan,labels:confirmation.labels,confirmation:{status:confirmation.status,reason:confirmation.reason,reviewer:confirmation.reviewer,timestamp:confirmation.timestamp,eventId:confirmation.eventId},correction:confirmation.correction}:{};
       const trainingRuns=runs.filter(r=>r.role==='training'),evaluationRuns=runs.filter(r=>r.role==='evaluation');
-      return {...record,reviewStatus:checked?'reviewed':'unreviewed',reviewCategory:checked?.category,reviewedAt:checked?.timestamp,reviewSource:checked?.annotationFile,reviewVersion:checked?.annotationVersion,trainingStatus:trainingRuns.length?'used':'not_used',trainingRuns,evaluationRuns};
+      return {...record,...training,reviewStatus:checked?'reviewed':'unreviewed',reviewCategory:checked?.category,reviewedAt:checked?.timestamp,reviewSource:checked?.annotationFile,reviewVersion:checked?.annotationVersion,trainingStatus:trainingRuns.length?'used':'not_used',trainingRuns,evaluationRuns};
     }).filter(r=>(review==='all'||r.reviewStatus===review)&&(training==='all'||r.trainingStatus===training));
+  }
+  async reviewTraining({id,status,finalPlan=null,reason,reviewer,correction=null}) {
+    if(!['confirmed','corrected_confirmed','incorrect','excluded','unreviewed'].includes(status))throw Error('Unknown training review status');
+    if(![reason,reviewer].every(v=>typeof v==='string'&&v.trim()))throw Error('Review reason and reviewer are required');
+    const record=(await this.conversations()).find(r=>r.id===id);
+    if(!record)throw Error('Conversation not found');
+    const confirmed=['confirmed','corrected_confirmed'].includes(status);
+    if(confirmed&&(!finalPlan||typeof finalPlan!=='object'||Array.isArray(finalPlan)))throw Error('Explicit final plan is required');
+    if(status==='corrected_confirmed'&&(typeof correction!=='string'||!correction.trim()))throw Error('Correction description is required');
+    // Append-only provenance: correcting or withdrawing a review preserves history.
+    const event={recordType:'training_review_event',eventId:randomUUID(),id,timestamp:timestamp(),status,reason,reviewer,correction,finalPlan:confirmed?structuredClone(finalPlan):null,labels:confirmed?labelsFromPlan(finalPlan):null};
+    await this.appendLine(this.file,event);
+    return event;
   }
   async markReviewed({id,category,annotationFile,annotationVersion}) {
     if(![id,category,annotationFile,annotationVersion].every(v=>typeof v==='string'&&v.trim()))throw Error('Review provenance is required');

@@ -11,6 +11,12 @@ function createCommandSystem(store, { dialogue = null } = {}) {
   return {
     register(intent, handler) { handlers.set(intent, handler); },
     async execute(input, options = {}) {
+      // Gemini owns all talk interpretation, including greetings and intent routing.
+      // Keep explicit search mode separate; parser below is the legacy search path.
+      if(dialogue?.ownsTalk && options.mode !== 'search'){
+        if(typeof input!=='string'||!input.trim()||input.length>2000)return {kind:'reply',message:'1~2,000자 이내로 입력해주세요.'};
+        return dialogue.execute(input.trim(),{requestId:options.requestId});
+      }
       const command = parse(input, options);
       if (command.error) return { kind: 'reply', message: command.error };
       if (command.blocked) return { kind: 'reply', blocked: true, message: responses.blocked };

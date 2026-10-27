@@ -56,11 +56,10 @@ function compilePlan(input,catalog,entities=[]){
   function metric(id){
     const m=catalog.metrics[id];
     if(m.aggregation!=='share')return scoped(baseMetric(id),plan.filters,{target:true,groups:plan.groupBy});
-    const spec=plan.share;
-    const expression=spec?baseMetric(spec.numerator.metric):id==='organization_weighted_share'?baseMetric('weighted_minutes'):id==='organization_broadcast_share'?"DISTINCTCOUNT('BO'[방송일시])":null;
-    if(!expression)throw Object.assign(Error('편성비중의 계산 근거를 확인하지 못했어.'),{code:'BI_METRIC_UNSUPPORTED'});
-    const numerator=scoped(expression,spec?[...plan.filters,...spec.numerator.filters]:plan.filters,{target:true,groups:plan.groupBy});
-    const denominator=scoped(expression,spec?spec.denominator.filters:plan.filters.filter(f=>fields.get(f.field)?.type==='datetime'),{groups:spec?spec.denominator.groupBy:plan.groupBy.filter(g=>fields.get(g.field)?.type==='datetime')});
+    const spec=checked.sharePlans[id];
+    const numeratorFilters=[...new Map([...plan.filters,...spec.numerator.filters].map(f=>[JSON.stringify(f),f])).values()];
+    const numerator=scoped(baseMetric(spec.numerator.metric),numeratorFilters,{target:true,groups:plan.groupBy});
+    const denominator=scoped(baseMetric(spec.denominator.metric),spec.denominator.filters,{groups:spec.denominator.groupBy});
     return `DIVIDE(${numerator}, ${denominator})`;
   }
   let expression,outputs;
@@ -79,7 +78,7 @@ function compilePlan(input,catalog,entities=[]){
   const sort=plan.sort.length?plan.sort:outputs.map(field=>({field,direction:'asc'}));
   const order=sort.map(s=>`[__out${outputs.indexOf(s.field)}], ${s.direction.toUpperCase()}`).join(', ');
   const finalOrder=sort.map(s=>`[__out${outputs.indexOf(s.field)}] ${s.direction.toUpperCase()}`).join(', ');
-  return {plan,outputs,dax:`EVALUATE TOPN(${plan.limit+1}, ${expression}, ${order})\nORDER BY ${finalOrder}`};
+  return {plan,sharePlans:checked.sharePlans,outputs,dax:`EVALUATE TOPN(${plan.limit+1}, ${expression}, ${order})\nORDER BY ${finalOrder}`};
 }
 
 function createLiveExecutor({catalog,entities=[],query,onStatus=()=>{}}){

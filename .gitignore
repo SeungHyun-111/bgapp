@@ -24,4 +24,9 @@ Desktop.ini
 nlu/models/
 nlu/results/
 __pycache__/
+.venv-training/
+/training/snapshots/
+/training/datasets/
+/training/models/
+/training/reports/
 nlu/.rasa/

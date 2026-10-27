@@ -1,4 +1,27 @@
 {
+  "metricExtensions": {
+    "organization_weighted_share": {
+      "aliases": ["편성비중", "편성 비중"],
+      "calculation": {
+        "type": "share",
+        "basisMetric": "weighted_minutes",
+        "numeratorScope": "query",
+        "denominatorFilterTypes": ["datetime"],
+        "denominatorGroupTypes": ["datetime"],
+        "description": "선택 대상·조건의 가중분 / 같은 기간 전체 조직·브랜드·상품유형의 가중분. 분모는 기간 조건과 기간 그룹만 유지한다."
+      }
+    },
+    "organization_broadcast_share": {
+      "calculation": {
+        "type": "share",
+        "basisMetric": "broadcast_count",
+        "numeratorScope": "query",
+        "denominatorFilterTypes": ["datetime"],
+        "denominatorGroupTypes": ["datetime"],
+        "description": "선택 대상·조건의 방송일시 고유 개수 / 같은 기간 전체 조직·브랜드·상품유형의 방송일시 고유 개수. 분모는 기간 조건과 기간 그룹만 유지한다."
+      }
+    }
+  },
   "metrics": {
     "broadcast_count": {
       "id": "broadcast_count",

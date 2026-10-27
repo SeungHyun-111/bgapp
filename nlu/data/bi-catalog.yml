@@ -414,6 +414,10 @@ nlu:
       - 상품 [가중분비중]{"entity":"metric","value":"organization_weighted_share"} 궁금해
       - 이번달 상품 [가중편성비중]{"entity":"metric","value":"organization_weighted_share"} 알려줘
       - 상품 [가중편성비중]{"entity":"metric","value":"organization_weighted_share"} 궁금해
+      - 이번달 상품 [편성비중]{"entity":"metric","value":"organization_weighted_share"} 알려줘
+      - 상품 [편성비중]{"entity":"metric","value":"organization_weighted_share"} 궁금해
+      - 이번달 상품 [편성 비중]{"entity":"metric","value":"organization_weighted_share"} 알려줘
+      - 상품 [편성 비중]{"entity":"metric","value":"organization_weighted_share"} 궁금해
       - 이번달 상품 [방송횟수편성비중]{"entity":"metric","value":"organization_broadcast_share"} 알려줘
       - 상품 [방송횟수편성비중]{"entity":"metric","value":"organization_broadcast_share"} 궁금해
       - 이번달 상품 [방송횟수비중]{"entity":"metric","value":"organization_broadcast_share"} 알려줘

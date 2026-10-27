@@ -23,6 +23,7 @@
     "bi:reference-smoke": "node scripts/smoke-bi-captures.js",
     "nlu:setup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/rasa.ps1 setup",
     "nlu:train": "node scripts/train-reviewed-nlu.js",
+    "nlu:train-only": "node scripts/train-reviewed-nlu.js --train-only",
     "nlu:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/rasa.ps1 start",
     "nlu:label": "node scripts/label-query.js",
     "nlu:test": "node --test scripts/test-dialogue.js",

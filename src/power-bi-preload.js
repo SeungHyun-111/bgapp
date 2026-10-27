@@ -3,6 +3,8 @@ contextBridge.exposeInMainWorld('powerBi', {
   schema: () => ipcRenderer.invoke('bi:schema'),
   command: input => ipcRenderer.invoke('bi:command', input),
   engine: () => ipcRenderer.invoke('bi:engine'),
+  geminiUsage: () => ipcRenderer.invoke('bi:gemini-usage'),
+  onGeminiUsage: callback => ipcRenderer.on('bi:gemini-usage-changed', () => callback()),
   onReplyProgress: callback => ipcRenderer.on('bi:reply-progress', (_event,value) => callback(value)),
   suggestions: value => ipcRenderer.invoke('bi:suggestions', value),
   refreshCodes: () => ipcRenderer.invoke('bi:refresh-codes'),
