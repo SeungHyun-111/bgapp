@@ -36,7 +36,7 @@ module.exports = function createPowerBi(options = {}) {
   const dialogue = require('./gemini/dialogue').createGeminiDialogue({
     directory:dataDirectory,store:queryStore,onStatus:message=>status(message),
     client:new (require('./gemini/client').GeminiClient)({usageTracker:geminiUsage}),
-    executor:require('./gemini/analysis-engine').createExecutor({query:dax=>bridge.query(dax),onStatus:message=>status(message)})
+    executor:require('./gemini/analysis-engine').createExecutor({beforeQuery:()=>ensureLogin(),query:dax=>bridge.query(dax),onStatus:message=>status(message)})
   });
   const commands = createCommandSystem(queryStore, { dialogue });
   let refreshingCodes = null;
@@ -62,7 +62,7 @@ module.exports = function createPowerBi(options = {}) {
       status('Power BI 로그인 확인 완료 · 질문해줘 🐰');
       return result;
     }).catch(error=>{
-      status('Power BI 로그인을 완료하지 못했어. 우사기를 다시 열거나 질문을 보내면 재시도할게.');
+      status('Power BI 로그인을 완료하지 못했어. 실제 BI 조회나 검색 시 다시 시도할게.');
       throw error;
     }).finally(()=>{auth=false;authenticationPending=null;});
     return authenticationPending;
@@ -87,7 +87,7 @@ module.exports = function createPowerBi(options = {}) {
   ipcMain.handle('bi:command', async (event, input) => {
     if (!owner(event)) return { error: '허용되지 않은 요청입니다.' };
     try {
-      await ensureLogin();
+      if (input?.mode === 'search') await ensureLogin();
       if (input?.mode !== 'search') status('Gemini API: interpreting question...');
       return await commands.execute(input?.text, { mode: input?.mode === 'search' ? 'search' : 'talk',requestId:typeof input?.requestId==='string'?input.requestId.slice(0,100):null });
     }
@@ -155,7 +155,7 @@ module.exports = function createPowerBi(options = {}) {
     area = screen.getDisplayNearestPoint(anchor).workArea;
     if (win && !win.isDestroyed()) {
       place(win.getBounds().height); win.setAlwaysOnTop(pet.isAlwaysOnTop()); win.show(); win.focus(); win.webContents.send('bi:focus');
-      ensureLogin().catch(()=>{});return;
+      return;
     }
     win = new BrowserWindow({
       width: 780, height: 230, frame: false, transparent: true, hasShadow: false,
@@ -166,7 +166,7 @@ module.exports = function createPowerBi(options = {}) {
     win.setMenu(null); place(230);
     win.on('show', () => pausePet(true));
     win.on('hide', () => pausePet(false));
-    win.once('ready-to-show', () => { win.show(); win.focus(); ensureLogin().catch(()=>{}); });
+    win.once('ready-to-show', () => { win.show(); win.focus(); });
     // Keep the conversation visible during screenshots and other focus changes.
     // Close explicitly through the pet toggle, the close button or window close.
     win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
@@ -177,5 +177,9 @@ module.exports = function createPowerBi(options = {}) {
   }
   const stop = () => { pausePet(false); dialogue.stop?.(); nlu.stop(); bridge.stop(); if (win && !win.isDestroyed()) win.destroy(); };
   app.once('before-quit',stop);
+  // startPets creates this service at app startup. Begin sign-in once without
+  // waiting for the chat window or blocking ordinary Gemini conversation.
+  // A BI request arriving during sign-in shares authenticationPending.
+  ensureLogin().catch(()=>{});
   return { open, stop };
 };

@@ -135,7 +135,7 @@
       "restoration": "만료된 서버 ID 대신 새 Interaction ID를 로컬 turnId에 매핑한다. 복원만을 이유로 이전 BI 조회를 재실행하지 않는다.",
       "dailyBasePolicy": "Reuse one BASE per Asia/Seoul calendar day. Recreate on expiry, deletion, catalog change or explicit reset; preserve local branch context."
     },
-    "executionFeedback": "앱 검증 결과·실제 계산 결과·최종 사용자 응답·오류를 현재 분기에 연결해 다음 질문의 문맥으로 제공한다. 최초 Gemini 응답만 서버에 남기고 실제 실행 결과가 자동 전달됐다고 가정하지 않는다.",
+    "executionFeedback": "실제 BI 조회 조건·계산식·calculationResult·finalAnswer·오류 및 정답 확인 정보는 전체 학습용 로그에 보존한다. Gemini의 다음 질문·repair·상태 복원에는 현재 분기의 이전 질문, 검증된 Plan(기간·대상·필터·그룹·계산 구조), clarification 상태와 실행 성공 여부만 축약해 제공한다. 원천 행·실제 계산 결과 숫자·최종 답변은 Gemini 문맥으로 보내지 않는다.",
     "localHistory": {
       "file": "conversation-history.jsonl",
       "independentOfServerState": true,

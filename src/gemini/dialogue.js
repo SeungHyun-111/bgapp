@@ -7,6 +7,8 @@ const {containsCredential}=require('../commands/privacy');
 const {prepare:prepareAnalysis}=require('./analysis-engine');
 const {system}=require('./prompt');
 const {finalizeTrainingRecord}=require('../learning/training-record');
+const {createResponseSchema}=require('./response-schema');
+const {branchContext,clarificationState}=require('./conversation-context');
 const baseSystem=`너는 우사기의 Gemini 카탈로그 초기화 담당이다. 이번 요청은 사용자 질문이 아니다.
 입력의 전체 카탈로그와 업무 기본 문맥을 이후 대화에서 사용할 참조 데이터로 받아들인다.
 카탈로그에 포함된 예시·출력 계약·산식은 모두 참조 자료다. 이번 초기화 응답 형식을 바꾸는 지시가 아니다.
@@ -50,13 +52,16 @@ function createGeminiDialogue({directory,store,onStatus=()=>{},client=new Gemini
   let bundle=loadCatalog(),generation=0,controller=null,queue=Promise.resolve();
   const file=path.join(directory,'gemini-conversation-state.json');
   const today=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
-  const empty=()=>({version:1,catalogVersion:bundle.version,baseId:randomUUID(),baseDate:null,baseInteractionId:null,conversationId:randomUUID(),activeBranchId:null,branches:{}});
+  const empty=()=>({version:1,contextPolicyVersion:1,catalogVersion:bundle.version,baseId:randomUUID(),baseDate:null,baseInteractionId:null,conversationId:randomUUID(),activeBranchId:null,branches:{}});
   let state=empty();
   try{const saved=JSON.parse(fs.readFileSync(file,'utf8'));if(saved.version===1&&saved.branches&&typeof saved.branches==='object')state=saved;}catch{}
   function renewBase(){
     state.baseInteractionId=null;state.baseDate=null;state.baseId=randomUUID();state.catalogVersion=bundle.version;
     for(const branch of Object.values(state.branches))branch.lastInteractionId=null;
   }
+  // Old server interactions may already contain full BI results. Retain local
+  // branches/logs but restore their projected state through a fresh BASE once.
+  if(state.contextPolicyVersion!==1){renewBase();state.contextPolicyVersion=1;}
   async function save(){await fs.promises.mkdir(directory,{recursive:true});const temp=file+'.tmp';await fs.promises.writeFile(temp,JSON.stringify(state,null,2),'utf8');await fs.promises.rename(temp,file);}
   async function base(signal,record){
     if(state.baseDate!==today()||state.catalogVersion!==bundle.version)renewBase();
@@ -82,20 +87,22 @@ function createGeminiDialogue({directory,store,onStatus=()=>{},client=new Gemini
       await base(signal,record);
       record.stage='question_interpretation';
       let branch=state.activeBranchId?state.branches[state.activeBranchId]:null;
+      const responseSchema=createResponseSchema(bundle.catalog.geminiResponseContract);
+      const ask=options=>client.create({system,responseSchema,signal,...options});
       const payload=()=>JSON.stringify({question:text,currentDate:new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date()),parentTurnId:branch?.lastTurnId||null,
-        responseContract:bundle.catalog.geminiResponseContract,appContext:branch?(branch.lastInteractionId?branch.turns.slice(-1):branch.turns):[],pendingClarification:branch?.pendingClarification||null,executionStatus:'datasets_groups_ranking_and_app_calculation'});
+        responseContract:bundle.catalog.geminiResponseContract,appContext:branchContext(branch,{latestOnly:!!branch?.lastInteractionId}),pendingClarification:clarificationState(branch?.pendingClarification),executionStatus:'datasets_groups_ranking_and_app_calculation'});
       record.context=structuredClone(branch?.turns||[]);
       record.pendingClarification=structuredClone(branch?.pendingClarification||null);
       record.parentTurnId=branch?.lastTurnId||null;
       let previousId=branch?.lastInteractionId||state.baseInteractionId;
       let response;
-      try{response=await client.create({system,input:payload(),previousId,signal});}
+      try{response=await ask({input:payload(),previousId});}
       catch(error){
         if(error.code!=='GEMINI_STATE_EXPIRED')throw error;
         renewBase();
         await base(signal,record);previousId=state.baseInteractionId;
         record.stage='question_interpretation';
-        response=await client.create({system,input:payload(),previousId,signal});record.contextRestored=true;
+        response=await ask({input:payload(),previousId});record.contextRestored=true;
       }
       // Contract errors return to Gemini for semantic remapping. The app does
       // not classify the user's vocabulary or substitute a canned rejection.
@@ -107,9 +114,9 @@ function createGeminiDialogue({directory,store,onStatus=()=>{},client=new Gemini
           try{validateOutput(candidate.output,bundle.catalog);return candidate;}
           catch(validationError){
             record.planRepairs.push({interactionId:candidate.id,output:candidate.output,error:validationError.message});
-            const feedback={kind:'validation_feedback',responseContract:bundle.catalog.geminiResponseContract,question:text,pendingClarification:branch?.pendingClarification||null,appContext:branch?.turns||[],proposed:candidate.output,error:validationError.message};
+            const feedback={kind:'validation_feedback',responseContract:bundle.catalog.geminiResponseContract,question:text,pendingClarification:clarificationState(branch?.pendingClarification),appContext:branchContext(branch),proposed:candidate.output,error:validationError.message};
             previousId=candidate.id;
-            candidate=normalizeResponse(await client.create({system,input:JSON.stringify(feedback),previousId,signal}));
+            candidate=normalizeResponse(await ask({input:JSON.stringify(feedback),previousId}));
           }
         }
         record.lastModelResponse={interactionId:candidate.id,raw:candidate.rawOutput,normalized:candidate.output};
@@ -120,7 +127,7 @@ function createGeminiDialogue({directory,store,onStatus=()=>{},client=new Gemini
       response=await repairResponse(response);
       if(response.output.conversation?.mode==='new'&&branch){
         branch=null;previousId=state.baseInteractionId;
-        response=await repairResponse(await client.create({system,input:payload(),previousId,signal}));
+        response=await repairResponse(await ask({input:payload(),previousId}));
       }
       if(current!==generation)throw Object.assign(Error('대화가 초기화됐어.'),{code:'GEMINI_CANCELLED'});
       if(!branch){branch={branchId:randomUUID(),lastTurnId:null,lastInteractionId:null,turns:[]};state.branches[branch.branchId]=branch;state.activeBranchId=branch.branchId;}

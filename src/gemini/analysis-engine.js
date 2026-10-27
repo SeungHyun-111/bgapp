@@ -261,8 +261,9 @@ function render(prepared,rows){
   }));
 }
 
-function createExecutor({query,onStatus=()=>{}}){
+function createExecutor({query,onStatus=()=>{},beforeQuery=async()=>{}}){
   return {async execute({plan,catalog,responseTemplate,signal,record}){
+    let authentication=null;
     const p=prepare(plan,catalog,responseTemplate);signal.throwIfAborted();
     record.validation={ok:true,executionAllowed:true,scope:'datasets_groups_and_app_formulas',blankPolicy:'exclude_nulls_aggregate_all_blank_is_null'};
     record.actualBiQueryConditions=p.datasets.map(d=>({id:d.id,period:d.period,target:d.target,targets:d.targets,filters:d.filters||[],fields:d.ids}));
@@ -272,6 +273,9 @@ function createExecutor({query,onStatus=()=>{}}){
       signal.throwIfAborted();record.stage='source_query';record.executionAttempted=true;
       const conditions=[`${p.col('field:방송일시')} >= ${dateLiteral(start)}`,`${p.col('field:방송일시')} < ${dateLiteral(end)}`,...d.conditions];
       const dax=`EVALUATE SELECTCOLUMNS(TOPN(${d.cap+1}, FILTER(ALL('BO'), ${conditions.join(' && ')}), ${p.col('field:방송일시')}, ASC), ${d.ids.map((id,i)=>`${literal('raw'+i)}, ${p.col(id)}`).join(', ')})`;
+      // One lazy authentication per execution, shared by datasets and splits.
+      authentication||=Promise.resolve().then(()=>beforeQuery());
+      await authentication;signal.throwIfAborted();
       const raw=extractRows(await query(dax));record.queryExecuted=true;signal.throwIfAborted();
       record.sourceQueries.push({dataset:d.id,start:new Date(start).toISOString(),endExclusive:new Date(end).toISOString(),rows:raw.length,split:raw.length>d.cap});
       if(raw.length>d.cap){
