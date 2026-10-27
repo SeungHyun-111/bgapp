@@ -47,7 +47,6 @@
     "qwen:mask-test": "python -B scripts/test_qwen_masking.py"
   },
   "devDependencies": {
-    "ajv": "^8.20.0",
     "electron": "^37.10.3"
   },
   "packageManager": "pnpm@10.34.7",

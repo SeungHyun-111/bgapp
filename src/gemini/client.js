@@ -19,6 +19,14 @@ class GeminiClient{
     if(!response.ok){
       this.usageTracker?.finish(usageId,{status:'http_error',httpStatus:response.status});
       // Do not expose raw provider errors, headers or credentials to UI/logs.
+      if(response.status===400){
+        let providerMessage='';
+        try{providerMessage=String((await response.json())?.error?.message||'');}catch{}
+        if(/schema/i.test(providerMessage)&&/too many states|too complex|complexity/i.test(providerMessage)){
+          throw fail('GEMINI_SCHEMA_TOO_COMPLEX','Gemini 응답 Schema가 너무 복잡해서 요청이 거절됐어. 앱의 응답 형식 설정을 수정해야 해.');
+        }
+        throw fail('GEMINI_REQUEST_INVALID','Gemini API가 요청 형식을 받아들이지 못했어 (HTTP 400). 앱의 요청·Schema 설정을 확인해야 해.');
+      }
       if(previousId&&(response.status===404||response.status===410))throw fail('GEMINI_STATE_EXPIRED','이전 대화 상태를 다시 만들어야 해.');
       const code={400:'GEMINI_REQUEST_INVALID',401:'GEMINI_AUTH_FAILED',403:'GEMINI_ACCESS_DENIED',404:'GEMINI_MODEL_UNAVAILABLE',429:'GEMINI_QUOTA_EXCEEDED'}[response.status]||'GEMINI_API_ERROR';
       throw fail(code,`Gemini API가 요청을 처리하지 못했어 (HTTP ${response.status}). 키·모델·사용 한도를 확인해줘.`);

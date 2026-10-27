@@ -31,7 +31,7 @@ async function fixture(t,{authenticate=async()=>({authenticated:true})}={}){
     model='test';
     async create(args){
       if(JSON.parse(args.input).kind==='BASE')return {id:'base',output:{ready:true}};
-      assert(args.responseSchema);
+      assert.equal(args.responseSchema,undefined);
       assert(answers.length,'unexpected Gemini request');
       return {id:'response-'+Math.random(),output:answers.shift()};
     }

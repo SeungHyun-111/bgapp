@@ -7,7 +7,6 @@ const {containsCredential}=require('../commands/privacy');
 const {prepare:prepareAnalysis}=require('./analysis-engine');
 const {system}=require('./prompt');
 const {finalizeTrainingRecord}=require('../learning/training-record');
-const {createResponseSchema}=require('./response-schema');
 const {branchContext,clarificationState}=require('./conversation-context');
 const baseSystem=`너는 우사기의 Gemini 카탈로그 초기화 담당이다. 이번 요청은 사용자 질문이 아니다.
 입력의 전체 카탈로그와 업무 기본 문맥을 이후 대화에서 사용할 참조 데이터로 받아들인다.
@@ -52,7 +51,7 @@ function createGeminiDialogue({directory,store,onStatus=()=>{},client=new Gemini
   let bundle=loadCatalog(),generation=0,controller=null,queue=Promise.resolve();
   const file=path.join(directory,'gemini-conversation-state.json');
   const today=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
-  const empty=()=>({version:1,contextPolicyVersion:1,catalogVersion:bundle.version,baseId:randomUUID(),baseDate:null,baseInteractionId:null,conversationId:randomUUID(),activeBranchId:null,branches:{}});
+  const empty=()=>({version:1,contextPolicyVersion:2,catalogVersion:bundle.version,baseId:randomUUID(),baseDate:null,baseInteractionId:null,conversationId:randomUUID(),activeBranchId:null,branches:{}});
   let state=empty();
   try{const saved=JSON.parse(fs.readFileSync(file,'utf8'));if(saved.version===1&&saved.branches&&typeof saved.branches==='object')state=saved;}catch{}
   function renewBase(){
@@ -61,7 +60,7 @@ function createGeminiDialogue({directory,store,onStatus=()=>{},client=new Gemini
   }
   // Old server interactions may already contain full BI results. Retain local
   // branches/logs but restore their projected state through a fresh BASE once.
-  if(state.contextPolicyVersion!==1){renewBase();state.contextPolicyVersion=1;}
+  if(state.contextPolicyVersion!==2){renewBase();state.contextPolicyVersion=2;}
   async function save(){await fs.promises.mkdir(directory,{recursive:true});const temp=file+'.tmp';await fs.promises.writeFile(temp,JSON.stringify(state,null,2),'utf8');await fs.promises.rename(temp,file);}
   async function base(signal,record){
     if(state.baseDate!==today()||state.catalogVersion!==bundle.version)renewBase();
@@ -87,8 +86,7 @@ function createGeminiDialogue({directory,store,onStatus=()=>{},client=new Gemini
       await base(signal,record);
       record.stage='question_interpretation';
       let branch=state.activeBranchId?state.branches[state.activeBranchId]:null;
-      const responseSchema=createResponseSchema(bundle.catalog.geminiResponseContract);
-      const ask=options=>client.create({system,responseSchema,signal,...options});
+      const ask=options=>client.create({system,signal,...options});
       const payload=()=>JSON.stringify({question:text,currentDate:new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date()),parentTurnId:branch?.lastTurnId||null,
         responseContract:bundle.catalog.geminiResponseContract,appContext:branchContext(branch,{latestOnly:!!branch?.lastInteractionId}),pendingClarification:clarificationState(branch?.pendingClarification),executionStatus:'datasets_groups_ranking_and_app_calculation'});
       record.context=structuredClone(branch?.turns||[]);
@@ -124,9 +122,14 @@ function createGeminiDialogue({directory,store,onStatus=()=>{},client=new Gemini
       }
       record.initialModelResponse=structuredClone(response.rawOutput??response.output);
       record.initialGeminiPlan=structuredClone(normalizeResponse(response).output?.plan??null);
+      if(normalizeResponse(response).output?.conversation?.mode==='new'&&branch){
+        // Detach the old topic before repairing an invalid new-topic Plan.
+        branch=null;record.branchId=null;previousId=state.baseInteractionId;
+        response=await ask({input:payload(),previousId});
+      }
       response=await repairResponse(response);
       if(response.output.conversation?.mode==='new'&&branch){
-        branch=null;previousId=state.baseInteractionId;
+        branch=null;record.branchId=null;previousId=state.baseInteractionId;
         response=await repairResponse(await ask({input:payload(),previousId}));
       }
       if(current!==generation)throw Object.assign(Error('대화가 초기화됐어.'),{code:'GEMINI_CANCELLED'});
@@ -153,9 +156,22 @@ function createGeminiDialogue({directory,store,onStatus=()=>{},client=new Gemini
     }catch(error){
       record.outcome='error';record.error={code:error.code||'GEMINI_PLAN_INVALID',stage:record.stage,message:error.message};
       message=record.stage==='base_initialization'?'Gemini 대화 준비 중 문제가 생겼어. 아직 질문 해석이나 BI 조회는 실행하지 않았어.':error.message;
-      const failedBranch=state.branches[record.branchId];
-      if(current===generation&&failedBranch&&record.rawModelResponse&&!failedBranch.turns.some(t=>t.turnId===turnId)){
-        failedBranch.turns.push({turnId,question:text,gemini:record.normalizedModelResponse||record.rawModelResponse,error:record.error,actualExecution:'failed',finalAnswer:message});
+      const failedResponse=record.normalizedModelResponse||record.lastModelResponse?.normalized;
+      if(current===generation&&failedResponse){
+        let failedBranch=state.branches[record.branchId];
+        const initialOutput=record.initialModelResponse?.response||record.initialModelResponse;
+        if(!failedBranch||initialOutput?.conversation?.mode==='new'&&record.stage==='question_interpretation'){
+          failedBranch={branchId:randomUUID(),lastTurnId:null,lastInteractionId:null,turns:[]};
+          state.branches[failedBranch.branchId]=failedBranch;state.activeBranchId=failedBranch.branchId;
+          record.branchId=failedBranch.branchId;
+        }
+        if(!failedBranch.turns.some(t=>t.turnId===turnId))record.parentTurnId=failedBranch.lastTurnId;
+        record.interactionId||=record.lastModelResponse?.interactionId;
+        record.geminiPlan??=failedResponse.plan||null;
+        record.rawModelResponse??=record.lastModelResponse?.raw;
+        record.normalizedModelResponse??=failedResponse;
+        record.action??=failedResponse.action;
+        if(!failedBranch.turns.some(t=>t.turnId===turnId))failedBranch.turns.push({turnId,question:text,gemini:failedResponse,error:record.error,actualExecution:'failed',finalAnswer:message});
         failedBranch.lastTurnId=turnId;failedBranch.lastInteractionId=record.interactionId;
         try{await save();}catch{}
       }

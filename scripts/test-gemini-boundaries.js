@@ -3,17 +3,14 @@ const assert=require('node:assert/strict');
 const fs=require('fs/promises');
 const os=require('os');
 const path=require('path');
-const Ajv=require('ajv');
 const {QueryStore}=require('../src/commands/query-store');
 const {createGeminiDialogue,validateOutput}=require('../src/gemini/dialogue');
-const {createResponseSchema}=require('../src/gemini/response-schema');
 const {branchContext,clarificationState}=require('../src/gemini/conversation-context');
 const {createExecutor}=require('../src/gemini/analysis-engine');
 const {loadCatalog}=require('../src/gemini/catalog');
 const {GeminiClient}=require('../src/gemini/client');
 const catalog=loadCatalog().catalog;
-const schema=createResponseSchema(catalog.geminiResponseContract);
-const schemaValid=new Ajv({strict:true,allowUnionTypes:true}).compile(schema);
+const schema={type:'object',properties:{ready:{type:'boolean',enum:[true]}},required:['ready'],additionalProperties:false};
 const period={start:'2026-08-01',endExclusive:'2026-09-01',timezone:'Asia/Seoul'};
 const plan=()=>({period:{...period},target:{type:'brand',value:'가전'},formula:{operator:'sum',field:'field:가중분'},outputFormat:'number',groupBy:[]});
 const response=(action='reply',overrides={})=>({action,conversation:{mode:'continue',reset:false},message:action==='execute'?null:'안녕',plan:action==='execute'?plan():null,responseTemplate:action==='execute'?'합계 {{value}}':null,...overrides});
@@ -24,8 +21,11 @@ async function fixture(t,answer){
   const store=new QueryStore(directory),calls=[],events=[];
   const client={model:'test',create:async args=>{
     const input=JSON.parse(args.input);calls.push({...args,input});
-    if(input.kind==='BASE')return {id:'base-'+calls.length,output:{ready:true}};
-    assert.deepEqual(args.responseSchema,schema);
+    if(input.kind==='BASE'){
+      assert.deepEqual(args.responseSchema,schema);
+      return {id:'base-'+calls.length,output:{ready:true}};
+    }
+    assert.equal(args.responseSchema,undefined,'Question and repair calls must use the original unconstrained JSON mode');
     const output=await answer(input,args,calls);
     return {id:'turn-'+calls.length,output};
   }};
@@ -36,16 +36,6 @@ async function fixture(t,answer){
   }});
   return {directory,store,calls,events,dialogue:createGeminiDialogue({directory,store,client,executor})};
 }
-
-test('response schema enforces action/envelope relationships and both complete Plan formats',()=>{
-  for(const output of [response(),response('clarify',{plan:{target:{type:'brand',value:'가전'}}}),response('execute'),response('execute',{plan:{datasets:[{id:'a',period}],calculations:[{id:'total',formula:{operator:'multiply',arguments:[{operator:'sum',field:'field:가중분'},2]}}]}})]){
-    assert.equal(schemaValid(output),true,JSON.stringify(schemaValid.errors));
-    validateOutput(output,catalog);
-  }
-  for(const output of [response('reply',{plan:plan()}),response('execute',{plan:null}),response('execute',{responseTemplate:null}),response('execute',{plan:{target:{type:'all'}}}),response('execute',{conversation:{mode:'continue',reset:true}}),response('clarify',{responseTemplate:'answer {{value}}'}),{response:response()},response('reply',{unknown:'field'})]){
-    assert.equal(schemaValid(output),false,JSON.stringify(output));
-  }
-});
 
 test('GeminiClient serializes responseSchema into the actual API request',async t=>{
   const previous=process.env.GEMINI_API_KEY;process.env.GEMINI_API_KEY='test-only';
@@ -61,7 +51,19 @@ test('GeminiClient serializes responseSchema into the actual API request',async 
   assert.equal(body.previous_interaction_id,'parent');
 });
 
-test('follow-up/repair uses schema and projected Plan context; full results stay in learning logs',async t=>{
+test('HTTP 400 schema-complexity diagnosis is safe and does not blame the API key or quota',async t=>{
+  const previous=process.env.GEMINI_API_KEY;process.env.GEMINI_API_KEY='test-only';
+  t.after(()=>{if(previous===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=previous;});
+  const client=new GeminiClient({fetchImpl:async()=>({ok:false,status:400,json:async()=>({error:{message:'The specified schema produces a constraint that has too many states for serving. private-provider-detail'}})})});
+  await assert.rejects(client.create({input:'hello',responseSchema:schema}),error=>{
+    assert.equal(error.code,'GEMINI_SCHEMA_TOO_COMPLEX');
+    assert(!error.message.includes('private-provider-detail'));
+    assert(!error.message.includes('사용 한도'));
+    return true;
+  });
+});
+
+test('follow-up/repair uses original JSON mode and projected Plan context; full results stay in learning logs',async t=>{
   let questions=0;
   const f=await fixture(t,input=>{
     if(input.kind==='validation_feedback')return response('execute');
@@ -91,7 +93,7 @@ test('follow-up/repair uses schema and projected Plan context; full results stay
   assert.equal(logs[0].confirmed,false);
 });
 
-test('expired interaction restores only projected context with schema and does not replay BI',async t=>{
+test('expired interaction restores only projected context in original JSON mode and does not replay BI',async t=>{
   let questions=0;
   const f=await fixture(t,input=>{
     if(questions++===0)return response('execute');
@@ -109,7 +111,7 @@ test('expired interaction restores only projected context with schema and does n
   assert.equal(logs[1].contextRestored,true);
 });
 
-test('clarification survives expiry and new-branch interpretation also receives schema',async t=>{
+test('clarification survives expiry and new-branch interpretation uses original JSON mode',async t=>{
   let questions=0;
   const f=await fixture(t,input=>{
     questions++;
@@ -160,7 +162,7 @@ test('pre-projection saved interactions are renewed once without losing local fu
   const dialogue=createGeminiDialogue({directory:f.directory,store:f.store,client});
   await dialogue.execute('그럼 9월은?');
   const state=JSON.parse(await fs.readFile(file,'utf8'));
-  assert.equal(state.contextPolicyVersion,1);
+  assert.equal(state.contextPolicyVersion,2);
   assert.equal(state.branches[saved.activeBranchId].turns[0].calculationResult.rows[0].value,SENTINEL);
 });
 
@@ -171,4 +173,30 @@ test('multiple datasets authenticate once; failed authentication never queries',
   assert.deepEqual(events,['auth','query','query']);
   const broken=createExecutor({beforeQuery:async()=>{throw Error('no login');},query:async()=>assert.fail('query before login')});
   await assert.rejects(broken.execute({plan:plan(),catalog,responseTemplate:'{{value}}',signal:new AbortController().signal,record:{}}),/no login/);
+});
+
+test('repair retains original feedback contract; failed question remains follow-up context',async t=>{
+  let requests=0;
+  const broken=response('execute',{plan:{datasets:[{id:'a',period:'2026',target:'라포레',filters:['청소기']}],calculations:[{id:'n',formula:'sum(field:가중분)'}]}});
+  const f=await fixture(t,input=>{
+    requests++;
+    if(input.kind==='validation_feedback'){
+      assert.equal(input.formatErrors,undefined);
+      assert.equal(input.proposed.plan.datasets[0].period,'2026');
+      assert.match(input.error,/날짜/);
+      return broken;
+    }
+    if(requests===1)return broken;
+    assert.equal(input.appContext.at(-1).question,'라포레 실적');
+    assert.equal(input.appContext.at(-1).executionStatus,'failed');
+    assert.equal(input.appContext.at(-1).plan,null);
+    return response('clarify',{message:'라포레의 어떤 지표를 볼까요?'});
+  });
+  const failed=await f.dialogue.execute('라포레 실적');
+  assert.match(failed.message,/날짜/);
+  await f.dialogue.execute('26년');
+  assert.deepEqual(f.events,[]);
+  const logs=await f.store.readLines(f.store.file);
+  assert.equal(logs[1].parentTurnId,logs[0].turnId);
+  assert.equal(logs[0].confirmed,false);
 });
